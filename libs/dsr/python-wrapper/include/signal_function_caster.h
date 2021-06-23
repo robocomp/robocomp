@@ -51,7 +51,7 @@ namespace pybind11::detail {
             auto caster = make_caster<U>();
             if (caster.load(src, convert)) {
                 value = cast_op<U>(caster);
-                std::cout << value.index() << " " << convert << std::endl;
+                //std::cout << value.index() << " " << convert << std::endl;
 
                 return true;
             }

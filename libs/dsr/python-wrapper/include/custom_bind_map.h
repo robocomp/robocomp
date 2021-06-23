@@ -17,11 +17,11 @@
 #pragma pop_macro("slots")
 
 inline static constexpr std::array<std::string_view, 17> attribute_type_TYPENAMES_UNION =
-        { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
-        "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE",
-        "FLOAT","INT", "UINT", "NUMPY_U64_VEC",
-        "UINT64_VEC", "FLOAT_VEC2", "FLOAT_VEC3",
-        "FLOAT_VEC4", "FLOAT_VEC6"};
+        { "STRING", "BOOL", "NUMPY_BYTE_VEC", "NUMPY_FLOAT_VEC",
+          "NUMPY_U64_VEC","BYTE_VEC", "FLOAT_VEC", "UINT64_VEC",
+          "FLOAT_VEC2", "FLOAT_VEC3","FLOAT_VEC4", "FLOAT_VEC6",
+          "UINT64", "DOUBLE", "FLOAT","INT", "UINT",
+         };
 
 
 
@@ -98,7 +98,7 @@ namespace pybind11 {
                [](Map &m, const KeyType &k, const MappedType &v) {
 
                    bool correct_type = false;
-
+                   //std::cout <<"[SET MAP ITEM] " << k << " "<< v.selected() << " [ "<< v <<" ]" <<std::endl;
                    switch (v.selected())
                    {
                        case 0:
@@ -223,7 +223,7 @@ namespace pybind11 {
                            correct_type = attribute_types::check_type((k).data(), v.vec6());
                            break;
                        default:
-                           throw std::runtime_error("[Not implemented type] Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
+                           throw /*std::runtime_error*/ pybind11::type_error("[Not implemented type] Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
                    }
 
                     if (correct_type) {
@@ -231,7 +231,7 @@ namespace pybind11 {
                         if (it != m.end()) it->second = v;
                         else m.emplace(k, v);
                     } else {
-                        throw std::runtime_error("Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
+                        throw /*std::runtime_error*/ pybind11::type_error("Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
                     }
 
                }

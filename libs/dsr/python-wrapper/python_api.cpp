@@ -9,7 +9,8 @@ using namespace DSR;
 #include "include/silent_output.h"
 #include "include/signal_function_caster.h"
 #include "include/custom_bind_map.h"
-//#include "include/vector_caster.h"
+#include "include/custom_bool_cast.h"
+#include "include/custom_vector_cast.h"
 
 #pragma push_macro("slots")
 #undef slots
@@ -43,24 +44,43 @@ using callback_types = std::variant<
         std::function<void(std::uint64_t)>
 >;
 
+enum ATT_ENUM: uint16_t {
+    STRING_PY,
+    BOOL_PY,
+    NPYU8,
+    NPYF,
+    NPYU64,
+    VECU8_PY,
+    VECF_PY,
+    VECU64_PY,
+    VEC2_PY,
+    VEC3_PY,
+    VEC4_PY,
+    VEC6_PY,
+    U64_PY,
+    DOUBLE_PY,
+    FLOAT_PY,
+    I32_PY,
+    U32_PY
+};
 
 using attribute_type = std::variant<std::string,
-                                    bool,
+                                    no_int_cast_bool,
                                     py::array_t<uint8_t>,
-                                    std::vector<uint8_t>,
                                     py::array_t<float>,
-                                    std::vector<float>,
-                                    uint64_t,
-                                    double,
-                                    float,
-                                    int32_t,
-                                    uint32_t,
                                     py::array_t<uint64_t>,
+                                    std::vector<uint8_t>,
+                                    std::vector<float>,
                                     std::vector<uint64_t>,
                                     std::array<float, 2>,
                                     std::array<float, 3>,
                                     std::array<float, 4>,
-                                    std::array<float, 6>>;
+                                    std::array<float, 6>,
+                                    uint64_t,
+                                    double,
+                                    float,
+                                    int32_t,
+                                    uint32_t>;
 
 
 
@@ -68,6 +88,7 @@ using attribute_type = std::variant<std::string,
 template<std::size_t idx, typename T>
 ValType convert_variant_fn(const attribute_type & e)
 {
+    //std::cout << "[PYTHON_VARIANT -> VALTYPE] " << attribute_type_TYPENAMES_UNION[e.index()] << std::endl;
     ValType vout;
     if constexpr (std::is_same_v<T, py::array_t<uint8_t>>)
     {
@@ -78,6 +99,7 @@ ValType convert_variant_fn(const attribute_type & e)
     } else if constexpr (std::is_same_v<T, py::array_t<float>>)
     {
         auto tmp = std::get<py::array_t<float>>(e);
+        //std::cout << tmp.dtype() << " " << tmp.size() << py::array_t<float>::ensure(tmp) << std::endl;
         const auto size = tmp.size();
         py::buffer_info x = tmp.request();
         vout.emplace<idx>(std::vector<float>{static_cast<float *>(x.ptr), static_cast<float *>(x.ptr) + size});
@@ -87,6 +109,10 @@ ValType convert_variant_fn(const attribute_type & e)
         const auto size = tmp.size();
         py::buffer_info x = tmp.request();
         vout.emplace<idx>(std::vector<uint64_t>{static_cast<uint64_t *>(x.ptr), static_cast<uint64_t *>(x.ptr) + size});
+    } else if constexpr (std::is_same_v<T, no_int_cast_bool>)
+    {
+        auto tmp = std::get<no_int_cast_bool>(e)();
+        vout.emplace<idx>(tmp);
     }
     else
     {
@@ -102,42 +128,23 @@ ValType convert_variant_fn(const attribute_type & e)
 ValType convert_variant(const attribute_type & e)
 {
     typedef ValType (*conver_fn) (const attribute_type &);
-    //using t = DSR::Types;
-
-    /*constexpr std::array<uint8_t, 9> idx_ValType = {t::STRING,
-                                                               t::BOOL,
-                                                               t::BYTE_VEC,
-                                                               t::FLOAT_VEC,
-                                                               t::UINT64,
-                                                               t::DOUBLE,
-                                                               t::FLOAT,
-                                                               t::INT,
-                                                               t::UINT };
-    */
-    /*
-         using ValType = std::variant<std::string, int32_t, float,
-            std::vector<float>, bool, std::vector<uint8_t>,
-            uint32_t, uint64_t, double, std::vector<uint64_t>,
-            std::array<float, 2>, std::array<float, 3>,
-            std::array<float, 4>, std::array<float, 6>>;
-     * */
     constexpr std::array<conver_fn, 17> cast = { convert_variant_fn<0, std::string>,
-                                                 convert_variant_fn<4, bool>,
+                                                 convert_variant_fn<4, no_int_cast_bool>,
                                                  convert_variant_fn<5, py::array_t<uint8_t>>,
-                                                 convert_variant_fn<5, std::vector<uint8_t>>,
                                                  convert_variant_fn<3, py::array_t<float>>,
-                                                 convert_variant_fn<3, std::vector<float>>,
-                                                 convert_variant_fn<7, uint64_t>,
-                                                 convert_variant_fn<8, double>,
-                                                 convert_variant_fn<2, float>,
-                                                 convert_variant_fn<1, int32_t>,
-                                                 convert_variant_fn<6, uint32_t>,
                                                  convert_variant_fn<9, py::array_t<uint64_t>>,
+                                                 convert_variant_fn<5, std::vector<uint8_t>>,
+                                                 convert_variant_fn<3, std::vector<float>>,
                                                  convert_variant_fn<9, std::vector<uint64_t>>,
                                                  convert_variant_fn<10, std::array<float, 2>>,
                                                  convert_variant_fn<11, std::array<float, 3>>,
                                                  convert_variant_fn<12, std::array<float, 4>>,
-                                                 convert_variant_fn<13, std::array<float, 6>>
+                                                 convert_variant_fn<13, std::array<float, 6>>,
+                                                 convert_variant_fn<7, uint64_t>,
+                                                 convert_variant_fn<8, double>,
+                                                 convert_variant_fn<2, float>,
+                                                 convert_variant_fn<1, int32_t>,
+                                                 convert_variant_fn<6, uint32_t>
                                              };
 
     const auto idx = e.index(); //idx_ValType.at(e.index());
@@ -147,9 +154,7 @@ ValType convert_variant(const attribute_type & e)
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
 
-
 PYBIND11_MODULE(pydsr, m) {
-
     py::bind_map<std::map<std::pair<uint64_t, std::string>, Edge>>(m, "MapStringEdge");
     py::bind_dsr_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
 
@@ -337,27 +342,28 @@ PYBIND11_MODULE(pydsr, m) {
                                   case 13:
                                       return py::array_t<float> { 6, self.vec6().data()};
                                   default:
-                                      throw std::runtime_error("Unreachable");
+                                      throw /*std::runtime_error*/ pybind11::type_error("Unreachable");
                               }
 
                 },
                           [&](Attribute &self, const attribute_type &val) {
+                              auto excep = std::string("Attributes cannot change type. Selected type is " + std::string{DSR::TYPENAMES_UNION[self.selected()]} + " and used type is " + std::string{attribute_type_TYPENAMES_UNION[val.index()]});
                               try {
-                                  //std::cout << "val idx: " << std::string{attribute_type_TYPENAMES_UNION[val.index()]} << " selected: " << std::string{DSR::TYPENAMES_UNION[self.selected()]} << std::endl;
+                                  //std::cout << "[SET MAP VALUE] " << self.selected() << ", " << val.index() << std::endl;
                                   switch (self.selected()) {
                                       case 0:
                                           self.str(std::get<std::string>(val));
                                           break;
                                       case 1:
-                                          if (val.index() == 6) self.dec(std::get<uint64_t>(val)); //This is intentional
+                                          if (val.index() == ATT_ENUM::U64_PY) self.dec(std::get<uint64_t>(val)); //This is intentional
                                           else self.dec(std::get<int32_t>(val));
                                           break;
                                       case 2:
-                                          if (val.index() == 7) self.fl(std::get<double>(val)); //This is intentional
+                                          if (val.index() == ATT_ENUM::DOUBLE_PY) self.fl(std::get<double>(val)); //This is intentional
                                           else self.fl(std::get<float>(val));
                                           break;
                                       case 3:
-                                          if (val.index() == 4) {
+                                          if (val.index() == ATT_ENUM::NPYF) {
                                               auto tmp = std::get<py::array_t<float>>(val);
                                               const auto size = tmp.size();
                                               py::buffer_info x = tmp.request();
@@ -366,10 +372,10 @@ PYBIND11_MODULE(pydsr, m) {
                                           else self.float_vec(std::get<std::vector<float>>(val));
                                           break;
                                       case 4:
-                                          self.bl(std::get<bool>(val));
+                                          self.bl(std::get<no_int_cast_bool>(val)());
                                           break;
                                       case 5:
-                                          if (val.index() == 2) {
+                                          if (val.index() == ATT_ENUM::NPYU8) {
                                               auto tmp = std::get<py::array_t<uint8_t>>(val);
                                               const auto size = tmp.size();
                                               py::buffer_info x = tmp.request();
@@ -378,7 +384,7 @@ PYBIND11_MODULE(pydsr, m) {
                                           else self.byte_vec(std::get<std::vector<uint8_t>>(val));
                                           break;
                                       case 6:
-                                          if (val.index() == 6) self.uint(std::get<uint64_t>(val));
+                                          if (val.index() == ATT_ENUM::U64_PY) self.uint(std::get<uint64_t>(val));
                                           else self.uint(std::get<uint32_t>(val));
                                           break;
                                       case 7:
@@ -388,19 +394,19 @@ PYBIND11_MODULE(pydsr, m) {
                                           self.dob(std::get<double>(val));
                                           break;
                                       case 9:
-                                          if (val.index() == 11) {
+                                          if (val.index() == ATT_ENUM::NPYU64) {
                                               auto tmp = std::get<py::array_t<uint64_t>>(val);
                                               const auto size = tmp.size();
                                               py::buffer_info x = tmp.request();
                                               self.u64_vec(std::vector<uint64_t>{static_cast<uint64_t *>(x.ptr), static_cast<uint64_t *>(x.ptr) + size});
-                                          } else if (val.index() == 3) {
+                                          } else if (val.index() == ATT_ENUM::VECU8_PY) {
                                               auto tmp = std::get<std::vector<uint8_t>>(val);
                                               self.u64_vec(std::vector<uint64_t>{tmp.begin(), tmp.end()});
                                           }
                                           else self.u64_vec(std::get<std::vector<uint64_t>>(val));
                                           break;
                                       case 10:
-                                          if (val.index() == 4) {
+                                          if (val.index() == ATT_ENUM::NPYF) {
                                               auto tmp = std::get<py::array_t<float>>(val);
                                               if (tmp.size() == 2) {
                                                   py::buffer_info x = tmp.request();
@@ -408,14 +414,16 @@ PYBIND11_MODULE(pydsr, m) {
                                                                                  static_cast<float *>(x.ptr)[1]});
 
                                               } else throw;
-                                          }else if (val.index() == 5) {
+                                          }else if (val.index() == ATT_ENUM::VECF_PY) {
                                               auto tmp = std::get<std::vector<float>>(val);
-                                              self.vec2(std::array<float, 2>{tmp[0], tmp[1]});
+                                              if (tmp.size() == 2) {
+                                                  self.vec2(std::array<float, 2>{tmp[0], tmp[1]});
+                                              } else throw pybind11::type_error(excep);
                                           }
                                           else self.vec2(std::get<std::array<float, 2>>(val));
                                           break;
                                       case 11:
-                                          if (val.index() == 4) {
+                                          if (val.index() == ATT_ENUM::NPYF) {
                                               auto tmp = std::get<py::array_t<float>>(val);
                                               if (tmp.size() == 3) {
                                                   py::buffer_info x = tmp.request();
@@ -423,18 +431,20 @@ PYBIND11_MODULE(pydsr, m) {
                                                                                  static_cast<float *>(x.ptr)[1],
                                                                                  static_cast<float *>(x.ptr)[2]});
 
-                                              } else throw;
-                                          } else if (val.index() == 5) {
+                                              } else throw pybind11::type_error(excep);
+                                          } else if (val.index() == ATT_ENUM::VECF_PY) {
                                               auto tmp = std::get<std::vector<float>>(val);
-                                              self.vec3(std::array<float, 3>{tmp[0],
-                                                                             tmp[1],
-                                                                             tmp[2]});
+                                              if (tmp.size() == 3) {
+                                                  self.vec3(std::array<float, 3>{tmp[0],
+                                                                                 tmp[1],
+                                                                                 tmp[2]});
+                                              } else throw pybind11::type_error(excep);
 
                                           }
                                           else self.vec3(std::get<std::array<float, 3>>(val));
                                           break;
                                       case 12:
-                                          if (val.index() == 4) {
+                                          if (val.index() == ATT_ENUM::NPYF) {
                                               auto tmp = std::get<py::array_t<float>>(val);
                                               if (tmp.size() == 4) {
                                                   py::buffer_info x = tmp.request();
@@ -443,19 +453,20 @@ PYBIND11_MODULE(pydsr, m) {
                                                                                  static_cast<float *>(x.ptr)[2],
                                                                                  static_cast<float *>(x.ptr)[3]});
 
-                                              } else throw;
-                                          }else if (val.index() == 5) {
+                                              } else throw pybind11::type_error(excep);
+                                          }else if (val.index() == ATT_ENUM::VECF_PY) {
                                               auto tmp = std::get<std::vector<float>>(val);
-                                              self.vec4(std::array<float, 4>{tmp[0],
-                                                                             tmp[1],
-                                                                             tmp[2],
-                                                                             tmp[3]});
-
+                                              if (tmp.size() == 4) {
+                                                  self.vec4(std::array<float, 4>{tmp[0],
+                                                                                 tmp[1],
+                                                                                 tmp[2],
+                                                                                 tmp[3]});
+                                              } else throw pybind11::type_error(excep);
                                           }
                                           else self.vec4(std::get<std::array<float, 4>>(val));
                                           break;
                                       case 13:
-                                          if (val.index() == 4) {
+                                          if (val.index() == ATT_ENUM::NPYF) {
                                               auto tmp = std::get<py::array_t<float>>(val);
                                               if (tmp.size() == 6) {
                                                   py::buffer_info x = tmp.request();
@@ -466,29 +477,27 @@ PYBIND11_MODULE(pydsr, m) {
                                                                                  static_cast<float *>(x.ptr)[4],
                                                                                  static_cast<float *>(x.ptr)[5]});
 
-                                              } else throw;
-                                          } else if (val.index() == 5) {
+                                              } else throw pybind11::type_error(excep);
+                                          } else if (val.index() == ATT_ENUM::VECF_PY) {
                                               auto tmp = std::get<std::vector<float>>(val);
-                                              self.vec6(std::array<float, 6>{tmp[0],
-                                                                             tmp[1],
-                                                                             tmp[2],
-                                                                             tmp[3],
-                                                                             tmp[4],
-                                                                             tmp[5]});
-
+                                              if (tmp.size() == 6) {
+                                                  self.vec6(std::array<float, 6>{tmp[0],
+                                                                                 tmp[1],
+                                                                                 tmp[2],
+                                                                                 tmp[3],
+                                                                                 tmp[4],
+                                                                                 tmp[5]});
+                                              } else throw pybind11::type_error(excep);
                                           }
                                           else self.vec6(std::get<std::array<float, 6>>(val));
                                           break;
                                       default:
-                                          throw std::runtime_error("Attributes cannot change type. Selected type is " +
-                                                                   std::string{DSR::TYPENAMES_UNION[self.selected()]} +
-                                                                   " and used type is " + std::string{
-                                                  attribute_type_TYPENAMES_UNION[val.index()]});
+                                          throw /*std::runtime_error*/ pybind11::type_error(excep);
                                       };
                                       self.timestamp(get_unix_timestamp());
                                       self.agent_id(local_agent_id);
                               } catch (...) {
-                                  throw std::runtime_error("Attributes cannot change type. Selected type is " + std::string{DSR::TYPENAMES_UNION[self.selected()]} + " and used type is " + std::string{attribute_type_TYPENAMES_UNION[val.index()]});
+                                  throw /*std::runtime_error*/ pybind11::type_error(excep);
                               }
                           },
                           py::return_value_policy::reference, "read or assign a new value to the Attribute object.");
