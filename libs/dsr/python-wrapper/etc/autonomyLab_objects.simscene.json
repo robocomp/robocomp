@@ -1,0 +1,2825 @@
+{
+    "DSRModel": {
+        "symbols": {
+            "1": {
+                "attribute": {
+                    "OuterRegionBottom": {
+                        "type": 1,
+                        "value": -7500
+                    },
+                    "OuterRegionLeft": {
+                        "type": 1,
+                        "value": -7500
+                    },
+                    "OuterRegionRight": {
+                        "type": 1,
+                        "value": 7500
+                    },
+                    "OuterRegionTop": {
+                        "type": 1,
+                        "value": 7500
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "SeaGreen"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "0"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 71.272423
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -2.885518
+                    }
+                },
+                "id": "1",
+                "links": [
+                    {
+                        "dst": "2",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707937479019165
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3206.950927734375,
+                                    2274.864990234375,
+                                    1225.4749755859375
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "3",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    267.2820129394531,
+                                    2348.886962890625,
+                                    1225.47802734375
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "4",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5708205699920654
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -838,
+                                    -1753.10595703125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "10",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    3188.281982421875,
+                                    1046.89501953125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "11",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    5329.8310546875,
+                                    -331.5119934082031,
+                                    1228.449951171875
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "12",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    4258.2861328125,
+                                    240.89700317382812,
+                                    1225.47998046875
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "14",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3925.946044921875,
+                                    674.8770141601562,
+                                    1225.4759521484375
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "15",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -1.5707955360412598,
+                                    -2.8623376238101628e-06,
+                                    -1.5707969665527344
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3299.93896484375,
+                                    -798.1160278320312,
+                                    1227.4759521484375
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "16",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    1.5707950592041016,
+                                    3.141589403152466
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -2817.7080078125,
+                                    -1301.1319580078125,
+                                    1227.47802734375
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "19",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5708205699920654
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    3269.29296875,
+                                    -1746.10595703125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "20",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    25,
+                                    -60
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "50",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "60",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "80",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    },
+                    {
+                        "dst": "200",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    -0.6995884776115417
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1324.4864501953125,
+                                    238.7539825439453,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "1"
+                    }
+                ],
+                "name": "world",
+                "type": "world"
+            },
+            "10": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2490
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 551.322937
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 9.141786
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddf7e3"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": "10",
+                "links": [
+                ],
+                "name": "Wall2",
+                "type": "plane"
+            },
+            "1000": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Magenta"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "200"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -278.689453
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -3.151021
+                    }
+                },
+                "id": "1000",
+                "links": [
+                ],
+                "name": "mind",
+                "type": "transform"
+            },
+            "11": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2464
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1030
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 531.78418
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 210.22673
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#d8d8d8"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 123
+                    }
+                },
+                "id": "11",
+                "links": [
+                ],
+                "name": "Wall5",
+                "type": "plane"
+            },
+            "12": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2009
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 535.76709
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -52.082443
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#dbdbdb"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": "12",
+                "links": [
+                ],
+                "name": "Wall4",
+                "type": "plane"
+            },
+            "14": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2940
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 467.635803
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 222.868149
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddefdd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": "14",
+                "links": [
+                ],
+                "name": "Wall16",
+                "type": "plane"
+            },
+            "15": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 970
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 579.482361
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 91.685844
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": "15",
+                "links": [
+                ],
+                "name": "Wall8",
+                "type": "plane"
+            },
+            "16": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 542.863342
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -14.153426
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": "16",
+                "links": [
+                ],
+                "name": "Wall9",
+                "type": "plane"
+            },
+            "19": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 4047
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 563.11908
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 147.616699
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ed7a00"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": "19",
+                "links": [
+                ],
+                "name": "Wall6",
+                "type": "plane"
+            },
+            "2": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1180
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 581.008911
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 109.110863
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#dbf4db"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": "2",
+                "links": [
+                ],
+                "name": "Wall0",
+                "type": "plane"
+            },
+            "20": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightGrey"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 120
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 7000
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 263.074371
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 165.568298
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#DDDDDD"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 12000
+                    }
+                },
+                "id": "20",
+                "links": [
+                ],
+                "name": "floor",
+                "type": "plane"
+            },
+            "200": {
+                "attribute": {
+                    "base_target_x": {
+                        "type": 2,
+                        "value": 3600
+                    },
+                    "base_target_y": {
+                        "type": 2,
+                        "value": 1550
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "Blue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "port": {
+                        "type": 1,
+                        "value": 12238
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -174.637238
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -74.730019
+                    },
+                    "robot_ref_adv_speed": {
+                        "type": 2,
+                        "value": 0
+                    },
+                    "robot_ref_rot_speed": {
+                        "type": 2,
+                        "value": 0
+                    },
+                    "robot_ref_side_speed": {
+                        "type": 2,
+                        "value": 0
+                    }
+                },
+                "id": "200",
+                "links": [
+                    {
+                        "dst": "50",
+                        "label": "in",
+                        "linkAttribute": {
+                        },
+                        "src": "200"
+                    },
+                    {
+                        "dst": "500",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "200"
+                    },
+                    {
+                        "dst": "1000",
+                        "label": "has",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "200"
+                    }
+                ],
+                "name": "viriato",
+                "type": "omnirobot"
+            },
+            "201": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "500"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "../../etc/viriato_base_concept_3/viriato_mesh.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -297.580231
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -332.255524
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": "201",
+                "links": [
+                ],
+                "name": "viriato_mesh",
+                "type": "mesh"
+            },
+            "202": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "500"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -103.442307
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -248.4133
+                    }
+                },
+                "id": "202",
+                "links": [
+                    {
+                        "dst": "203",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "202"
+                    },
+                    {
+                        "dst": "204",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    100,
+                                    0,
+                                    100
+                                ]
+                            }
+                        },
+                        "src": "202"
+                    },
+                    {
+                        "dst": "205",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    0,
+                                    -100
+                                ]
+                            }
+                        },
+                        "src": "202"
+                    }
+                ],
+                "name": "laser_pose",
+                "type": "transform"
+            },
+            "203": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "GreenYellow"
+                    },
+                    "laser_angles": {
+                        "type": 3,
+                        "value": [
+                        ]
+                    },
+                    "laser_dists": {
+                        "type": 3,
+                        "value": [
+                        ]
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 4
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "202"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 56.066166
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -253.351563
+                    }
+                },
+                "id": "203",
+                "links": [
+                ],
+                "name": "laser",
+                "type": "laser"
+            },
+            "204": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 4
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "202"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -40.584343
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -161.594437
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": "204",
+                "links": [
+                ],
+                "name": "laser1",
+                "type": "mesh"
+            },
+            "205": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 4
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "202"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 19.227972
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -201.698074
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": "205",
+                "links": [
+                ],
+                "name": "laser2",
+                "type": "mesh"
+            },
+            "206": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "500"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -379.181976
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -204.563416
+                    },
+                    "viriato_head_pan_tilt_nose_target": {
+                        "type": 3,
+                        "value": [
+                            1000,
+                            0,
+                            0
+                        ]
+                    }
+                },
+                "id": "206",
+                "links": [
+                    {
+                        "dst": "207",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    -0.0005755375605076551
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "206"
+                    }
+                ],
+                "name": "viriato_head_camera_pan_tilt",
+                "type": "pan_tilt"
+            },
+            "207": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 4
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "206"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -410.591095
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -282.490997
+                    }
+                },
+                "id": "207",
+                "links": [
+                    {
+                        "dst": "208",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0.0011809815187007189,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "207"
+                    }
+                ],
+                "name": "viriato_head_camera_pan_joint",
+                "type": "transform"
+            },
+            "208": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 5
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "207"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -466.174591
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -250.67131
+                    }
+                },
+                "id": "208",
+                "links": [
+                    {
+                        "dst": "209",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "208"
+                    }
+                ],
+                "name": "viriato_head_camera_tilt_joint",
+                "type": "transform"
+            },
+            "209": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 6
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "208"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -463.527924
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -163.424591
+                    }
+                },
+                "id": "209",
+                "links": [
+                    {
+                        "dst": "210",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "209"
+                    }
+                ],
+                "name": "camera_pose",
+                "type": "transform"
+            },
+            "210": {
+                "attribute": {
+                    "cam_depth": {
+                        "type": 5,
+                        "value": [
+                        ]
+                    },
+                    "cam_depthFactor": {
+                        "type": 2,
+                        "value": 1
+                    },
+                    "cam_depth_alivetime": {
+                        "type": 1,
+                        "value": 1620400089
+                    },
+                    "cam_depth_cameraID": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "cam_depth_focalx": {
+                        "type": 1,
+                        "value": 554
+                    },
+                    "cam_depth_focaly": {
+                        "type": 1,
+                        "value": 554
+                    },
+                    "cam_depth_height": {
+                        "type": 1,
+                        "value": 480
+                    },
+                    "cam_depth_width": {
+                        "type": 1,
+                        "value": 640
+                    },
+                    "cam_rgb": {
+                        "type": 5,
+                        "value": [
+                        ]
+                    },
+                    "cam_rgb_alivetime": {
+                        "type": 1,
+                        "value": 1620400089
+                    },
+                    "cam_rgb_cameraID": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "cam_rgb_depth": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "cam_rgb_focalx": {
+                        "type": 1,
+                        "value": 554
+                    },
+                    "cam_rgb_focaly": {
+                        "type": 1,
+                        "value": 554
+                    },
+                    "cam_rgb_height": {
+                        "type": 1,
+                        "value": 480
+                    },
+                    "cam_rgb_width": {
+                        "type": 1,
+                        "value": 640
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "Blue"
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 480
+                    },
+                    "ifconfig": {
+                        "type": 0,
+                        "value": "40000,50000"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 7
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "209"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -426.629547
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -86.217537
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 640
+                    }
+                },
+                "id": "210",
+                "links": [
+                ],
+                "name": "viriato_head_camera_sensor",
+                "type": "rgbd"
+            },
+            "220": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Orange"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "500"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -177.976257
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -303.349243
+                    },
+                    "viriato_left_arm_target": {
+                        "type": 3,
+                        "value": [
+                            -237,
+                            312,
+                            516,
+                            2.799999952316284,
+                            0,
+                            1.6820000410079956
+                        ]
+                    }
+                },
+                "id": "220",
+                "links": [
+                ],
+                "name": "viriato_left_arm_tip",
+                "type": "left_hand"
+            },
+            "3": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 5770
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 560.410645
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 186.918289
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddf7dd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": "3",
+                "links": [
+                ],
+                "name": "Wall1",
+                "type": "plane"
+            },
+            "4": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 4200
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 536.239685
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -87.719376
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ed7a00"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": "4",
+                "links": [
+                ],
+                "name": "Wall10",
+                "type": "plane"
+            },
+            "50": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "delimiting_polygon_x": {
+                        "type": 3,
+                        "value": [
+                            -3892,
+                            -262,
+                            -3761,
+                            -336
+                        ]
+                    },
+                    "delimiting_polygon_y": {
+                        "type": 3,
+                        "value": [
+                            -1690,
+                            -1690,
+                            2133,
+                            2227
+                        ]
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 44.890675
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -51.743259
+                    }
+                },
+                "id": "50",
+                "links": [
+                    {
+                        "dst": "73",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -1600,
+                                    295,
+                                    380
+                                ]
+                            }
+                        },
+                        "src": "50"
+                    },
+                    {
+                        "dst": "74",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -1600,
+                                    650,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "50"
+                    }
+                ],
+                "name": "dinning_room",
+                "type": "room"
+            },
+            "500": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Orange"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "200"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -263.540405
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -147.869156
+                    }
+                },
+                "id": "500",
+                "links": [
+                    {
+                        "dst": "201",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5700000524520874
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    200
+                                ]
+                            }
+                        },
+                        "src": "500"
+                    },
+                    {
+                        "dst": "202",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    400,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "500"
+                    },
+                    {
+                        "dst": "206",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    57,
+                                    1368
+                                ]
+                            }
+                        },
+                        "src": "500"
+                    },
+                    {
+                        "dst": "220",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "500"
+                    }
+                ],
+                "name": "body",
+                "type": "transform"
+            },
+            "60": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "delimiting_polygon_x": {
+                        "type": 3,
+                        "value": [
+                            -262,
+                            3237,
+                            -280,
+                            3181
+                        ]
+                    },
+                    "delimiting_polygon_y": {
+                        "type": 3,
+                        "value": [
+                            -1690,
+                            -1690,
+                            2301,
+                            2283
+                        ]
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 174.980789
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -146.958786
+                    }
+                },
+                "id": "60",
+                "links": [
+                    {
+                        "dst": "62",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1825,
+                                    58,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": "60"
+                    },
+                    {
+                        "dst": "64",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    2900,
+                                    1100,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "60"
+                    },
+                    {
+                        "dst": "68",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1500,
+                                    1950,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": "60"
+                    },
+                    {
+                        "dst": "71",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    1970,
+                                    925
+                                ]
+                            }
+                        },
+                        "src": "60"
+                    },
+                    {
+                        "dst": "72",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    3.140000104904175,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    1970,
+                                    925
+                                ]
+                            }
+                        },
+                        "src": "60"
+                    }
+                ],
+                "name": "kitchen",
+                "type": "room"
+            },
+            "62": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "60"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 233.05336
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -331.586212
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1400
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 450
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 890
+                    }
+                },
+                "id": "62",
+                "links": [
+                ],
+                "name": "kitchen_side_table",
+                "type": "mesh"
+            },
+            "64": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "60"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 262.018951
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -256.427185
+                    }
+                },
+                "id": "64",
+                "links": [
+                    {
+                        "dst": "65",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -50,
+                                    0,
+                                    890
+                                ]
+                            }
+                        },
+                        "src": "64"
+                    },
+                    {
+                        "dst": "66",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    -1200,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": "64"
+                    },
+                    {
+                        "dst": "67",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -400,
+                                    100,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": "64"
+                    }
+                ],
+                "name": "tableF",
+                "type": "transform"
+            },
+            "65": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2500
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "64"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 233.05336
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -331.586212
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 800
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 2200
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 750
+                    }
+                },
+                "id": "65",
+                "links": [
+                ],
+                "name": "tableF_countertop",
+                "type": "mesh"
+            },
+            "66": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "64"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 310.85434
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -336.116119
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#008888"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 650
+                    }
+                },
+                "id": "66",
+                "links": [
+                ],
+                "name": "tableF_side_panel",
+                "type": "plane"
+            },
+            "67": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2490
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "64"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 364.596558
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -293.275909
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#008888"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 9
+                    }
+                },
+                "id": "67",
+                "links": [
+                ],
+                "name": "tableF_front_panel",
+                "type": "plane"
+            },
+            "68": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "60"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 350.355072
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -198.916473
+                    }
+                },
+                "id": "68",
+                "links": [
+                    {
+                        "dst": "69",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -50,
+                                    890
+                                ]
+                            }
+                        },
+                        "src": "68"
+                    },
+                    {
+                        "dst": "70",
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    3.1415927410125732,
+                                    0.0003792187781073153,
+                                    3.1415927410125732
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -400,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": "68"
+                    }
+                ],
+                "name": "tableG",
+                "type": "transform"
+            },
+            "69": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 720
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "68"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 493.13559
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -199.510101
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 2000
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 800
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2110
+                    }
+                },
+                "id": "69",
+                "links": [
+                ],
+                "name": "tableG_countertop",
+                "type": "mesh"
+            },
+            "70": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "68"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 475.126068
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -162.228226
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#888800"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2110
+                    }
+                },
+                "id": "70",
+                "links": [
+                ],
+                "name": "tableG_front",
+                "type": "plane"
+            },
+            "71": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1850
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 600
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "60"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 365.332428
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -240.895782
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 600
+                    }
+                },
+                "id": "71",
+                "links": [
+                ],
+                "name": "fridge_mesh",
+                "type": "mesh"
+            },
+            "72": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "GreenYellow"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "obj_depth": {
+                        "type": 1,
+                        "value": 600
+                    },
+                    "obj_height": {
+                        "type": 1,
+                        "value": 1850
+                    },
+                    "obj_id": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "obj_interaction_angle": {
+                        "type": 2,
+                        "value": 0.785
+                    },
+                    "obj_interaction_shape": {
+                        "type": 0,
+                        "value": "trapezoid"
+                    },
+                    "obj_interaction_space": {
+                        "type": 2,
+                        "value": 1500
+                    },
+                    "obj_width": {
+                        "type": 1,
+                        "value": 600
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "60"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 106
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -160
+                    }
+                },
+                "id": "72",
+                "links": [
+                    {
+                        "dst": "72",
+                        "label": "interactive",
+                        "linkAttribute": {
+                        },
+                        "src": "72"
+                    }
+                ],
+                "name": "fridge",
+                "type": "object"
+            },
+            "73": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 770
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 600
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "50"
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -21.58913
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -111.277061
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 600
+                    }
+                },
+                "id": "73",
+                "links": [
+                ],
+                "name": "table_mesh",
+                "type": "mesh"
+            },
+            "74": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "GreenYellow"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "obj_depth": {
+                        "type": 1,
+                        "value": 1200
+                    },
+                    "obj_height": {
+                        "type": 1,
+                        "value": 770
+                    },
+                    "obj_id": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "obj_interaction_angle": {
+                        "type": 2,
+                        "value": 0
+                    },
+                    "obj_interaction_shape": {
+                        "type": 0,
+                        "value": "circle"
+                    },
+                    "obj_interaction_space": {
+                        "type": 2,
+                        "value": 500
+                    },
+                    "obj_width": {
+                        "type": 1,
+                        "value": 1200
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "50"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 85
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -130
+                    }
+                },
+                "id": "74",
+                "links": [
+                    {
+                        "dst": "74",
+                        "label": "interactive",
+                        "linkAttribute": {
+                        },
+                        "src": "74"
+                    }
+                ],
+                "name": "table",
+                "type": "object"
+            },
+            "80": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "delimiting_polygon_x": {
+                        "type": 3,
+                        "value": [
+                            3293,
+                            5296,
+                            3293,
+                            5296
+                        ]
+                    },
+                    "delimiting_polygon_y": {
+                        "type": 3,
+                        "value": [
+                            -1700,
+                            -1700,
+                            190,
+                            190
+                        ]
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 7,
+                        "value": "1"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 216.665649
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -91.719902
+                    }
+                },
+                "id": "80",
+                "links": [
+                ],
+                "name": "entrance",
+                "type": "room"
+            }
+        }
+    }
+}
