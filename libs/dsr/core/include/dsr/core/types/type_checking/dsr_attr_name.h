@@ -247,6 +247,13 @@ REGISTER_TYPE(battery_load, int, false);
 REGISTER_TYPE(wifi_signal, int, false);
 
 /*
+ * Ultrasound belt
+ * */
+REGISTER_TYPE(ultrasound_dists, std::reference_wrapper<const std::vector<float>>, false);
+REGISTER_TYPE(ultrasound_x_pos, std::reference_wrapper<const std::vector<float>>, false);
+REGISTER_TYPE(ultrasound_y_pos, std::reference_wrapper<const std::vector<float>>, false);
+
+/*
  * Room
  * */
 REGISTER_TYPE(delimiting_polygon_x, std::reference_wrapper<const std::vector<float>>, false);

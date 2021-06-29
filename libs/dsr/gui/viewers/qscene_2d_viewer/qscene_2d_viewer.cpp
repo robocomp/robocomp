@@ -606,6 +606,7 @@ void QScene2dViewer::draw_laser()
         if (lAngles.has_value() and lDists.has_value()) 
         {
             QPolygonF poly;
+            poly << robot->mapToScene(QPointF(0, 0));
             QPen pen(QColor("DarkGreen")); QBrush brush(QColor("DarkGreen"));
             auto angs = lAngles.value().get();
             auto dists = lDists.value().get();
@@ -614,10 +615,11 @@ void QScene2dViewer::draw_laser()
             {
                 QPointF p = robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
                 poly << p;
-//                auto e = scene.addEllipse(QRectF(0,0,50,50), pen, brush);
-//                e->setPos(p); e->setZValue(3000);
-//                points.push_back(e);
+                auto e = scene.addEllipse(QRectF(0,0,50,50), pen, brush);
+                e->setPos(p); e->setZValue(3000);
+                points.push_back(e);
             }
+            poly << robot->mapToScene(QPointF(0, 0));
             QColor color("LightGreen");
             color.setAlpha(60);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
