@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libtinyxml2-dev  \
   libopencv-dev \
   libqglviewer-dev-qt5 \
+  libqt5svg5-dev \
   libeigen3-dev \
   python3-dev \
   python3-pybind11 \
