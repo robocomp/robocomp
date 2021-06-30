@@ -1,0 +1,62 @@
+FROM robocomp/robocomp:focal_fcl_dev
+
+# LABEL about the custom image
+LABEL maintainer="emartinena@unex.es"
+LABEL version="0.1"
+LABEL description="This is custom Docker Image for Robocomp with DSR support in Ubuntu Focal"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+USER root
+### DSR package Dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  cmake \
+  gcc-10 \
+  g++-10 \
+  libasio-dev \
+  libtinyxml2-dev  \
+  libopencv-dev \
+  libqglviewer-dev-qt5 \
+  libeigen3-dev \
+  libqt5svg5-dev \
+  python3-dev \
+  python3-pybind11 \ 
+  gnupg2 \
+  && rm -rf /var/lib/apt/lists/*
+
+# RUN update-alternatives --auto gcc 
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+RUN python3 -m pip install pyrep
+
+
+# ICE fix
+# COPY Connection.h /usr/include/Ice/Connection.h
+### Third party dependencies
+RUN curl -S https://raw.githubusercontent.com/robocomp/robocomp/development/libs/dsr/dependencies.sh | bash -x
+RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools ; cd /usr/local/include/cppitertools && cmake . && make install
+
+
+#Compilation of DSR libs in Robocomp
+USER robolab
+RUN cd ~/robocomp/ && git fetch && git checkout -b development && sudo rm -r /opt/robocomp; sudo rm -r build; mkdir build; cd build; rm CMakeCache.txt ; cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ; make clean ; make -j10; sudo make install
+ENV PATH $PATH:/opt/robocomp/bin/
+RUN export PATH=$PATH:/opt/robocomp/bin/
+USER root
+
+RUN ldconfig
+
+#Compilation of DSR components
+USER robolab
+WORKDIR /home/robolab/robocomp/components/
+RUN git clone --progress https://github.com/robocomp/dsr-graph.git 
+WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
+USER robolab
+# TODO: Fix to don't need to delete lines
+RUN sed -i -e '12d' CMakeLists.txt
+RUN sed -i -e '17,19d' change_graph/src/CMakeListsSpecific.txt && mkdir build ; cd build && cmake .. && make -j$(nproc)
+WORKDIR /home/robolab/robocomp/components/dsr-graph/
+
+
+
+

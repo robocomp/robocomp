@@ -1,5 +1,5 @@
 #Download base image ubuntu 20.04
-FROM ubuntu:focal 
+FROM nvidia/opengl:1.2-glvnd-devel-ubuntu20.04
 
 
 # Disable Prompt During Packages Installation

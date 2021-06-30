@@ -11,7 +11,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 USER root
 RUN apt update && apt-get install --no-install-recommends --yes \
   libfcl-dev
+USER robolab
 RUN cd /home/robolab/robocomp && mkdir -p build && cd build && cmake -DFCL_SUPPORT=True .. && make -j$(nproc)
+USER root
+RUN cd /home/robolab/robocomp/build && make install
 USER robolab
 
 #  docker build -f Dockerfile.dev -t robocomp/robocomp:focal_fcl_dev .
