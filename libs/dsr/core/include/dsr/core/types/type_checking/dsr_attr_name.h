@@ -341,8 +341,10 @@ typedef std::array<float, 3> vec3;
 typedef std::array<float, 4> vec4;
 typedef std::array<float, 6> vec6;
 
-REGISTER_TYPE(test_double_type, double, false) //remove
-REGISTER_TYPE(test_uint32_type, uint32_t , false) //remove
+
+REGISTER_TYPE(test_string_type, std::string, false)
+REGISTER_TYPE(test_double_type, double, false)
+REGISTER_TYPE(test_uint32_type, uint32_t , false)
 REGISTER_TYPE(test_uint64_vec_type, std::reference_wrapper<const std::vector<uint64_t>> , false)
 REGISTER_TYPE(test_vec2_type, std::reference_wrapper<const vec2> , false)
 REGISTER_TYPE(test_vec3_type, std::reference_wrapper<const vec3> , false)

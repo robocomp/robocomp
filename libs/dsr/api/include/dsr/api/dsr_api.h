@@ -205,7 +205,7 @@ namespace DSR
                     if constexpr(is_reference_wrapper<decltype(name::type)>::value) {
                         return ret_type{tmp.value().get()};
                     } else {
-                        return ret_type{tmp};
+                        return tmp;
                     }
                 }
             }
