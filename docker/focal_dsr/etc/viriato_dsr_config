@@ -1,0 +1,31 @@
+CommonBehavior.Endpoints=tcp -p 10010
+
+# Endpoints for subscriptions interfaces
+CameraRGBDSimplePubTopic.Endpoints=tcp -p 11111
+LaserPubTopic.Endpoints=tcp -p 11112
+OmniRobotPubTopic.Endpoints=tcp -p 11113
+JointMotorPubTopic.Endpoints=tcp -p 11114
+KinovaArmPubTopic.Endpoints=tcp -p 11115
+
+#Proxies
+OmniRobotProxy = omnirobot:tcp -p 10004
+CoppeliaUtilsProxy = coppeliautils:tcp -p 10666
+DSRGetIDProxy = dsrgetid:tcp  -p 11000
+
+
+agent_id = 10
+agent_name = viriatoDSR
+#dsr_input_file = /home/robocomp/robocomp/components/dsr-graph/etc/autonomyLab2.json
+tree_view = true
+graph_view = true
+2d_view = true
+3d_view = false
+
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default  -p 9999
+
+Ice.MessageSizeMax=20004800
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0

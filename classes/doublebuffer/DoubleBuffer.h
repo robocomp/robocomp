@@ -5,7 +5,7 @@
 // Example of DoubleBuffer creation with default converters between input and output types:
 //      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
 //      use: laser_buffer.put(std::move(laserData));
-//      use: auto ldata = laser_buffer.get();
+//      use: auto ldata = laser_buffer.get() or auto ldata = laser_buffer.try_get()  // returns an optional
 // Example of DoubleBuffer creation with user-defined converter from input to output types
 //      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
 //      use:  laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});

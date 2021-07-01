@@ -1,0 +1,25 @@
+CommonBehavior.Endpoints=tcp -p 10008
+
+
+# Proxies for required interfaces
+DSRGetID.Endpoints=tcp -p 11000
+
+agent_id = 8
+agent_name = idserver
+#dsr_input_file = ../../etc/simplesimpleworld.json
+#dsr_input_file = ../../etc/simplesimpleworld-ramon.json
+#dsr_input_file = ../../etc/autonomyLab_width_integer.json
+dsr_input_file = ../../etc/autonomyLab_complete.simscene.json
+tree_view = true 
+graph_view = true
+2d_view = true
+3d_view = false
+
+dsr_output_path = ../../etc/
+dsr_write_to_file = false
+period = 100000  # miliseconds period on dsr saving to file
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0

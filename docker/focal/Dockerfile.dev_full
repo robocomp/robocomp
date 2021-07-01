@@ -36,7 +36,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       zeroc-icebox \
   && rm -rf /var/lib/apt/lists/*
 
-RUN sudo pip3 install pyside2 rich
+# Some incompatibility from pyside2 (5.15) and default qt installation (5.14)
+RUN sudo pip3 install PySide2==5.14.2 rich
 
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
