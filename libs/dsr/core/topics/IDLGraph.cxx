@@ -1227,7 +1227,7 @@ namespace IDL {
                 current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
                 current_alignment +=
-                        (4 * 4) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+                        (4 * 6) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
             default:
                 break;
@@ -1956,7 +1956,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.ds()) {
+        for (const auto& a : data.ds()) {
             (void) a;
             current_alignment += PairInt::getCdrSerializedSize((a.first), current_alignment);
             current_alignment += Attrib::getCdrSerializedSize((a.second), current_alignment);
@@ -2530,7 +2530,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.attrs()) {
+        for (const auto &a : data.attrs()) {
             (void) a;
             current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + a.first.size() + 1;
             current_alignment += MvregEdgeAttr::getCdrSerializedSize((a.second), current_alignment);
@@ -3230,7 +3230,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.ds()) {
+        for (const auto &a : data.ds()) {
             (void) a;
             current_alignment += PairInt::getCdrSerializedSize((a.first), current_alignment);
             current_alignment += IDLEdge::getCdrSerializedSize((a.second), current_alignment);
@@ -3774,7 +3774,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.attrs()) {
+        for (const auto &a : data.attrs()) {
             (void) a;
             current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + a.first.size() + 1;
             current_alignment += MvregNodeAttr::getCdrSerializedSize((a.second), current_alignment);
@@ -3784,7 +3784,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.fano()) {
+        for (const auto& a : data.fano()) {
             (void) a;
             current_alignment += EdgeKey::getCdrSerializedSize((a.first), current_alignment);
             current_alignment += MvregEdge::getCdrSerializedSize((a.second), current_alignment);
@@ -4221,7 +4221,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.ds()) {
+        for (const auto& a : data.ds()) {
             (void) a;
             current_alignment += PairInt::getCdrSerializedSize((a.first), current_alignment);
             current_alignment += IDLNode::getCdrSerializedSize((a.second), current_alignment);
@@ -4546,12 +4546,14 @@ namespace IDL {
 
     OrMap::OrMap(const OrMap &x) {
         m_id = x.m_id;
+        m_to_id = x.m_to_id;
         m_m = x.m_m;
         m_cbase = x.m_cbase;
     }
 
     OrMap::OrMap(OrMap &&x) {
         m_id = x.m_id;
+        m_to_id = x.m_to_id;
         m_m = std::move(x.m_m);
         m_cbase = std::move(x.m_cbase);
     }
@@ -4559,15 +4561,17 @@ namespace IDL {
     OrMap &OrMap::operator=(const OrMap &x) {
 
         m_id = x.m_id;
+        m_to_id = x.m_to_id;
         m_m = x.m_m;
         m_cbase = x.m_cbase;
 
         return *this;
     }
 
-    OrMap &OrMap::operator=(OrMap &&x) {
+    OrMap &OrMap::operator=(OrMap &&x)  {
 
         m_id = x.m_id;
+        m_to_id = x.m_to_id;
         m_m = std::move(x.m_m);
         m_cbase = std::move(x.m_cbase);
 
@@ -4580,6 +4584,7 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
@@ -4601,10 +4606,11 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
-        for (auto a : data.m()) {
+        for (const auto& a : data.m()) {
             (void) a;
             current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
@@ -4622,6 +4628,7 @@ namespace IDL {
     void OrMap::serialize(eprosima::fastcdr::Cdr &scdr) const {
 
         scdr << m_id;
+        scdr << m_to_id;
         scdr << m_m;
         scdr << m_cbase;
     }
@@ -4629,6 +4636,7 @@ namespace IDL {
     void OrMap::deserialize(eprosima::fastcdr::Cdr &dcdr) {
 
         dcdr >> m_id;
+        dcdr >> m_to_id;
         dcdr >> m_m;
         dcdr >> m_cbase;
     }
@@ -4657,7 +4665,31 @@ namespace IDL {
         return m_id;
     }
 
+    /*!
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
+ */
+    void OrMap::to_id(uint32_t _id) {
+        m_to_id = _id;
+    }
+
 /*!
+ * @brief This function returns the value of member id
+ * @return Value of member id
+ */
+    uint32_t OrMap::to_id() const {
+        return m_to_id;
+    }
+
+/*!
+ * @brief This function returns a reference to member id
+ * @return Reference to member id
+ */
+    uint32_t &OrMap::to_id() {
+        return m_to_id;
+    }
+
+    /*!
  * @brief This function copies the value in member m
  * @param _m New value to be copied in member m
  */

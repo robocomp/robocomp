@@ -533,11 +533,11 @@ DSRGraph::insert_or_assign_edge_(CRDTEdge &&attrs, uint64_t from, uint64_t to)
             }
         } else
         { // Insert
-            node.fano().insert({{to, attrs.type()}, mvreg<CRDTEdge>()});
+            //node.fano().insert({{to, attrs.type()}, mvreg<CRDTEdge>()});
+            std::string att_type = attrs.type();
             auto delta = node.fano()[{to, attrs.type()}].write(std::move(attrs));
-            update_maps_edge_insert(from, to, attrs.type());
-
-            return {true, CRDTEdge_to_IDL(agent_id, from, to, attrs.type(), delta), {}};
+            update_maps_edge_insert(from, to, att_type);
+            return {true, CRDTEdge_to_IDL(agent_id, from, to, att_type, delta), {}};
         }
     }
     return {false, {}, {}};
@@ -1075,7 +1075,7 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
         auto consume_unprocessed_deltas = [&](){
             auto att_key = std::tuple{from, to, type};
             decltype(unprocessed_delta_edge_att)::node_type node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
-            while (!unprocessed_delta_edge_att.empty())
+            while (!node_handle_edge_att.empty())
             {
                 auto &[att_name, delta, timestamp_delta_edge] = node_handle_edge_att.mapped();
                 if (timestamp <  timestamp_delta_edge) {
@@ -1647,7 +1647,7 @@ void DSRGraph::fullgraph_server_thread()
                             it != participant_set.end() and it->second)
                         {
                             lck.unlock();
-                            IDL::OrMap mp; mp.id(-1);
+                            IDL::OrMap mp; mp.id(-1); mp.to_id(sample.id());
                             dsrpub_request_answer.write(&mp);
                             continue;
                         } else {
@@ -1702,7 +1702,7 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread()
                             sync = true;
                             break;
                         }
-                        else if (!sync)
+                        else if (!sync && sample.to_id() == agent_id)
                         {
                             repeated = true;
                         }

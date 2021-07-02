@@ -2992,6 +2992,24 @@ namespace IDL {
         eProsima_user_DllExport uint32_t &id();
 
         /*!
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
+ */
+        eProsima_user_DllExport void to_id(uint32_t _id);
+
+        /*!
+         * @brief This function returns the value of member id
+         * @return Value of member id
+         */
+        eProsima_user_DllExport uint32_t to_id() const;
+
+        /*!
+         * @brief This function returns a reference to member id
+         * @return Reference to member id
+         */
+        eProsima_user_DllExport uint32_t &to_id();
+
+        /*!
          * @brief This function copies the value in member m
          * @param _m New value to be copied in member m
          */
@@ -3090,6 +3108,7 @@ namespace IDL {
 
     private:
         uint32_t m_id;
+        uint32_t m_to_id; //Used to check if a message with -1 m_id is for this agent.
         std::map<uint64_t, MvregNode> m_m;
         DotContext m_cbase;
     };
