@@ -54,8 +54,19 @@ WORKDIR /home/robolab/robocomp/components/
 RUN git clone --progress https://github.com/robocomp/dsr-graph.git 
 WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
 USER robolab
-RUN mkdir build && cd build && cmake .. && make -j$(nproc)
+ENV ROBOCOMP=/home/robolab/robocomp
+# RUN mkdir build && cd build && cmake .. && make -j$(nproc)
 # WORKDIR /home/robolab/robocomp/components/dsr-graph/
+USER root
+### DSR package Dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends python3-zeroc-ice psmisc
+RUN cd idserver && cmake . && make -j10
+RUN cd pioneer_dsr && cmake . && make -j10
+RUN cd path_follower && cmake . && make -j10
+RUN cd path_planner_astar && cmake . && make -j10
+RUN cd elastic_band && cmake . && make -j10
+
+
 
 # docker build -f Dockerfile.dev -t robocomp/robocomp:focal_dsr_dev .
 
