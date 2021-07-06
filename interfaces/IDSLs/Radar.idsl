@@ -1,0 +1,13 @@
+module RoboCompRadar
+{
+  struct RadarData
+  {
+    float distance;
+  };
+
+  interface Radar
+  {
+    RadarData getData();
+  };
+
+};
