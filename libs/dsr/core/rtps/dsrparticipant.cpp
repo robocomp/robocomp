@@ -43,6 +43,11 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
 
     //Create a descriptor for the new transport.
     auto custom_transport = std::make_shared<UDPv4TransportDescriptor>();
+
+    // Create a descriptor for the new transport.
+    //std::shared_ptr<SharedMemTransportDescriptor> custom_transport = std::make_shared<SharedMemTransportDescriptor>();
+
+    // Link the Transport Layer to the Participant.
     //auto custom_transport = std::make_shared<SharedMemTransportDescriptor>(); //std::make_shared<UDPv4TransportDescriptor>();
     custom_transport->sendBufferSize = 33554432;
     custom_transport->receiveBufferSize = 33554432;
@@ -51,6 +56,13 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
     custom_transport->maxMessageSize = 65000;
 
     PParam.transport().user_transports.push_back(custom_transport);
+
+    //eprosima::fastrtps::rtps::Locator_t default_unicast_locator;
+    //PParam.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(default_unicast_locator);
+
+    //eprosima::fastrtps::rtps::Locator_t initial_peer;
+    //eprosima::fastrtps::rtps::IPLocator::setIPv4(initial_peer, 127, 0, 0, 1);
+    //PParam.wire_protocol().builtin.initialPeersList.push_back(initial_peer);
 
     if (not localhost)
     {
@@ -66,7 +78,7 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
 
     } else {
 
-        custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
+        //custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
 
     }
 

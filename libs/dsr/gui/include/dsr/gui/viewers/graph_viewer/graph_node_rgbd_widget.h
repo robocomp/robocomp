@@ -32,7 +32,7 @@ class GraphNodeRGBDWidget : public QWidget
       //cam = graph->get_camera_api(graph->get_nodes_by_type("rgbd").at(0));
       setWindowTitle(QString::fromStdString(graph->get_agent_name()) + "-RGBD");
       //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphNodeRGBDWidget::drawRGBDSLOT);
-      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNodeRGBDWidget::drawRGBDSLOT);
+      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNodeRGBDWidget::drawRGBDSLOT, Qt::QueuedConnection);
       QHBoxLayout *layout = new QHBoxLayout();
       layout->addWidget(&rgbd_label);
       layout->addWidget(&depth_label);

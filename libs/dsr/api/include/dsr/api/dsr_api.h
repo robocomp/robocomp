@@ -61,7 +61,7 @@ namespace DSR
 
         public:
         size_t size();
-        DSRGraph(uint64_t root, std::string name, int id, const std::string& dsr_input_file = std::string(), bool all_same_host = true);
+        DSRGraph(uint64_t root, std::string name, int id, const std::string& dsr_input_file = std::string(), bool all_same_host = true, const std::string& csvoutput = "output.csv");
         ~DSRGraph() override;
 
 
@@ -82,23 +82,195 @@ namespace DSR
         //////////////////////////////////////////////////////
         ///  Core API
         //////////////////////////////////////////////////////
+        struct Times {
+            eprosima::fastrtps::rtps::Time_t send;
+            eprosima::fastrtps::rtps::Time_t recv;
+            eprosima::fastrtps::rtps::Time_t ready;
+            eprosima::fastrtps::rtps::Time_t proc;
+            std::string type;
+            int num_atts;
+
+            Times()= default;
+            Times(Times&& t)  noexcept {
+                ready = t.ready;
+                send = t.send;
+                recv = t.recv;
+                proc = t.proc;
+                num_atts = t.num_atts;
+                type = std::move(t.type);
+            }
+
+            void write(FILE *f) const {
+                fprintf(f, "%ld;%ld;%ld;%ld;%s;%d\n", send.to_ns(), recv.to_ns(), ready.to_ns(), proc.to_ns(), type.c_str(), num_atts);
+            }
+        };
+
+        struct TimesLocal {
+            eprosima::fastrtps::rtps::Time_t start;
+            eprosima::fastrtps::rtps::Time_t write;
+            eprosima::fastrtps::rtps::Time_t send;
+            eprosima::fastrtps::rtps::Time_t signls;
+            std::string op;
+
+
+            TimesLocal()= default;
+            TimesLocal(TimesLocal&& t)  noexcept {
+                start = t.start;
+                write = t.write;
+                send = t.send;
+                signls = t.signls;
+                op = std::move(t.op);
+            }
+
+            void writef(FILE *f) const {
+                fprintf(f, "%ld;%ld;%ld;%ld;%s\n", start.to_ns(), write.to_ns(), send.to_ns(), signls.to_ns(), op.c_str());
+            }
+        };
 
         // Nodes
         std::optional<Node> get_node(const std::string &name);
         std::optional<Node> get_node(uint64_t id);
-        std::optional<uint64_t> insert_node(Node &node);
-        bool update_node(Node &node);
+        template<typename No>
+        std::optional<uint64_t> insert_node(No &&node/*, TimesLocal &&tm = TimesLocal()*/) requires(std::is_same_v<std::remove_cvref_t<No>, DSR::Node>)
+        {
+            std::optional<IDL::MvregNode> delta;
+            bool inserted = false;
+            uint64_t new_node_id;
+            {
+            std::unique_lock<std::shared_mutex> lock(_mutex);
+            std::shared_lock<std::shared_mutex> lck_cache(_mutex_cache_maps);
+            new_node_id = generator.generate();
+            node.id(new_node_id);
+            if (node.name().empty() or name_map.contains(node.name()))
+            node.name(node.type() + "_" + id_generator::hex_string(new_node_id));
+            lck_cache.unlock();
+            std::tie(inserted, delta) = insert_node_(user_node_to_crdt(std::forward<No>(node)));
+           // eprosima::fastrtps::rtps::Time_t::now(tm.write);
+            }
+            if (inserted)
+            {
+                if (!copy)
+                {
+                    if (delta.has_value())
+                    {
+                        dsrpub_node.write(&delta.value());
+                      //  eprosima::fastrtps::rtps::Time_t::now(tm.send);
+                        emit update_node_signal(node.id(), node.type());
+                        for (const auto &[k, v]: node.fano())
+                        {
+                            emit update_edge_signal(node.id(), k.first, k.second);
+                        }
+                       // eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+                       // tm.op = "insert_node";
+                       // tm.writef(outfilelocal);
+                    }
+                }
+                return new_node_id;
+            }
+            return {};
+        }
+        template<typename No>
+        bool update_node(No &&node/*, TimesLocal &&tm = TimesLocal()*/) requires(std::is_same_v<std::remove_cvref_t<No>, DSR::Node>)
+        {
+
+            bool updated = false;
+            std::optional<std::vector<IDL::MvregNodeAttr>> vec_node_attr;
+
+            {
+            std::unique_lock<std::shared_mutex> lock(_mutex);
+            std::shared_lock<std::shared_mutex> lck_cache(_mutex_cache_maps);
+            if (deleted.contains(node.id()))
+                throw std::runtime_error(
+            (std::string("Cannot update node in G, " + std::to_string(node.id()) + " is deleted") + __FILE__ +
+            " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+            else if (( id_map.contains(node.id()) and id_map.at(node.id()) != node.name()) or
+            ( name_map.contains(node.name()) and name_map.at(node.name()) != node.id()))
+            throw std::runtime_error(
+            (std::string("Cannot update node in G, id and name must be unique") + __FILE__ + " " +
+            __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+            else if (nodes.contains(node.id())) {
+            lck_cache.unlock();
+            std::tie(updated, vec_node_attr) = update_node_(user_node_to_crdt(std::forward<No>(node)));
+            //eprosima::fastrtps::rtps::Time_t::now(tm.write);
+            }
+        }
+        if (updated) {
+            if (!copy) {
+                if (vec_node_attr.has_value()) {
+                    dsrpub_node_attrs.write(&vec_node_attr.value());
+                    //eprosima::fastrtps::rtps::Time_t::now(tm.send);
+                    emit update_node_signal(node.id(), node.type());
+                    std::vector<std::string> atts_names(vec_node_attr->size());
+                    std::transform(std::make_move_iterator(vec_node_attr->begin()),
+                                   std::make_move_iterator(vec_node_attr->end()),
+                                   atts_names.begin(),
+                                   [](auto &&x) { return x.attr_name(); });
+                    emit update_node_attr_signal(node.id(), atts_names);
+
+                }
+                //eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+                //tm.op = "update_node";
+                //tm.writef(outfilelocal);
+            }
+        }
+        return updated;
+    }
         bool delete_node(const std::string &name);
-        bool delete_node(uint64_t id);
+        bool delete_node(uint64_t id/*, TimesLocal &&tm = TimesLocal()*/);
 
         // Edges
-        bool insert_or_assign_edge(const Edge& attrs);
+        template<typename Ed>
+        bool insert_or_assign_edge(Ed &&attrs/*, TimesLocal &&tm = TimesLocal()*/) requires(std::is_same_v<std::remove_cvref_t<Ed>, DSR::Edge>)
+        {
+            bool result = false;
+            std::optional<IDL::MvregEdge> delta_edge;
+            std::optional<std::vector<IDL::MvregEdgeAttr>> delta_attrs;
+
+            {
+            std::unique_lock<std::shared_mutex> lock(_mutex);
+            uint64_t from = attrs.from();
+            uint64_t to = attrs.to();
+            if (nodes.contains(from) && nodes.contains(to)) {
+            std::tie(result, delta_edge, delta_attrs) = insert_or_assign_edge_(user_edge_to_crdt(std::forward<Ed>(attrs)), from, to);
+            //eprosima::fastrtps::rtps::Time_t::now(tm.write);
+            } else {
+            std::cout << __FUNCTION__ << ":" << __LINE__ << " Error. ID:" << from << " or " << to
+                      << " not found. Cant update. " << std::endl;
+            return false;
+            }
+        }
+        if (result) {
+            if (!copy) {
+                emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
+
+                if (delta_edge.has_value()) { //Insert
+                    dsrpub_edge.write(&delta_edge.value());
+                    //eprosima::fastrtps::rtps::Time_t::now(tm.send);
+                } else if (delta_attrs.has_value()) { //Update
+                    dsrpub_edge_attrs.write(&delta_attrs.value());
+                    //eprosima::fastrtps::rtps::Time_t::now(tm.send);
+                    std::vector<std::string> atts_names(delta_attrs->size());
+                    std::transform(std::make_move_iterator(delta_attrs->begin()),
+                                   std::make_move_iterator(delta_attrs->end()),
+                                   atts_names.begin(),
+                                   [](auto &&x) { return x.attr_name(); });
+
+                    emit update_edge_attr_signal(attrs.from(), attrs.to(), attrs.type(), atts_names);
+
+                }
+                //eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+                //tm.op = "insert_or_assign_edge";
+                //tm.writef(outfilelocal);
+            }
+        }
+        return true;
+    }
         std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
         std::optional<Edge> get_edge(uint64_t from, uint64_t to, const std::string& key);
         std::optional<Edge> get_edge(const Node& n, const std::string& to, const std::string& key);
         static std::optional<Edge> get_edge(const Node& n, uint64_t to, const std::string& key);
         bool delete_edge(const std::string& from, const std::string& t, const std::string& key);
-        bool delete_edge(uint64_t from, uint64_t t, const std::string& key);
+        bool delete_edge(uint64_t from, uint64_t t, const std::string& key/*, TimesLocal &&tm = TimesLocal()*/);
         /**CORE END**/
 
 
@@ -534,15 +706,18 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // CRDT join operations
         ///////////////////////////////////////////////////////////////////////////
-        void join_delta_node(IDL::MvregNode &&mvreg);
-        void join_delta_edge(IDL::MvregEdge &&mvreg);
-        std::optional<std::string> join_delta_node_attr(IDL::MvregNodeAttr &&mvreg);
-        std::optional<std::string> join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg);
-        void join_full_graph(IDL::OrMap &&full_graph);
 
-        bool process_delta_edge(uint64_t from, uint64_t to, const std::string& type, mvreg<CRDTEdge> && delta);
-        void process_delta_node_attr(uint64_t id, const std::string& att_name, mvreg<CRDTAttribute> && attr);
-        void process_delta_edge_attr(uint64_t from, uint64_t to, const std::string& type, const std::string& att_name, mvreg<CRDTAttribute> && attr);
+        FILE * outfilelocal;
+        FILE * outfile;
+        void join_delta_node(IDL::MvregNode &&mvreg, Times &&tm);
+        void join_delta_edge(IDL::MvregEdge &&mvreg, Times &&tm);
+        std::optional<std::string> join_delta_node_attr(IDL::MvregNodeAttr &&mvreg, Times &&tm);
+        std::optional<std::string> join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg, Times &&tm);
+        void join_full_graph(IDL::OrMap &&full_graph, Times &&tm);
+
+        bool process_delta_edge(uint64_t from, uint64_t to, const std::string& type, mvreg<CRDTEdge> && delta, Times &&tm);
+        void process_delta_node_attr(uint64_t id, const std::string& att_name, mvreg<CRDTAttribute> && attr, Times &&tm);
+        void process_delta_edge_attr(uint64_t from, uint64_t to, const std::string& type, const std::string& att_name, mvreg<CRDTAttribute> && attr, Times &&tm);
 
         //Maps for temporary deltas
         std::unordered_multimap<uint64_t, std::tuple<std::string, mvreg<DSR::CRDTAttribute>, uint64_t> > unprocessed_delta_node_att;

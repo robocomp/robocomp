@@ -24,13 +24,14 @@ using namespace std::literals;
 ///// PUBLIC METHODS
 /////////////////////////////////////////////////
 
-DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &dsr_input_file, bool all_same_host)
+DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &dsr_input_file, bool all_same_host, const std::string& csvoutput)
         : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), tp_delta_attr(1), same_host(all_same_host), generator(id)
 {
 
     qDebug() << "Agent name: " << QString::fromStdString(agent_name);
     utils =  std::make_unique<Utilities>(this);
-
+    outfile = fopen(csvoutput.c_str(),"w");
+    outfilelocal = fopen(("localo_"+ csvoutput).c_str(), "w");
     // RTPS Create participant
     auto[suc, participant_handle] = dsrparticipant.init(agent_id, agent_name, all_same_host,
                                                         ParticipantChangeFunctor(this, [&](DSR::DSRGraph *graph,
@@ -139,6 +140,7 @@ std::optional<DSR::Node> DSRGraph::get_node(uint64_t id)
     return {};
 }
 
+
 std::tuple<bool, std::optional<IDL::MvregNode>> DSRGraph::insert_node_(CRDTNode &&node)
 {
     if (deleted.find(node.id()) == deleted.end())
@@ -157,7 +159,9 @@ std::tuple<bool, std::optional<IDL::MvregNode>> DSRGraph::insert_node_(CRDTNode 
     return {false, {}};
 }
 
-std::optional<uint64_t> DSRGraph::insert_node(Node &node)
+/*template<typename No>
+std::optional<uint64_t> DSRGraph::insert_node(No &&node, TimesLocal &&tm)
+requires(std::is_same_v<std::remove_cvref_t<No>, DSR::Node>)
 {
     std::optional<IDL::MvregNode> delta;
     bool inserted = false;
@@ -169,7 +173,8 @@ std::optional<uint64_t> DSRGraph::insert_node(Node &node)
         if (node.name().empty() or name_map.contains(node.name()))
             node.name(node.type() + "_" + id_generator::hex_string(new_node_id));
         lck_cache.unlock();
-        std::tie(inserted, delta) = insert_node_(user_node_to_crdt(node));
+        std::tie(inserted, delta) = insert_node_(user_node_to_crdt(std::forward<No>(node)));
+        eprosima::fastrtps::rtps::Time_t::now(tm.write);
     }
     if (inserted)
     {
@@ -178,17 +183,22 @@ std::optional<uint64_t> DSRGraph::insert_node(Node &node)
             if (delta.has_value())
             {
                 dsrpub_node.write(&delta.value());
+                eprosima::fastrtps::rtps::Time_t::now(tm.write);
                 emit update_node_signal(node.id(), node.type());
                 for (const auto &[k, v]: node.fano())
                 {
                     emit update_edge_signal(node.id(), k.first, k.second);
                 }
             }
+            eprosima::fastrtps::rtps::Time_t::now(tm.write);
+            tm.op = "insert_node";
+            tm.writef(outfilelocal);
         }
         return node.id();
     }
     return {};
-}
+}*/
+
 
 std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::update_node_(CRDTNode &&node)
 {
@@ -222,7 +232,7 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
                     auto delta = iter.at(k).reset();
                     it_a = iter.erase(it_a);
                     atts_deltas.emplace_back(
-                            CRDTNodeAttr_to_IDL(node.agent_id(), node.id(), node.id(), k, delta));
+                            CRDTNodeAttr_to_IDL(agent_id, node.id(), node.id(), k, delta));
 
                 } else {
                     it_a++;
@@ -235,8 +245,10 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
 
     return {false, {}};
 }
-
-bool DSRGraph::update_node(Node &node)
+/*
+template<typename No>
+bool DSRGraph::update_node(No &&node, TimesLocal &&tm)
+requires(std::is_same_v<std::remove_cvref_t<No>, DSR::Node>)
 {
 
     bool updated = false;
@@ -256,13 +268,15 @@ bool DSRGraph::update_node(Node &node)
                      __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         else if (nodes.contains(node.id())) {
             lck_cache.unlock();
-            std::tie(updated, vec_node_attr) = update_node_(user_node_to_crdt(node));
+            std::tie(updated, vec_node_attr) = update_node_(user_node_to_crdt(std::forward<No>(node)));
+            eprosima::fastrtps::rtps::Time_t::now(tm.write);
         }
     }
     if (updated) {
         if (!copy) {
             if (vec_node_attr.has_value()) {
                 dsrpub_node_attrs.write(&vec_node_attr.value());
+                eprosima::fastrtps::rtps::Time_t::now(tm.send);
                 emit update_node_signal(node.id(), node.type());
                 std::vector<std::string> atts_names(vec_node_attr->size());
                 std::transform(std::make_move_iterator(vec_node_attr->begin()),
@@ -272,10 +286,13 @@ bool DSRGraph::update_node(Node &node)
                 emit update_node_attr_signal(node.id(), atts_names);
 
             }
+            eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+            tm.op = "update_node";
+            tm.writef(outfilelocal);
         }
     }
     return updated;
-}
+}*/
 
 std::tuple<bool, std::vector<std::tuple<uint64_t, uint64_t, std::string>>, std::optional<IDL::MvregNode>, std::vector<IDL::MvregEdge>>
 DSRGraph::delete_node_(uint64_t id) {
@@ -354,7 +371,7 @@ bool DSRGraph::delete_node(const std::string &name)
 
 }
 
-bool DSRGraph::delete_node(uint64_t id)
+bool DSRGraph::delete_node(uint64_t id/*, TimesLocal &&tm */)
 {
 
     bool result = false;
@@ -364,12 +381,13 @@ bool DSRGraph::delete_node(uint64_t id)
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         std::tie(result, deleted_edges, deleted_node, delta_vec) = delete_node_(id);
+        //eprosima::fastrtps::rtps::Time_t::now(tm.write);
     }
-
     if (result) {
         if (!copy) {
             emit del_node_signal(id);
             dsrpub_node.write(&deleted_node.value());
+            //eprosima::fastrtps::rtps::Time_t::now(tm.send);
 
             for (auto &a  : delta_vec) {
                 dsrpub_edge.write(&a);
@@ -377,6 +395,9 @@ bool DSRGraph::delete_node(uint64_t id)
             for (auto &[id0, id1, label] : deleted_edges)
                     emit del_edge_signal(id0, id1, label);
         }
+        //eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+        //tm.op = "delete_node";
+        //tm.writef(outfilelocal);
         return true;
     }
 
@@ -542,9 +563,10 @@ DSRGraph::insert_or_assign_edge_(CRDTEdge &&attrs, uint64_t from, uint64_t to)
     }
     return {false, {}, {}};
 }
-
-
-bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
+/*
+template<typename Ed>
+bool DSRGraph::insert_or_assign_edge(Ed &&attrs, TimesLocal &&tm)
+requires(std::is_same_v<std::remove_cvref_t<Ed>, DSR::Edge>)
 {
     bool result = false;
     std::optional<IDL::MvregEdge> delta_edge;
@@ -555,7 +577,8 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
         uint64_t from = attrs.from();
         uint64_t to = attrs.to();
         if (nodes.contains(from) && nodes.contains(to)) {
-            std::tie(result, delta_edge, delta_attrs) = insert_or_assign_edge_(user_edge_to_crdt(attrs), from, to);
+            std::tie(result, delta_edge, delta_attrs) = insert_or_assign_edge_(user_edge_to_crdt(std::forward<Ed>(attrs)), from, to);
+            eprosima::fastrtps::rtps::Time_t::now(tm.write);
         } else {
             std::cout << __FUNCTION__ << ":" << __LINE__ << " Error. ID:" << from << " or " << to
                       << " not found. Cant update. " << std::endl;
@@ -568,9 +591,10 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
 
             if (delta_edge.has_value()) { //Insert
                 dsrpub_edge.write(&delta_edge.value());
-            }
-            if (delta_attrs.has_value()) { //Update
+                eprosima::fastrtps::rtps::Time_t::now(tm.write);
+            } else if (delta_attrs.has_value()) { //Update
                 dsrpub_edge_attrs.write(&delta_attrs.value());
+                eprosima::fastrtps::rtps::Time_t::now(tm.write);
                 std::vector<std::string> atts_names(delta_attrs->size());
                 std::transform(std::make_move_iterator(delta_attrs->begin()),
                                std::make_move_iterator(delta_attrs->end()),
@@ -580,10 +604,13 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
                 emit update_edge_attr_signal(attrs.from(), attrs.to(), attrs.type(), atts_names);
 
             }
+            eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+            tm.op = "insert_or_assign_edge";
+            tm.writef(outfilelocal);
         }
     }
     return true;
-}
+}*/
 
 
 std::optional<IDL::MvregEdge> DSRGraph::delete_edge_(uint64_t from, uint64_t to, const std::string &key)
@@ -595,26 +622,33 @@ std::optional<IDL::MvregEdge> DSRGraph::delete_edge_(uint64_t from, uint64_t to,
             node.fano().erase({to, key});
             update_maps_edge_delete(from, to, key);
             return CRDTEdge_to_IDL(agent_id, from, to, key, delta);
-        }
-    }
+        } else {std::cout << "No existe el edge [" << from << ", " << to << ", "<<  key << "]" << std::endl;}
+    } else {std::cout << "No existe el nodo  " << from << std::endl;}
     return {};
 }
 
-bool DSRGraph::delete_edge(uint64_t from, uint64_t to, const std::string &key)
+bool DSRGraph::delete_edge(uint64_t from, uint64_t to, const std::string &key/*, TimesLocal &&tm*/)
 {
 
     std::optional<IDL::MvregEdge> delta;
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         delta = delete_edge_(from, to, key);
+        //eprosima::fastrtps::rtps::Time_t::now(tm.write);
     }
     if (delta.has_value())
     {
         if (!copy) {
             emit del_edge_signal(from, to, key);
             dsrpub_edge.write(&delta.value());
+           // eprosima::fastrtps::rtps::Time_t::now(tm.send);
         }
+        //eprosima::fastrtps::rtps::Time_t::now(tm.signls);
+       // tm.op = "delete_edge";
+        //tm.writef(outfilelocal);
         return true;
+    } else {
+        std::cout << "No existe" << std::endl;
     }
     return false;
 }
@@ -897,7 +931,7 @@ bool DSRGraph::empty(const uint64_t &id)
         return false;
 }
 
-void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
+void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg, Times &&tm)
 {
 
     std::optional<CRDTNode> maybe_deleted_node = {};
@@ -929,7 +963,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                 auto &[att_name, delta, timestamp_node_att] = node_handle_node_att.mapped();
                 std::cout << "node_att " << id<< ", " <<att_name << ", " << std::boolalpha << (timestamp < timestamp_node_att) << std::endl;
                 if (timestamp < timestamp_node_att) {
-                    process_delta_node_attr(id, att_name,std::move(delta));
+                    process_delta_node_attr(id, att_name,std::move(delta), std::move(tm));
                 }
                 node_handle_node_att = std::move(unprocessed_delta_node_att.extract(id));
             }
@@ -940,7 +974,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                 auto att_key = std::tuple{id, to, type};
                 std::cout << "edge " << id<< ", " <<to << ", " <<type <<", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
                 if (timestamp < timestamp_edge) {
-                    process_delta_edge(id, to, type, std::move(delta));
+                    process_delta_edge(id, to, type, std::move(delta), std::move(tm));
                 }
                 if (nodes.contains(id) and nodes.at(id).read_reg().fano().contains({to, type})) {
                     decltype(unprocessed_delta_edge_att)::node_type node_handle_edge_att = std::move(
@@ -949,7 +983,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                         auto &[att_name, delta, timestamp_edge_att] = node_handle_edge_att.mapped();
                         std::cout << "edge_att " << id<< ", " <<to << ", " <<type <<", "<<att_name  << ", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
                         if (timestamp < timestamp_edge_att) {
-                            process_delta_edge_attr(id, to, type, att_name, std::move(delta));
+                            process_delta_edge_attr(id, to, type, att_name, std::move(delta), std::move(tm));
                         }
                         node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
                     }
@@ -965,7 +999,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                 auto att_key = std::tuple{id, to, type};
                 std::cout << "edge " << id<< ", " <<to << ", " <<type <<", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
                 if (timestamp < timestamp_edge) {
-                    process_delta_edge(id, to, type, std::move(delta));
+                    process_delta_edge(id, to, type, std::move(delta), std::move(tm));
                 }
                 if (nodes.contains(id) and nodes.at(id).read_reg().fano().contains({to, type})) {
                     decltype(unprocessed_delta_edge_att)::node_type node_handle_edge_att = std::move(
@@ -974,7 +1008,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                         auto &[att_name, delta, timestamp_edge_att] = node_handle_edge_att.mapped();
                         std::cout << "edge_att " << id<< ", " <<to << ", " <<type <<", "<<att_name  << ", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
                         if (timestamp < timestamp_edge_att) {
-                            process_delta_edge_attr(id, to, type, att_name, std::move(delta));
+                            process_delta_edge_attr(id, to, type, att_name, std::move(delta), std::move(tm));
                         }
                         node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
                     }
@@ -992,6 +1026,8 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
                 joined = true;
                 //maybe_deleted_node = (nodes[id].empty()) ? std::nullopt : std::make_optional(nodes.at(id).read_reg());
                 nodes[id].join(std::move(crdt_delta));
+                eprosima::fastrtps::rtps::Time_t::now(tm.proc);
+                tm.write(outfile);
                 if (nodes.at(id).empty() or d_empty) {
                     nodes.erase(id);
                     //maybe_deleted_node = (nodes[id].empty()) ? std::nullopt : std::make_optional(nodes.at(id).read_reg()); //This is weird.
@@ -1038,11 +1074,13 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
     }
 }
 
-bool DSRGraph::process_delta_edge(uint64_t from, uint64_t to, const std::string& type, mvreg<CRDTEdge> && delta)
+bool DSRGraph::process_delta_edge(uint64_t from, uint64_t to, const std::string& type, mvreg<CRDTEdge> && delta, Times &&tm)
 {
     const bool d_empty = delta.empty();
     auto &node = nodes.at(from).read_reg();
     node.fano()[{to, type}].join(std::move(delta));
+    eprosima::fastrtps::rtps::Time_t::now(tm.proc);
+    tm.write(outfile);
     if (d_empty or !node.fano().contains({to, type})) { //Remove
         node.fano().erase({to, type});
         update_maps_edge_delete(from, to, type);
@@ -1054,7 +1092,7 @@ bool DSRGraph::process_delta_edge(uint64_t from, uint64_t to, const std::string&
 }
 
 
-void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
+void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg, Times &&tm)
 {
     try {
         bool signal = false, joined = false;
@@ -1079,7 +1117,7 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
             {
                 auto &[att_name, delta, timestamp_delta_edge] = node_handle_edge_att.mapped();
                 if (timestamp <  timestamp_delta_edge) {
-                    process_delta_edge_attr(from, to, type, att_name,std::move(delta));
+                    process_delta_edge_attr(from, to, type, att_name,std::move(delta), std::move(tm));
                 }
                 node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
             }
@@ -1100,7 +1138,7 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
             bool dfrom{deleted.contains(from)}, dto{deleted.contains(to)};
             if (cfrom and cto) {
                 joined = true;
-                signal = process_delta_edge(from, to, type, std::move(crdt_delta));
+                signal = process_delta_edge(from, to, type, std::move(crdt_delta), std::move(tm));
 
                 if (signal) {
                     consume_unprocessed_deltas();
@@ -1153,18 +1191,20 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
 }
 
 
-void DSRGraph::process_delta_node_attr(uint64_t id, const std::string& att_name, mvreg<CRDTAttribute> && attr)
+void DSRGraph::process_delta_node_attr(uint64_t id, const std::string& att_name, mvreg<CRDTAttribute> && attr, Times &&tm)
 {
     const bool d_empty = attr.empty();
     auto &n = nodes.at(id).read_reg();
     n.attrs()[att_name].join(std::move(attr));
+    eprosima::fastrtps::rtps::Time_t::now(tm.proc);
+    tm.write(outfile);
     //Check if we are inserting or deleting.
     if (d_empty or not n.attrs().contains(att_name)) { //Remove
         n.attrs().erase(att_name);
     }
 }
 
-std::optional<std::string> DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg)
+std::optional<std::string> DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg, Times &&tm)
 {
 
     try {
@@ -1179,7 +1219,7 @@ std::optional<std::string> DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&m
             //Check if the node where we are joining the edge exist.
             if (nodes.contains(id)) {
                 joined = true;
-                process_delta_node_attr(id, att_name, std::move(crdt_delta));
+                process_delta_node_attr(id, att_name, std::move(crdt_delta), std::move(tm));
                 std::erase_if(unprocessed_delta_node_att,
                               [&](auto &it){ return it.first == id && std::get<0>(it.second) == att_name;});
             } else if (!deleted.contains(id)) {
@@ -1215,11 +1255,13 @@ std::optional<std::string> DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&m
     return std::nullopt;
 }
 
-void DSRGraph::process_delta_edge_attr(uint64_t from, uint64_t to, const std::string& type, const std::string& att_name, mvreg<CRDTAttribute> && attr)
+void DSRGraph::process_delta_edge_attr(uint64_t from, uint64_t to, const std::string& type, const std::string& att_name, mvreg<CRDTAttribute> && attr, Times &&tm)
 {
     const bool d_empty = attr.empty();
     auto &n = nodes.at(from).read_reg().fano().at({to, type}).read_reg();
     n.attrs()[att_name].join(std::move(attr));
+    eprosima::fastrtps::rtps::Time_t::now(tm.proc);
+    tm.write(outfile);
     //Check if we are inserting or deleting.
     if (d_empty or !n.attrs().contains(att_name)) { //Remove
         n.attrs().erase(att_name);
@@ -1227,7 +1269,7 @@ void DSRGraph::process_delta_edge_attr(uint64_t from, uint64_t to, const std::st
 }
 
 
-std::optional<std::string> DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg)
+std::optional<std::string> DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg, Times &&tm)
 {
     try {
         bool joined = false;
@@ -1244,7 +1286,7 @@ std::optional<std::string> DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&m
             if (nodes.contains(from)  and nodes.at(from).read_reg().fano().contains({to, type}))
             {
                 joined = true;
-                process_delta_edge_attr(from, to, type, att_name, std::move(crdt_delta));
+                process_delta_edge_attr(from, to, type, att_name, std::move(crdt_delta), std::move(tm));
                 std::erase_if(unprocessed_delta_edge_att,
                               [&](auto &it){ return it.first == std::tuple{from, to, type} && std::get<0>(it.second) == att_name;});
             } else if (!deleted.contains(from)){
@@ -1280,7 +1322,7 @@ std::optional<std::string> DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&m
     return std::nullopt;
 }
 
-void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
+void DSRGraph::join_full_graph(IDL::OrMap &&full_graph, Times &&tm)
 {
     std::vector<std::tuple<bool, uint64_t, std::string, std::optional<CRDTNode>>> updates;
 
@@ -1303,7 +1345,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
         {
             auto &[att_name, delta, timestamp_node_att] = node_handle_node_att.mapped();
             if (timestamp < timestamp_node_att) {
-                process_delta_node_attr(id, att_name,std::move(delta));
+                process_delta_node_attr(id, att_name,std::move(delta), std::move(tm));
             }
             node_handle_node_att = std::move(unprocessed_delta_node_att.extract(id));
         }
@@ -1313,7 +1355,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
             auto &[to, type, delta, timestamp_edge] = node_handle_edge.mapped();
             auto att_key = std::tuple{id, to, type};
             if (timestamp < timestamp_edge) {
-                process_delta_edge(id, to, type, std::move(delta));
+                process_delta_edge(id, to, type, std::move(delta), std::move(tm));
             }
             if (nodes.contains(id) and nodes.at(id).read_reg().fano().contains({to, type})) {
                 decltype(unprocessed_delta_edge_att)::node_type node_handle_edge_att = std::move(
@@ -1321,7 +1363,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
                 while (!node_handle_edge_att.empty()) {
                     auto &[att_name, delta, timestamp_edge_att] = node_handle_edge_att.mapped();
                     if (timestamp < timestamp_edge_att) {
-                        process_delta_edge_attr(id, to, type, att_name, std::move(delta));
+                        process_delta_edge_attr(id, to, type, att_name, std::move(delta), std::move(tm));
                     }
                     node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
                 }
@@ -1337,7 +1379,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
             auto att_key = std::tuple{id, to, type};
             std::cout << "edge " << id<< ", " <<to << ", " <<type <<", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
             if (timestamp < timestamp_edge) {
-                process_delta_edge(id, to, type, std::move(delta));
+                process_delta_edge(id, to, type, std::move(delta), std::move(tm));
             }
             if (nodes.contains(id) and nodes.at(id).read_reg().fano().contains({to, type})) {
                 decltype(unprocessed_delta_edge_att)::node_type node_handle_edge_att = std::move(
@@ -1346,7 +1388,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
                     auto &[att_name, delta, timestamp_edge_att] = node_handle_edge_att.mapped();
                     std::cout << "edge_att " << id<< ", " <<to << ", " <<type <<", "<<att_name  << ", "<<std::boolalpha << (timestamp < timestamp_edge) << std::endl;
                     if (timestamp < timestamp_edge_att) {
-                        process_delta_edge_attr(id, to, type, att_name, std::move(delta));
+                        process_delta_edge_attr(id, to, type, att_name, std::move(delta), std::move(tm));
                     }
                     node_handle_edge_att = std::move(unprocessed_delta_edge_att.extract(att_key));
                 }
@@ -1366,6 +1408,8 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
             id = k;
             if (!deleted.contains(k)) {
                 nodes[k].join(std::move(mv));
+                eprosima::fastrtps::rtps::Time_t::now(tm.proc);
+                tm.write(outfile);
                 if (mv_empty or nodes.at(k).empty()) {
                     update_maps_node_delete(k, nd);
                     updates.emplace_back(make_tuple(false, k, "", std::nullopt));
@@ -1453,7 +1497,15 @@ void DSRGraph::node_subscription_thread(bool showReceived)
                                 qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
                                         << m_info.sample_identity.writer_guid().entityId.value;
                             }
-                            tp.spawn_task(&DSRGraph::join_delta_node, this, std::move(sample));
+                            Times t;
+                            t.send = m_info.source_timestamp;
+                            t.recv = m_info.reception_timestamp;
+                            eprosima::fastrtps::rtps::Time_t::now(t.ready);
+                            t.type = "JOIN_DELTA_NODE";
+                            t.num_atts = 1;
+                            //t.size_msg_ = size_msg;
+                            join_delta_node(std::move(sample), std::move(t));
+                            //tp.spawn_task(&DSRGraph::join_delta_node, this, std::move(sample), std::move(t));
                         }
                     }
                 } else {
@@ -1486,7 +1538,15 @@ void DSRGraph::edge_subscription_thread(bool showReceived)
                                 qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
                                         << m_info.sample_identity.writer_guid().entityId.value;
                             }
-                            tp.spawn_task(&DSRGraph::join_delta_edge, this, std::move(sample));
+                            Times t;
+                            t.send = m_info.source_timestamp;
+                            t.recv = m_info.reception_timestamp;
+                            eprosima::fastrtps::rtps::Time_t::now(t.ready);
+                            t.type = "JOIN_DELTA_EDGE";
+                            t.num_atts = 1;
+                            //t.size_msg_ = size_msg;
+                            //join_delta_edge(std::move(sample), std::move(t));
+                            tp.spawn_task(&DSRGraph::join_delta_edge, this, std::move(sample), std::move(t));
                         }
                     }
                 } else {
@@ -1519,7 +1579,9 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
                             qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
-                        tp_delta_attr.spawn_task([this, samples = std::move(samples)]() mutable {
+                        eprosima::fastrtps::rtps::Time_t now;
+                        eprosima::fastrtps::rtps::Time_t::now(now);
+                        tp_delta_attr.spawn_task([this, samples = std::move(samples), m_info = std::move(m_info), now]() mutable {
                             if (samples.vec().empty()) return;
 
                             auto from = samples.vec().at(0).from();
@@ -1530,8 +1592,15 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
 
                             for (auto &&sample: samples.vec()) {
                                 if (sample.agent_id() != agent_id and !ignored_attributes.contains(sample.attr_name().data())) {
-                                    futures.emplace_back(tp.spawn_task_waitable([this, sample = std::move(sample)]() mutable {
-                                            return join_delta_edge_attr(std::move(sample));
+                                    Times t;
+                                    t.send = m_info.source_timestamp;
+                                    t.recv = m_info.reception_timestamp;
+                                    t.type = "JOIN_DELTA_EDGE_ATT";
+                                    t.ready = now;
+                                    t.num_atts = samples.vec().size();
+                                    //t.size_msg_ = size_msg;
+                                    futures.emplace_back(tp.spawn_task_waitable([this, sample = std::move(sample), t = std::move(t)]() mutable {
+                                            return join_delta_edge_attr(std::move(sample), std::move(t));
                                     }));
                                 }
                             }
@@ -1549,6 +1618,32 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
                             emit update_edge_signal(from, to, type);
 
                         });
+                        /*
+                        if (samples.vec().empty()) return;
+
+                        auto from = samples.vec().at(0).from();
+                        auto to = samples.vec().at(0).to();
+                        auto type = samples.vec().at(0).type();
+
+                        std::vector<std::string> sig (samples.vec().size());
+
+                        for (auto &&sample: samples.vec()) {
+                            if (sample.agent_id() != agent_id and !ignored_attributes.contains(sample.attr_name().data())) {
+                                Times t;
+                                t.send = m_info.source_timestamp;
+                                t.recv = m_info.reception_timestamp;
+                                t.type = "JOIN_DELTA_EDGE_ATT";
+                                t.num_atts = samples.vec().size();
+                                t.ready = now;
+                                //t.size_msg_ = size_msg;
+                                sig.emplace_back(join_delta_edge_attr(std::move(sample), std::move(t)).value_or(""));
+
+                            }
+                        }
+
+                        emit update_edge_attr_signal(from, to, type, sig);
+                        emit update_edge_signal(from, to, type);
+                         */
                     }
                 } else {
                     break;
@@ -1584,7 +1679,9 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
 
-                        tp_delta_attr.spawn_task([this, samples = std::move(samples)]() mutable {
+                        eprosima::fastrtps::rtps::Time_t now;
+                        eprosima::fastrtps::rtps::Time_t::now(now);
+                        tp_delta_attr.spawn_task([this, samples = std::move(samples), m_info = std::move(m_info), now ]() mutable {
 
                             if (samples.vec().empty()) return;
 
@@ -1596,8 +1693,14 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                             for (auto &&s: samples.vec()) {
                                 if (s.agent_id() != agent_id and
                                     ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
-                                    futures.emplace_back(tp.spawn_task_waitable([this, samp{std::move(s)}]() mutable {
-                                        auto f = join_delta_node_attr(std::move(samp));
+                                    Times t;
+                                    t.send = m_info.source_timestamp;
+                                    t.recv = m_info.reception_timestamp;
+                                    t.ready = now;
+                                    t.type = "JOIN_DELTA_NODE_ATT";
+                                    t.num_atts = samples.vec().size();
+                                    futures.emplace_back(tp.spawn_task_waitable([this, samp{std::move(s)}, t = std::move(t)]() mutable {
+                                        auto f = join_delta_node_attr(std::move(samp), std::move(t));
                                         return f;
                                     }));
 
@@ -1615,6 +1718,33 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                             emit update_node_attr_signal(id, sig);
                             emit update_node_signal(id, type);
                         });
+                        /*
+                        if (samples.vec().empty()) return;
+
+                        auto id = samples.vec().at(0).id();
+                        auto itn = nodes.find(id);
+                        auto type = (itn != nodes.end()) ? itn->second.read_reg().type() : "";
+
+
+                        std::vector<std::string> sig (samples.vec().size());
+
+                        for (auto &&s: samples.vec()) {
+                            if (s.agent_id() != agent_id and
+                                ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
+                                Times t;
+                                t.send = m_info.source_timestamp;
+                                t.recv = m_info.reception_timestamp;
+                                t.ready = now;
+                                t.type = "JOIN_DELTA_NODE_ATT";
+                                t.num_atts = samples.vec().size();
+                                sig.emplace_back(join_delta_node_attr(std::move(s), std::move(t)).value_or(""));
+
+                            }
+                        }
+
+                        emit update_node_attr_signal(id, sig);
+                        emit update_node_signal(id, type);
+                         */
                     }
                 } else {
                     break;
@@ -1697,7 +1827,14 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread()
                             qDebug() << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value
                                     << " whith "
                                     << sample.m().size() << " elements";
-                            tp.spawn_task(&DSRGraph::join_full_graph, this, std::move(sample));
+                            Times t;
+                            t.send = m_info.source_timestamp;
+                            t.recv = m_info.reception_timestamp;
+                            eprosima::fastrtps::rtps::Time_t::now(t.ready);
+                            t.type = "JOIN_FULL_GRAPH";
+                            t.num_atts = 1;
+                            tp.spawn_task(&DSRGraph::join_full_graph, this, std::move(sample), std::move(t));
+                            //join_full_graph(std::move(sample), std::move(t));
                             qDebug() << "Synchronized.";
                             sync = true;
                             break;

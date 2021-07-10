@@ -45,7 +45,7 @@ set_target_properties(pydsr PROPERTIES
         CXX_EXTENSIONS ON
         Python_ADDITIONAL_VERSIONS 3.8)
 
-target_compile_options(pydsr PRIVATE -g -fmax-errors=5 -std=c++20 )
+target_compile_options(pydsr PRIVATE -Ofast -march=native -flto  -fmax-errors=5 -std=c++20 )
 set_target_properties(pydsr PROPERTIES PREFIX "")
 
 
