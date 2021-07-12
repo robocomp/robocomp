@@ -58,11 +58,11 @@ QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *paren
     create_graph();
 
     //update signals
-    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &QScene2dViewer::add_or_assign_node_slot);
-	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &QScene2dViewer::add_or_assign_edge_slot);
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &QScene2dViewer::add_or_assign_node_slot, Qt::QueuedConnection);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &QScene2dViewer::add_or_assign_edge_slot, Qt::QueuedConnection);
 
-	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &QScene2dViewer::del_edge_slot);
-	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &QScene2dViewer::del_node_slot);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &QScene2dViewer::del_edge_slot, Qt::QueuedConnection);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &QScene2dViewer::del_node_slot, Qt::QueuedConnection);
     qDebug()<<"***************END QScene2dViewer********************";
 }
 

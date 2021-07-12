@@ -10,9 +10,9 @@ InnerAPI::InnerAPI(DSR::DSRGraph *G_)
     G = G_;
     rt = G->get_rt_api();
     //update signals
-    connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerAPI::add_or_assign_edge_slot);
-    connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerAPI::del_edge_slot);
-    connect(G, &DSR::DSRGraph::del_node_signal, this, &InnerAPI::del_node_slot);
+    connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerAPI::add_or_assign_edge_slot, Qt::QueuedConnection);
+    connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerAPI::del_edge_slot, Qt::QueuedConnection);
+    connect(G, &DSR::DSRGraph::del_node_signal, this, &InnerAPI::del_node_slot, Qt::QueuedConnection);
 }
 
 /// Computation of resultant RTMat going from A to common ancestor and from common ancestor to B (inverted)

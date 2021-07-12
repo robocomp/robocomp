@@ -73,7 +73,7 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
 //    m_itemFlags = CF_Mutual_Arrows;
     adjust();
     QObject::connect(source->getGraphViewer()->getGraph().get(), &DSR::DSRGraph::update_edge_attr_signal, this,
-            &GraphEdge::update_edge_attr_slot);
+            &GraphEdge::update_edge_attr_slot, Qt::QueuedConnection);
 }
 
 
