@@ -614,7 +614,7 @@ PYBIND11_MODULE(pydsr, m) {
                      return g.insert_node(n);
                  }, "node"_a,
                  "Insert in the graph the new node passed as parameter. Returns the id of the node or None if the Node alredy exist in the map.")
-            .def("update_node", &DSRGraph::update_node, "node"_a, "Update the node in the graph. Returns a bool.")
+            .def("update_node", &DSRGraph::update_node<DSR::Node&>, "node"_a, "Update the node in the graph. Returns a bool.")
             .def("get_edge", [](DSRGraph &self, const std::string &from, const std::string &to,
                                 const std::string &key) -> std::optional<Edge> {
                      return self.get_edge(from, to, key);
@@ -625,7 +625,7 @@ PYBIND11_MODULE(pydsr, m) {
                      return self.get_edge(from, to, key);
                  }, "from"_a, "to"_a, "type"_a,
                  "Return the edge with the parameters from, to, and type passed as parameter.  If the edge does not exist it return None")
-            .def("insert_or_assign_edge", &DSRGraph::insert_or_assign_edge, "edge"_a,
+            .def("insert_or_assign_edge", &DSRGraph::insert_or_assign_edge<DSR::Edge&>, "edge"_a,
                  "Insert or updates and edge. returns a bool")
             .def("delete_edge", static_cast<bool (DSRGraph::*)(uint64_t, uint64_t,
                                                                const std::basic_string<char> &)>(&DSRGraph::delete_edge),
