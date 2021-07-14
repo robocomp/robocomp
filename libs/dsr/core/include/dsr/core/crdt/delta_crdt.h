@@ -274,10 +274,12 @@ public:
         dot_kernel<T> res;
         // get new dot
         std::pair<key_type , int> dot = c.makedot(id);
+
+        std::pair<std::pair<key_type, int>, T> tmp (dot, val);
         // add under new dot
-        ds.insert(std::pair<std::pair<key_type, int>, T>(dot, val));
+        ds.insert(tmp);
         // make delta
-        res.ds.insert(std::pair<std::pair<key_type, int>, T>(dot, val));
+        res.ds.insert(std::move(tmp));
         res.c.insertdot(dot);
         return res;
     }
@@ -288,10 +290,11 @@ public:
         dot_kernel<T> res;
         // get new dot
         std::pair<key_type , int> dot = c.makedot(id);
+        std::pair<std::pair<key_type , int>, T> tmp (dot, std::move(val));
         // add under new dot
-        ds.insert(std::pair<std::pair<key_type , int>, T>(dot, val));
+        ds.insert(tmp);
         // make delta
-        res.ds.emplace(dot, std::move(val));
+        res.ds.insert(std::move(tmp));
         res.c.insertdot(std::move(dot));
         return res;
     }

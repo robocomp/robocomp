@@ -157,7 +157,9 @@ std::tuple<bool, std::optional<IDL::MvregNode>> DSRGraph::insert_node_(CRDTNode 
     return {false, {}};
 }
 
-std::optional<uint64_t> DSRGraph::insert_node(Node &node)
+template<typename No>
+std::optional<uint64_t> DSRGraph::insert_node(No &&node)
+    requires (std::is_same_v<std::remove_reference_t<No>, DSR::Node>)
 {
     std::optional<IDL::MvregNode> delta;
     bool inserted = false;
@@ -169,7 +171,7 @@ std::optional<uint64_t> DSRGraph::insert_node(Node &node)
         if (node.name().empty() or name_map.contains(node.name()))
             node.name(node.type() + "_" + id_generator::hex_string(new_node_id));
         lck_cache.unlock();
-        std::tie(inserted, delta) = insert_node_(user_node_to_crdt(node));
+        std::tie(inserted, delta) = insert_node_(user_node_to_crdt(std::forward<No>(node)));
     }
     if (inserted)
     {
@@ -189,6 +191,10 @@ std::optional<uint64_t> DSRGraph::insert_node(Node &node)
     }
     return {};
 }
+
+template std::optional<uint64_t>  DSRGraph::insert_node<DSR::Node &&>(DSR::Node&&);
+template std::optional<uint64_t>  DSRGraph::insert_node<DSR::Node&>(DSR::Node&);
+
 
 std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::update_node_(CRDTNode &&node)
 {
@@ -235,8 +241,9 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
 
     return {false, {}};
 }
-
-bool DSRGraph::update_node(Node &node)
+template<typename No>
+bool DSRGraph::update_node(No &&node)
+requires (std::is_same_v<std::remove_cvref_t<No>, DSR::Node>)
 {
 
     bool updated = false;
@@ -256,7 +263,7 @@ bool DSRGraph::update_node(Node &node)
                      __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         else if (nodes.contains(node.id())) {
             lck_cache.unlock();
-            std::tie(updated, vec_node_attr) = update_node_(user_node_to_crdt(node));
+            std::tie(updated, vec_node_attr) = update_node_(user_node_to_crdt(std::forward<No>(node)));
         }
     }
     if (updated) {
@@ -276,6 +283,12 @@ bool DSRGraph::update_node(Node &node)
     }
     return updated;
 }
+
+template bool DSRGraph::update_node<DSR::Node &&>(DSR::Node&&);
+template bool DSRGraph::update_node<DSR::Node&>(DSR::Node&);
+template bool DSRGraph::update_node<const DSR::Node&>(const DSR::Node&);
+
+
 
 std::tuple<bool, std::vector<std::tuple<uint64_t, uint64_t, std::string>>, std::optional<IDL::MvregNode>, std::vector<IDL::MvregEdge>>
 DSRGraph::delete_node_(uint64_t id) {
@@ -543,8 +556,9 @@ DSRGraph::insert_or_assign_edge_(CRDTEdge &&attrs, uint64_t from, uint64_t to)
     return {false, {}, {}};
 }
 
-
-bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
+template<typename Ed>
+bool DSRGraph::insert_or_assign_edge(Ed &&attrs)
+requires (std::is_same_v<std::remove_cvref_t<Ed>, DSR::Edge>)
 {
     bool result = false;
     std::optional<IDL::MvregEdge> delta_edge;
@@ -555,7 +569,7 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
         uint64_t from = attrs.from();
         uint64_t to = attrs.to();
         if (nodes.contains(from) && nodes.contains(to)) {
-            std::tie(result, delta_edge, delta_attrs) = insert_or_assign_edge_(user_edge_to_crdt(attrs), from, to);
+            std::tie(result, delta_edge, delta_attrs) = insert_or_assign_edge_(user_edge_to_crdt(std::forward<Ed>(attrs)), from, to);
         } else {
             std::cout << __FUNCTION__ << ":" << __LINE__ << " Error. ID:" << from << " or " << to
                       << " not found. Cant update. " << std::endl;
@@ -584,6 +598,12 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs)
     }
     return true;
 }
+
+
+
+template bool DSRGraph::insert_or_assign_edge<DSR::Edge &&>(DSR::Edge&&);
+template bool DSRGraph::insert_or_assign_edge<DSR::Edge&>(DSR::Edge&);
+template bool DSRGraph::insert_or_assign_edge<const DSR::Edge&>(const DSR::Edge&);
 
 
 std::optional<IDL::MvregEdge> DSRGraph::delete_edge_(uint64_t from, uint64_t to, const std::string &key)

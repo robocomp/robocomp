@@ -24,16 +24,16 @@ TreeViewer::TreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QT
     createGraph();
 
     connect(G.get(), &DSR::DSRGraph::update_node_signal, this,
-			[=, this]( std::uint64_t id, const std::string& type ) {TreeViewer::add_or_assign_node_SLOT(id, type);});
+			[=, this]( std::uint64_t id, const std::string& type ) {TreeViewer::add_or_assign_node_SLOT(id, type);}, Qt::QueuedConnection);
     setColumnCount(2);
 	QStringList horzHeaders;
 	horzHeaders <<"Attribute"<< "Value";
 
 	this->setHeaderLabels( horzHeaders );
 	this->header()->setDefaultSectionSize(250);
-	//connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphViewer::addEdgeSLOT);
+	//connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphViewer::addEdgeSLOT, Qt::QueuedConnection);
 //	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &TreeViewer::);
-	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &TreeViewer::del_node_SLOT);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &TreeViewer::del_node_SLOT, Qt::QueuedConnection);
 }
 
 void TreeViewer::createGraph()

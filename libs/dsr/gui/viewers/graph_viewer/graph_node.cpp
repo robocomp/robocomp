@@ -37,7 +37,7 @@ GraphNode::GraphNode(const std::shared_ptr<DSR::GraphViewer>&
 	animation->setStartValue(plain_color);
 	animation->setEndValue(dark_color);
 	animation->setLoopCount(ANIMATION_REPEAT);
-    QObject::connect(graph_viewer_->getGraph().get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNode::update_node_attr_slot);
+    QObject::connect(graph_viewer_->getGraph().get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNode::update_node_attr_slot, Qt::QueuedConnection);
 }
 
 void GraphNode::setTag(const std::string &tag_)

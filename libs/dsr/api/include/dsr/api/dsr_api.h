@@ -86,13 +86,16 @@ namespace DSR
         // Nodes
         std::optional<Node> get_node(const std::string &name);
         std::optional<Node> get_node(uint64_t id);
-        std::optional<uint64_t> insert_node(Node &node);
-        bool update_node(Node &node);
+        template<typename No>
+        std::optional<uint64_t> insert_node(No &&node) requires (std::is_same_v<std::remove_reference_t<No>, DSR::Node>);
+        template<typename No>
+        bool update_node(No &&node) requires (std::is_same_v<std::remove_cvref_t<No>, DSR::Node>);
         bool delete_node(const std::string &name);
         bool delete_node(uint64_t id);
 
         // Edges
-        bool insert_or_assign_edge(const Edge& attrs);
+        template<typename Ed>
+        bool insert_or_assign_edge(Ed && attrs) requires (std::is_same_v<std::remove_cvref_t<Ed>, DSR::Edge>);
         std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
         std::optional<Edge> get_edge(uint64_t from, uint64_t to, const std::string& key);
         std::optional<Edge> get_edge(const Node& n, const std::string& to, const std::string& key);

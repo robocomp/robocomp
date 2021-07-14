@@ -43,7 +43,7 @@ OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float 
 	qDebug() << __FUNCTION__ << "End analyse";
 	_mViewer->setSceneData(root.get());
 
-    connect(G.get(), &DSR::DSRGraph::update_node_signal, [this](auto id, auto type)
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this,  [this](auto id, auto type)
         { try
           {
             auto node = G->get_node(id);
@@ -51,14 +51,14 @@ OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float 
                 add_or_assign_node_slot(node.value());
           }
           catch(const std::exception &e){ std::cout << e.what() << std::endl; throw e;}
-        });
-	connect(G.get(), &DSR::DSRGraph::update_edge_signal,
+        }, Qt::QueuedConnection);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this,
         [this](auto from, auto to, auto type){
                                                 auto parent = G->get_node(from);
                                                 auto node = G->get_node(to);
                                                 if(parent.has_value() and node.has_value())
                                                     add_or_assign_edge_slot(parent.value(), node.value());
-                                             });
+                                             }, Qt::QueuedConnection);
 	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &OSG3dViewer::delEdgeSLOT);
 	//connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &OSG3dViewer::delNodeSLOT);
 
