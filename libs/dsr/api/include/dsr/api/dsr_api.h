@@ -449,10 +449,14 @@ namespace DSR
                 bool r = false;
                 {
                     std::unique_lock<std::shared_mutex> lock(_mutex);
-                    if (id_map.find(node.id()) == id_map.end() and name_map.find(node.name())  == name_map.end()) {
+                    if (auto t1 = id_map.find(node.id()) == id_map.end(), t2 = name_map.find(node.name())  == name_map.end(); t1 and t2) {
                         std::tie(r, std::ignore) = insert_node_(user_node_to_crdt(node));
-                    } else throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id already exists ")
-                                                     + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                    } else {
+                        if (!t1 and t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id (" +  std::to_string(node.id()) +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                        if (t1 and !t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                        if (!t1 and !t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") and same id (" +  std::to_string(node.id()) +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                    }
+
                 }
                 if (r) {
                     return node.id();
