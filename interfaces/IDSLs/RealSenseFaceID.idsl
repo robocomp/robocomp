@@ -1,0 +1,22 @@
+module RoboCompRealSenseFaceID
+{
+  struct UserData
+  {
+    string userAuthenticated;
+  };
+
+  sequence <UserData> UserDataList;
+
+  interface RealSenseFaceID
+  {
+    bool enroll(string user);
+    UserDataList authenticate();
+    bool eraseUser(string user);
+    bool eraseAll();
+    UserDataList getQueryUsers();
+    bool startPreview();
+    bool stopPreview();
+  };
+};
+
+
