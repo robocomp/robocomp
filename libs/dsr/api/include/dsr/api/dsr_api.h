@@ -453,8 +453,8 @@ namespace DSR
                         std::tie(r, std::ignore) = insert_node_(user_node_to_crdt(node));
                     } else {
                         if (!t1 and t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id (" +  std::to_string(node.id()) +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
-                        if (t1 and !t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
-                        if (!t1 and !t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") and same id (" +  std::to_string(node.id()) +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                        else if (t1 and !t2) throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                        else throw std::runtime_error((std::string("Cannot insert node in G, a node with the same name (" +  node.name() +") and same id (" +  std::to_string(node.id()) +") already exists ") + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
                     }
 
                 }
