@@ -6,7 +6,7 @@ module RoboCompCameraSimple
 
   struct TImage
   {
-
+    bool compressed;  // opencv jpeg compression
     int width;
     int height;
     int depth;
