@@ -35,11 +35,8 @@ class genericworker_h(TemplateDict):
 
     def agm_includes(self):
         result = ""
-        if self.component.is_agm1_agent():
+        if self.component.is_agm_agent():
             result += "#include <agm.h>\n"
-        if self.component.is_agm2_agent():
-            result += "#include <AGM2.h>\n"
-            result += "#include <agm2.h>\n"
         return result
 
     def agm_behaviour_parameter_struct(self):

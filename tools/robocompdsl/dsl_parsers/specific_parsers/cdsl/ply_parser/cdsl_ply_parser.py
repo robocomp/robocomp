@@ -1,7 +1,7 @@
 import os
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import is_agm2_agent, is_agm2_agent_ROS, communication_is_ice, is_agm1_agent, \
+from dsl_parsers.parsing_utils import is_agm2_agent_ROS, communication_is_ice, is_agm_agent, \
     generate_recursive_imports
 from dsl_parsers.specific_parsers.cdsl.componentinspections import ComponentInspections
 from dsl_parsers.specific_parsers.cdsl.ply_parser.ply_parser_yacc import CCDSLPlyParser
@@ -34,11 +34,9 @@ class CDSLParser(DSLParserTemplate):
             imprts = component.imports
         else:
             imprts = []
-        if component.is_agm1_agent():
+        if component.is_agm_agent():
             imprts.extend(
                 ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if component.is_agm2_agent():
-            imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 
@@ -71,7 +69,7 @@ class CDSLParser(DSLParserTemplate):
                         component.rosInterfaces.append(interface)
                         component.usingROS = True
         # Handle options for communications
-        if is_agm1_agent(component):
+        if is_agm_agent(component):
             component.iceInterfaces += ['AGMCommonBehavior', 'AGMExecutive', 'AGMExecutiveTopic', 'AGMWorldModel']
             if not 'AGMCommonBehavior' in component.implements:
                 component.implements = ['AGMCommonBehavior'] + component.implements
@@ -79,30 +77,5 @@ class CDSLParser(DSLParserTemplate):
                 component.requires = ['AGMExecutive'] + component.requires
             if not 'AGMExecutiveTopic' in component.subscribesTo:
                 component.subscribesTo = ['AGMExecutiveTopic'] + component.subscribesTo
-        if component.is_agm2_agent():
-            if is_agm2_agent_ROS(component):
-                component.usingROS = True
-                agm2agent_requires = [['AGMDSRService', 'ros']]
-                agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]
-                if not 'AGMDSRService' in component.rosInterfaces: component.rosInterfaces.append('AGMDSRService')
-                if not 'AGMDSRTopic' in component.rosInterfaces: component.rosInterfaces.append('AGMDSRTopic')
-                if not 'AGMExecutiveTopic' in component.rosInterfaces: component.rosInterfaces.append(
-                    'AGMExecutiveTopic')
-            else:
-                agm2agent_requires = [['AGMDSRService', 'ice']]
-                agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-                if not 'AGMDSRService' in component.iceInterfaces: component.iceInterfaces.append('AGMDSRService')
-                if not 'AGMDSRTopic' in component.iceInterfaces: component.iceInterfaces.append('AGMDSRTopic')
-                if not 'AGMExecutiveTopic' in component.iceInterfaces: component.iceInterfaces.append(
-                    'AGMExecutiveTopic')
-
-            # AGM2 agents REQUIRES
-            for agm2agent_req in agm2agent_requires:
-                if not agm2agent_req in component.requires:
-                    component.requires = [agm2agent_req] + component.requires
-            # AGM2 agents SUBSCRIBES
-            for agm2agent_sub in agm2agent_subscribesTo:
-                if not agm2agent_sub in component.subscribesTo:
-                    component.subscribesTo = [agm2agent_sub] + component.subscribesTo
         self.struct = component
         return component

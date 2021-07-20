@@ -20,7 +20,7 @@ class specificworker_h(TemplateDict):
 
     def agm_attributes(self):
         result = ''
-        if self.component.is_agm1_agent():
+        if self.component.is_agm_agent():
             result += "std::string action;\n"
             result += "RoboCompAGMCommonBehavior::ParameterMap params;\n"
             result += "AGMModel::SPtr worldModel;\n"
@@ -29,10 +29,6 @@ class specificworker_h(TemplateDict):
                 result += "void regenerateInnerModelViewer();\n"
             result += "bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);\n"
             result += "void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
-        elif self.component.is_agm2_agent():
-            result += "std::string action;\n"
-            result += "AGMModel::SPtr worldModel;\n"
-            result += "bool active;\n"
         return result
 
 

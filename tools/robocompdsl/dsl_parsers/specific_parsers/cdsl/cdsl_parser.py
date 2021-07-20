@@ -118,10 +118,8 @@ class CDSLParser(DSLParserTemplate):
 
         component.dsr = False
         component.dsr = 'dsr' in [x.lower() for x in component.options]
-        if component.is_agm1_agent():
+        if component.is_agm_agent():
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if component.is_agm2_agent():
-            imprts.extend(['AGM2.idsl'])
         component.imports.extend(list(map(os.path.basename, sorted(imprts))))
         component.recursiveImports = generate_recursive_imports(list(component.imports), self._include_directories)
         # Language
@@ -183,7 +181,7 @@ class CDSLParser(DSLParserTemplate):
                         component.rosInterfaces.append(interface)
                         component.usingROS = True
         # Handle options for communications
-        if component.is_agm1_agent():
+        if component.is_agm_agent():
             component.iceInterfaces += [['AGMCommonBehavior', 'ice'], ['AGMExecutive', 'ice'], ['AGMExecutiveTopic', 'ice'], ['AGMWorldModel', 'ice']]
             if 'AGMCommonBehavior' not in component.implements:
                 component.implements = [['AGMCommonBehavior', 'ice']] + component.implements
@@ -191,23 +189,6 @@ class CDSLParser(DSLParserTemplate):
                 component.requires = [['AGMExecutive', 'ice']] + component.requires
             if 'AGMExecutiveTopic' not in component.subscribesTo:
                 component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
-        if component.is_agm2_agent():
-            agm2agent_requires = [['AGMDSRService', 'ice'], ['AGM2', 'ice']]
-            agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-            if 'AGMDSRService' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
-            if 'AGMDSRTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
-            if 'AGMExecutiveTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
-            if 'AGM2' not in component.iceInterfaces: component.iceInterfaces.append(['AGM2', 'ice'])
-
-            # AGM2 agents REQUIRES
-            for agm2agent_req in agm2agent_requires:
-                if agm2agent_req not in component.requires:
-                    component.requires = [agm2agent_req] + component.requires
-            # AGM2 agents SUBSCRIBES
-            for agm2agent_sub in agm2agent_subscribes_to:
-                if agm2agent_sub not in component.subscribesTo:
-                    component.subscribesTo = [agm2agent_sub] + component.subscribesTo
-        # component = ComponentFacade.from_nested_dict(component)
         self.struct = component
         return component
 

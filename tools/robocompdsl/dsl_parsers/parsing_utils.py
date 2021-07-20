@@ -77,22 +77,11 @@ def is_valid_rpc_idsl(idsl):
     return False
 
 
-def is_agm1_agent(component):
+def is_agm_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     options = component.options
     return 'agmagent' in [x.lower() for x in options]
-
-
-def is_agm2_agent(component):
-    assert isinstance(component, (dict, OrderedDict)), \
-        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
-    valid = ['agm2agent', 'agm2agentice']
-    options = component.options
-    for v in valid:
-        if v.lower() in options:
-            return True
-    return False
 
 
 def idsl_robocomp_path(idsl_name, include_directories=None):
