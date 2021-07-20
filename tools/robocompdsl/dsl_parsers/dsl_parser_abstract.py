@@ -28,7 +28,6 @@ class DSLParserTemplate:
     def parser(self, value):
         pass
 
-
     @property
     def string(self):
         return self.__string
@@ -65,6 +64,8 @@ class DSLParserTemplate:
         pass
 
     def parse_string(self, string):
+        assert isinstance(string, str)
+        assert string.strip() != "", "Nothing to parse. Empty string."
         if self.string is None:
             self.string = string
         self.__pyparsing_result = self.parser.parseString(string)
@@ -72,8 +73,8 @@ class DSLParserTemplate:
 
     @abc.abstractmethod
     def _create_parser(self):
-        pass
+        """private method to create the parser"""
 
     @abc.abstractmethod
     def string_to_struct(self, string, **kwargs):
-        pass
+        """Method to convert string to struct"""

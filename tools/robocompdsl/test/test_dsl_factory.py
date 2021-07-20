@@ -17,9 +17,6 @@ sys.path.append(ROBOCOMPDSL_DIR)
 
 from dsl_parsers.dsl_factory import DSLFactory
 
-
-
-
 def deep_sort(obj):
     """
     Recursively sort list or dict nested lists

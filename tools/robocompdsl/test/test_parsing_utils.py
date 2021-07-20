@@ -50,13 +50,13 @@ class ParsingUtilsTest(unittest.TestCase):
         interfaces = pool.interfaces()
         self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags', 'CommonBehavior'])
 
-    def test_is_agm1_agent(self):
+    def test_is_agm_agent(self):
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "camerasimple.cdsl"))
-        self.assertFalse(component.is_agm1_agent())
+        self.assertFalse(component.is_agm_agent())
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "humanAgent.cdsl"))
-        self.assertTrue(component.is_agm1_agent())
+        self.assertTrue(component.is_agm_agent())
 
     # def test_is_agm2_agent(self):
     #     self.assertRaises(AssertionError, parsing_utils.is_agm2_agent, "CameraSimple")
