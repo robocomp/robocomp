@@ -27,8 +27,6 @@ connect(G.get(), &DSR::DSRGraph::update_node_attr_signal, this, &SpecificWorker:
 connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &SpecificWorker::del_edge_slot);
 connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &SpecificWorker::del_node_slot);
 
-
-
 // Graph viewer
 using opts = DSR::DSRViewer::view;
 int current_opts = 0;
