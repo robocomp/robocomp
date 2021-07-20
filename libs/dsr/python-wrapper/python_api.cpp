@@ -320,11 +320,11 @@ PYBIND11_MODULE(pydsr, m) {
                                   case 2:
                                       return self.fl();
                                   case 3:
-                                      return py::array_t<float> { static_cast<ssize_t>(self.float_vec().size()), self.float_vec().data()};
+                                      return py::array_t<float> { self.float_vec().size(), self.float_vec().data()};
                                   case 4:
                                       return self.bl();
                                   case 5:
-                                      return py::array_t<uint8_t> {static_cast<ssize_t>(self.byte_vec().size()), self.byte_vec().data()};
+                                      return py::array_t<uint8_t> {self.byte_vec().size(), self.byte_vec().data()};
                                   case 6:
                                       return self.uint();
                                   case 7:
@@ -332,7 +332,7 @@ PYBIND11_MODULE(pydsr, m) {
                                   case 8:
                                       return self.dob();
                                   case 9:
-                                      return py::array_t<uint64_t> {static_cast<ssize_t>(self.u64_vec().size()), self.u64_vec().data()};
+                                      return py::array_t<uint64_t> {self.u64_vec().size(), self.u64_vec().data()};
                                   case 10:
                                       return py::array_t<float> { 2, self.vec2().data()};
                                   case 11:
