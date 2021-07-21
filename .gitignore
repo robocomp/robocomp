@@ -89,3 +89,5 @@ components/melex-rodao/
 *cmake-build-default/
 
 *cmake-build-debug/
+
+tools/robocompdsl/test/htmlcov/

@@ -96,7 +96,7 @@ class CDSLParser(DSLParserTemplate):
         CDSL.ignore(cppStyleComment)
         return CDSL
 
-    def string_to_struct(self, string, **kwargs):
+    def string_to_struct(self, string: str, **kwargs) -> componentfacade.ComponentFacade:
         parsing_result = self.parse_string(string)
         component = componentfacade.ComponentFacade()
         # print 'parseCDSL.component', includeDirectories
@@ -155,12 +155,7 @@ class CDSLParser(DSLParserTemplate):
             ui_type = parsing_result['component']['content']['gui']['type'][0]
             if ui_type.lower() == 'qt':
                 ui_widget = parsing_result['component']['content']['gui']['widget']
-                if ui_widget in ['QWidget', 'QMainWindow', 'QDialog']:
-                    component.gui = [ui_type, ui_widget]
-                else:
-                    component.gui = [ui_type, 'QMainWindow']
-            else:
-                ui_widget = parsing_result['component']['content']['gui']['widget']
+                component.gui = [ui_type, ui_widget]
         except KeyError:
             pass
 
