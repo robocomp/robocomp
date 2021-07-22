@@ -884,10 +884,8 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::CollisionResult result;
 
 	n1->collisionObject->computeAABB();
- 	fcl::AABB a1 = n1->collisionObject->getAABB();
 
 	n2->collisionObject->computeAABB();
- 	fcl::AABB a2 = n2->collisionObject->getAABB();
 
 	// NOTE: http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/namespacefcl.html
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
