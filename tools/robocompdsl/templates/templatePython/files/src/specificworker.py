@@ -45,7 +45,7 @@ class SpecificWorker(GenericWorker):
             ${statemachine_start_and_destroy}
 
     def __del__(self):
-        console.print('SpecificWorker destructor')
+        """Destructor"""
 
     def setParams(self, params):
         # try:
