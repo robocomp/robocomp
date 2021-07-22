@@ -90,6 +90,7 @@ namespace DSR
         std::optional<uint64_t> insert_node(No &&node) requires (std::is_same_v<std::remove_reference_t<No>, DSR::Node>);
         template<typename No>
         bool update_node(No &&node) requires (std::is_same_v<std::remove_cvref_t<No>, DSR::Node>);
+        bool delete_node(const DSR::Node& node);
         bool delete_node(const std::string &name);
         bool delete_node(uint64_t id);
 

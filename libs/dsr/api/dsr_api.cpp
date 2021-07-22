@@ -25,7 +25,13 @@ using namespace std::literals;
 /////////////////////////////////////////////////
 
 DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &dsr_input_file, bool all_same_host)
-        : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), tp_delta_attr(1), same_host(all_same_host), generator(id)
+        : agent_id(id),
+        agent_name(std::move(name)),
+        copy(false),
+        tp(5),
+        tp_delta_attr(1),
+        same_host(all_same_host),
+        generator(id)
 {
 
     qDebug() << "Agent name: " << QString::fromStdString(agent_name);
@@ -51,6 +57,7 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
                                                                         graph->delete_node(info.info.m_participantName.to_string());
                                                                     }
                                                                 }));
+
 
     // RTPS Initialize publisher with general topic
     auto [res, pub, writer] = dsrpub_node.init(participant_handle, dsrparticipant.getNodeTopic());
@@ -309,6 +316,7 @@ DSRGraph::delete_node_(uint64_t id) {
     update_maps_node_delete(id, node.value());
     //search and remove edges.
     //For each node check if there is an edge to remove.
+    //TODO: use to_edges.
     for (auto &[k, v] : nodes)
     {
         std::shared_lock<std::shared_mutex> lck_cache(_mutex_cache_maps);
@@ -329,6 +337,10 @@ DSRGraph::delete_node_(uint64_t id) {
 
     return make_tuple(true, std::move(deleted_edges), std::move(delta_remove), std::move(delta_vec));
 
+}
+bool DSRGraph::delete_node(const DSR::Node &node)
+{
+    return delete_node(node.id());
 }
 
 bool DSRGraph::delete_node(const std::string &name)
