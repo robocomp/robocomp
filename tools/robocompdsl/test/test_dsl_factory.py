@@ -6,16 +6,12 @@ from collections import OrderedDict
 
 from pyparsing import ParseException
 import copy
-sys.path.append("/opt/robocomp/python")
-sys.path.append('/opt/robocomp/python/robocompdsl/')
+from config_tests import CURRENT_DIR
 import dsl_parsers.specific_parsers.cdsl.componentfacade as cf
-
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
-RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
-sys.path.append(ROBOCOMPDSL_DIR)
-
 from dsl_parsers.dsl_factory import DSLFactory
+
+RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
+
 
 def deep_sort(obj):
     """

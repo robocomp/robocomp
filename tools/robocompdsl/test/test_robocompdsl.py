@@ -7,17 +7,14 @@ import unittest
 
 import pyparsing
 
+from config_tests import CURRENT_DIR
+from autogeneration_tests.test_cdsl.test_component_generation import ComponentGenerationChecker
 import robocompdsl
 from filesgenerator import FilesGenerator
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
 TEST_DIR = os.path.join(CURRENT_DIR, "..", "autogeneration_tests", "test_cdsl")
 REF_COMPONENTS_PATH = os.path.join(RESOURCES_DIR, "reference_components")
-sys.path.append(ROBOCOMPDSL_DIR)
-
-from autogeneration_tests.test_cdsl.test_component_generation import ComponentGenerationChecker
 
 
 class RobocompdslTest(unittest.TestCase):

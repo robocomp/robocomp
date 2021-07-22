@@ -3,14 +3,11 @@ import sys
 import unittest
 from unittest import TestCase
 
+from config_tests import CURRENT_DIR
 from dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
 from dsl_parsers import parsing_utils
 from dsl_parsers.dsl_factory import DSLFactory
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
-RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
-sys.path.append(ROBOCOMPDSL_DIR)
 
 
 # noinspection PyCompatibility
