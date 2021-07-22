@@ -183,6 +183,7 @@ class GraphNodeWidget : public  QTableWidget
                 qobject_cast<QDoubleSpinBox *>(widget_map[k])->setValue(std::round(v.dob()));
                 break;
             }
+            //TODO: Update u64vec, vec2, vec3, vec4, vec6
         }
         widget_map[k]->blockSignals(false);
     }
@@ -323,6 +324,86 @@ class GraphNodeWidget : public  QTableWidget
                     graph->runtime_checked_modify_attrib_local(n.value(), k, (double)value);
                     graph->update_node(n.value());
                 });
+                break;
+            }
+            case 9:
+            {
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                if (!v.u64_vec().empty() and v.u64_vec().size() <= 10) {
+                    for (unsigned char i : v.u64_vec()) {
+                        QDoubleSpinBox *spin = new QDoubleSpinBox();
+                        spin->setMinimum(0);
+                        //spin->setMaximum(100000000000000000);
+                        spin->setValue(i);
+                        layout->addWidget(spin);
+                    }
+                    setCellWidget(rc, 1, widget);
+                    widget_map[k] = widget;
+                } else {
+                    inserted = false;
+                }
+                break;
+            }
+            case 10: {
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                for (float i : v.vec2()) {
+                    QDoubleSpinBox *spin = new QDoubleSpinBox();
+                    spin->setMinimum(-10000);
+                    spin->setMaximum(10000);
+                    spin->setValue(i);
+                    layout->addWidget(spin);
+                }
+                setCellWidget(rc, 1, widget);
+                widget_map[k] = widget;
+                break;
+            }
+            case 11: {
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                for (float i : v.vec3()) {
+                    QDoubleSpinBox *spin = new QDoubleSpinBox();
+                    spin->setMinimum(-10000);
+                    spin->setMaximum(10000);
+                    spin->setValue(i);
+                    layout->addWidget(spin);
+                }
+                setCellWidget(rc, 1, widget);
+                widget_map[k] = widget;
+                break;
+            }
+            case 12: {
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                for (float i : v.vec4()) {
+                    QDoubleSpinBox *spin = new QDoubleSpinBox();
+                    spin->setMinimum(-10000);
+                    spin->setMaximum(10000);
+                    spin->setValue(i);
+                    layout->addWidget(spin);
+                }
+                setCellWidget(rc, 1, widget);
+                widget_map[k] = widget;
+                break;
+            }
+            case 13: {
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                for (float i : v.vec6()) {
+                    QDoubleSpinBox *spin = new QDoubleSpinBox();
+                    spin->setMinimum(-10000);
+                    spin->setMaximum(10000);
+                    spin->setValue(i);
+                    layout->addWidget(spin);
+                }
+                setCellWidget(rc, 1, widget);
+                widget_map[k] = widget;
                 break;
             }
         }

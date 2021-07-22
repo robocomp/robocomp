@@ -181,13 +181,63 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         G->runtime_checked_add_attrib_local(edge,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
                         break;
                     }
+
+                    case 8: {
+                        G->runtime_checked_add_attrib_local(edge,  attr_key,  attr_value.toString().replace(",", ".").toDouble());
+                        break;
+                    }
+
+                    case 9: {
+                        std::vector<uint64_t> v;
+                        for (const QVariant &val : attr_value.toList())
+                            v.push_back(static_cast<uint64_t>(std::stoull(val.toString().toStdString())));
+                        G->runtime_checked_add_attrib_local(edge, attr_key, std::move(v));
+                        break;
+                    }
+
+                    case 10: {
+                        auto val_list = attr_value.toList();
+                        std::array<float, 2> v{val_list[0].toFloat(), val_list[1].toFloat()};
+                        G->runtime_checked_add_attrib_local(edge, attr_key, v);
+                        break;
+                    }
+
+                    case 11: {
+                        auto val_list = attr_value.toList();
+                        std::array<float, 3> v{val_list[0].toFloat(), val_list[1].toFloat(), val_list[2].toFloat()};
+                        G->runtime_checked_add_attrib_local(edge, attr_key, v);
+                        break;
+                    }
+
+                    case 12: {
+                        auto val_list = attr_value.toList();
+                        std::array<float, 4> v{val_list[0].toFloat(), val_list[1].toFloat(), val_list[2].toFloat(), val_list[3].toFloat()};
+                        G->runtime_checked_add_attrib_local(edge, attr_key, v);
+                        break;
+                    }
+
+                    case 13: {
+                        auto val_list = attr_value.toList();
+                        std::array<float, 6> v{val_list[0].toFloat(), val_list[1].toFloat(),
+                                               val_list[2].toFloat(), val_list[3].toFloat(),
+                                               val_list[4].toFloat(), val_list[5].toFloat()};
+                        G->runtime_checked_add_attrib_local(edge, attr_key, v);
+                        break;
+                    }
                     default:
                         G->runtime_checked_add_attrib_local(edge,   attr_key, attr_value.toString().toStdString());
                 }
             }
             qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << srcn << " to " << dstn << " label "  << QString::fromStdString(edgeName);
             //edge.attrs(attrs);
-            G->insert_or_assign_edge(edge);
+            if (!G->insert_or_assign_edge(edge)) {
+                auto esrc = G->get_name_from_id(srcn);
+                auto edstn = G->get_name_from_id(dstn);
+                if (!esrc.has_value() and edstn.has_value()) qWarning() << "WARNING: " << __FILE__ << " " << __FUNCTION__ << " Source Node " << srcn << " does not exist";
+                else if (esrc.has_value() and !edstn.has_value()) qWarning() << "WARNING: " << __FILE__ << " " << __FUNCTION__ << " Dest Node " << dstn << " does not exist";
+                else if (!esrc.has_value() and !edstn.has_value()) qWarning() << "WARNING: " << __FILE__ << " " << __FUNCTION__ << " Source and Dest Node " << srcn << ", " << dstn << " does not exist";
+                else qWarning() << "WARNING: " << __FILE__ << " " << __FUNCTION__ << " Error inserting edge from file";
+            }
 
         } //foreach(links)
 }
@@ -236,6 +286,48 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
             case 7:
                 val = QString::number(std::get<std::uint64_t>(value.value())); //This should be quint64 but QJsonValue not allow it.
                 break;
+            case 8:
+                val = std::get<double>(value.value());
+                break;
+            case 9: {
+                QJsonArray array;
+                for (const uint64_t &value : std::get<std::vector<uint64_t>>(value.value()))
+                    array.push_back(QString::number(value));
+                val = array;
+                break;
+            }
+
+            case 10: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 2>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 11: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 3>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 12: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 4>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 13: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 6>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
         }
         content["type"] = static_cast<qint64>(value.value().index());
         content["value"] = val;
@@ -294,7 +386,48 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
             case 7:
                 val = QString::number(std::get<std::uint64_t>(value.value()));
                 break;
+            case 8:
+                val = std::get<double>(value.value());
+                break;
+            case 9: {
+                QJsonArray array;
+                for (const uint64_t &value : std::get<std::vector<uint64_t>>(value.value()))
+                    array.push_back(QString::number(value));
+                val = array;
+                break;
+            }
 
+            case 10: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 2>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 11: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 3>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 12: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 4>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
+
+            case 13: {
+                QJsonArray array;
+                for (const float &value : std::get<std::array<float, 6>>(value.value()))
+                    array.push_back(value);
+                val = array;
+                break;
+            }
         }
         content["type"] = static_cast<qint64>(value.value().index());
         content["value"] = val;
