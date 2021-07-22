@@ -19,6 +19,8 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
 
@@ -39,10 +41,11 @@ class SpecificWorker(GenericWorker):
         if startup_check:
             self.startup_check()
         else:
-            pass
+            self.timer.timeout.connect(self.compute)
+            self.timer.start(self.Period)
 
     def __del__(self):
-        console.print('SpecificWorker destructor')
+        """Destructor"""
 
     def setParams(self, params):
         # try:
@@ -53,10 +56,9 @@ class SpecificWorker(GenericWorker):
         return True
 
 
-
+    @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        while True: pass
         # computeCODE
         # try:
         #   self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -74,9 +76,7 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
-        import time
-        time.sleep(0.2)
-        exit()
+        QTimer.singleShot(200, QApplication.instance().quit)
 
 
 

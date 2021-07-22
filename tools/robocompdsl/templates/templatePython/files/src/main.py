@@ -62,13 +62,14 @@ import signal
 from rich.console import Console
 console = Console()
 
+from PySide2 import QtCore
 ${import_qtwidgets}
 import interfaces
 from specificworker import *
 
 #SIGNALS handler
 def sigint_handler(*args):
-    ${qt_application_quit}
+    QtCore.QCoreApplication.quit()
 
 
 if __name__ == '__main__':
@@ -89,5 +90,5 @@ if __name__ == '__main__':
 
     interface_manager.set_default_hanlder(worker)
     signal.signal(signal.SIGINT, sigint_handler)
-    ${qt_app_exec}
+    app.exec_()
     interface_manager.destroy()

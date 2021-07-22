@@ -6,11 +6,11 @@ from templates.templatePython.plugins.base.functions import function_utils as ut
 from templates.common.templatedict import TemplateDict
 
 
+
 COMPUTE_METHOD_STR = """
-${qt_slot}
+@QtCore.Slot()
 def compute(self):
     print('SpecificWorker.compute...')
-    ${compute_body}
     # computeCODE
     # try:
     #   self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -34,7 +34,6 @@ INTERFACE_TYPES_COMMENT_STR = """\
 ${types}
 """
 
-
 PROXY_METHODS_COMMENT_STR = """\
 ######################
 # From the ${module_name} you can ${action} this methods:
@@ -53,12 +52,6 @@ def ${interface_name}_${method_name}(self${param_str_a}):
     ${return_str}
 """
 
-PYSIDE_IMPORTS = """\
-from PySide2.QtCore import QTimer
-from PySide2.QtWidgets import QApplication
-"""
-
-
 class src_specificworker_py(TemplateDict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -69,11 +62,6 @@ class src_specificworker_py(TemplateDict):
         self['subscription_methods'] = self.subscription_methods()
         self['implements_methods'] = self.implements_methods()
         self['interface_specific_comment'] = self.interface_specific_comment()
-        self['pyside_imports'] = self.pyside_imports()
-        self['startup_check_code'] = self.startup_check_code()
-
-
-
 
     @staticmethod
     def replace_type_cpp_to_python(t):
@@ -85,14 +73,7 @@ class src_specificworker_py(TemplateDict):
         result = ""
         statemachine = self.component.statemachine
         if (statemachine is not None and statemachine['machine']['default'] is True) or self.component.statemachine_path is None:
-            if self.component.gui is None:
-                qt_slot = ""
-                compute_body = "while True: pass"
-            else:
-                qt_slot = "@QtCore.Slot()"
-                compute_body = "pass"
-
-            result += Template(COMPUTE_METHOD_STR).substitute(qt_slot=qt_slot, compute_body=compute_body)
+            result += COMPUTE_METHOD_STR
         return result
 
     def methods(self, interfaces, subscribe=False):
@@ -167,8 +148,7 @@ class src_specificworker_py(TemplateDict):
         result = ""
         if self.component.statemachine is None:
             result += "self.timer.timeout.connect(self.compute)\n"
-        else:
-            result += "pass\n"
+            result += "self.timer.start(self.Period)\n"
         return result
 
     def interface_specific_comment(self):
@@ -202,18 +182,4 @@ class src_specificworker_py(TemplateDict):
                     if structs_str:
                         result += Template(INTERFACE_TYPES_COMMENT_STR).substitute(module_name=module['name'],
                                                                                    types=structs_str)
-        return result
-
-    def pyside_imports(self):
-        result = ""
-        if self.component.gui is not None:
-            result = PYSIDE_IMPORTS
-        return result
-
-    def startup_check_code(self):
-        result = ""
-        if self.component.gui is not None:
-            result = "from PySide2.QtCore import QTimer\nfrom PySide2.QtWidgets import QApplication\nQTimer.singleShot(200, QApplication.instance().quit)\n"
-        else:
-            result = "import time\ntime.sleep(0.2)\nexit()\n"
         return result

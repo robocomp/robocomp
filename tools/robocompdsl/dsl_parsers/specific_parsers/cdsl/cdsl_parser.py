@@ -31,10 +31,10 @@ class CDSLParser(DSLParserTemplate):
         QUOTE = Suppress(Word("\""))
 
         # keywords
-        (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, NO_GUI, QT,
+        (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
          INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTICE, DSR, ICE, ROS) = list(map(CaselessKeyword, """
-        import communications language component cpp cpp11 gui QWidget QMainWindow QDialog no_gui Qt 
+        import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
         python requires implements subscribesTo publishes options true false
         InnerModelViewer statemachine visual agmagent agm2agent agm2agentice dsr ice ros""".split()))
 
@@ -74,10 +74,7 @@ class CDSLParser(DSLParserTemplate):
 
         # GUI
         gui_options = (QWIDGET | QMAINWINDOW | QDIALOG)
-        qt_gui = (QT + OPAR - gui_options('widget') - CPAR)
-        gui_type = (qt_gui | NO_GUI)
-        gui = Group(Optional(GUI.suppress() - gui_type('type') + SEMI))
-
+        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('widget') - CPAR + SEMI))
         # additional options
         valid_options = INNERMODELVIEWER | AGMAGENT | DSR
         options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
@@ -152,7 +149,7 @@ class CDSLParser(DSLParserTemplate):
         # GUI
         component.gui = None
         try:
-            ui_type = parsing_result['component']['content']['gui']['type'][0]
+            ui_type = parsing_result['component']['content']['gui']['type']
             if ui_type.lower() == 'qt':
                 ui_widget = parsing_result['component']['content']['gui']['widget']
                 component.gui = [ui_type, ui_widget]

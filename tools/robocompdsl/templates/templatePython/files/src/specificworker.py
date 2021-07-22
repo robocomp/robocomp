@@ -19,6 +19,8 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
 
@@ -58,7 +60,7 @@ class SpecificWorker(GenericWorker):
     ${compute_creation}
 
     def startup_check(self):
-        ${startup_check_code}
+        QTimer.singleShot(200, QApplication.instance().quit)
 
     ${statemachine_slots}
 

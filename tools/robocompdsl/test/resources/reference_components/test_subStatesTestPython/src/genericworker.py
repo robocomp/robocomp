@@ -19,6 +19,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
+from PySide2 import QtWidgets, QtCore
 
 ROBOCOMP = ''
 try:
@@ -31,7 +32,6 @@ Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 
-from PySide2 import QtWidgets, QtCore
 try:
     from ui_mainUI import *
 except:
@@ -218,16 +218,11 @@ class GenericWorker(QtWidgets.QWidget):
         sys.exit(-1)
 
     #-------------------------
-
-
-    # Trash never used but kept asked by pbustos: "Will be removed in the next robocompdsl release." 20210608.
     @QtCore.Slot()
     def killYourSelf(self):
         rDebug("Killing myself")
         self.kill.emit()
 
-
-    # Trash never used but kept asked by pbustos: "Will be removed in the next robocompdsl release." 20210608.
     # \brief Change compute period
     # @param per Period in ms
     @QtCore.Slot(int)

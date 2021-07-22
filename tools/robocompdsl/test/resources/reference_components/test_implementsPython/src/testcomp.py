@@ -62,15 +62,17 @@ import signal
 from rich.console import Console
 console = Console()
 
+from PySide2 import QtCore
 import interfaces
 from specificworker import *
 
 #SIGNALS handler
 def sigint_handler(*args):
-    exit()
+    QtCore.QCoreApplication.quit()
 
 
 if __name__ == '__main__':
+    app = QtCore.QCoreApplication(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config')
     parser.add_argument('--startup-check', action='store_true')
@@ -87,4 +89,5 @@ if __name__ == '__main__':
 
     interface_manager.set_default_hanlder(worker)
     signal.signal(signal.SIGINT, sigint_handler)
+    app.exec_()
     interface_manager.destroy()

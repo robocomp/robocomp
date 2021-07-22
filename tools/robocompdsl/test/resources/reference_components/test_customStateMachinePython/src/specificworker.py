@@ -19,6 +19,8 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
 
@@ -39,11 +41,10 @@ class SpecificWorker(GenericWorker):
         if startup_check:
             self.startup_check()
         else:
-            self.timer.start(self.Period)
             self.myStateMachine.start()
 
     def __del__(self):
-        console.print('SpecificWorker destructor')
+        """Destructor"""
 
     def setParams(self, params):
         # try:
@@ -55,8 +56,6 @@ class SpecificWorker(GenericWorker):
 
 
     def startup_check(self):
-        from PySide2.QtCore import QTimer
-        from PySide2.QtWidgets import QApplication
         QTimer.singleShot(200, QApplication.instance().quit)
 
     # =============== Slots methods for State Machine ===================
