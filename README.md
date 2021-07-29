@@ -113,6 +113,42 @@ make bash process the modified file by typing:
 
     source ~/.bashrc
 
+If you do not have Qt5 already installed, you may skip this step and proceed to compilation.
+
+* Check Qt5 version used by qmake
+
+```bash
+qmake --version
+```
+
+If qmake uses a Qt5 version less than v5.15, you might want to manually install Qt5.15 or higher from [qt.io](https://www.qt.io/download-open-source) and configure qmake to use this version instead.
+
+* To configure qmake, open the config file `/usr/share/qtchooser/default.conf` in your favourite text editor, add the following lines and save the configuration. (Run as root if needed)
+
+```
+<QT5-INSTALLATION-DIRECTORY>/bin
+<QT5-INSTALLATION-DIRECTORY>/lib
+```
+
+* Update your `~/.bashrc`
+
+```bash
+gedit ~/.bashrc
+```
+
+* Add the following lines
+
+```bash
+export PATH=$PATH:<QT5-INSTALLATION-DIRECTORY>/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<QT5-INSTALLATION-DIRECTORY>/lib
+```
+
+* Update newly set environment variables
+
+```bash
+source ~/.bashrc
+```
+
 Done! Now let's compile and install the whole thing:
 
     sudo [ -d /opt/robocomp ] && rm -r /opt/robocomp
