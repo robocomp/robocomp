@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelrgbd.h"
+#include "innermodel/innermodelrgbd.h"
 #include <innermodel/innermodel.h>
 
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModel *innermodel_, InnerModelNode *parent_) 

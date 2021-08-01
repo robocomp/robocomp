@@ -19,13 +19,8 @@ class src_CMakeLists_txt(TemplateDict):
         result = ""
         if 'agmagent' in [x.lower() for x in self.component.options]:
             result += AGM_INCLUDES_STR
-        if self.component.is_agm1_agent():
+        if self.component.is_agm_agent():
             result += 'SET(LIBS ${LIBS} -lagm)\n'
             result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-        if self.component.is_agm2_agent():
-            result += 'SET(LIBS ${LIBS} -lagm2)\n'
-            result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-            result += 'include(/usr/local/share/cmake/FindAGM2.cmake)\n'
-
         return result
 

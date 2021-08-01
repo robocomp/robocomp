@@ -1,64 +1,74 @@
-set(LIB_NAME osgviewer)
-set(LIB_DESC "osgviewer library")
-set(LIB_DEPS qmat)
+cmake_minimum_required( VERSION 3.10 )
+project(osgviewer
+		VERSION 2021.3.1
+		DESCRIPTION "RoboComp OsgViewer library"
+		LANGUAGES CXX
+		)
 
-set(srcs
-	adapterwidget.cpp
-	findnamednode.cpp
-	getworldcoorofnode.cpp
-	osgview.cpp
-	viewerqt.cpp
-   )
+# QT
+find_package(Qt5 COMPONENTS Gui Xml OpenGL Core REQUIRED)
 
-set(incs
-	include/${LIB_NAME}/adapterwidget.h
-	include/${LIB_NAME}/osgview.h
-	include/${LIB_NAME}/viewerqt.h
-   )
+# OPENSG
+find_package(OpenSceneGraph REQUIRED COMPONENTS osg osgDB osgGA osgUtil osgViewer osgText)
 
-RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
-set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(osgviewer SHARED )
+add_library(Robocomp::osgviewer ALIAS osgviewer )
+
+set_property(TARGET osgviewer PROPERTY AUTOMOC ON)
+set_property(TARGET osgviewer PROPERTY AUTOUIC ON)
+
+# Needed to get automoc process the *.h files
+file(GLOB headers_to_moc
+		${CMAKE_CURRENT_SOURCE_DIR}/include/osgviewer/*.h
+		)
+
+target_sources(osgviewer
+		PRIVATE
+		adapterwidget.cpp
+		findnamednode.cpp
+		getworldcoorofnode.cpp
+		osgview.cpp
+		viewerqt.cpp
+		${headers_to_moc})
+
+target_link_libraries(osgviewer
+		PRIVATE Robocomp::qmat
+		PRIVATE Qt5::Xml Qt5::Core
+		PUBLIC  Qt5::Gui Qt5::Widgets Qt5::OpenGL
+		PUBLIC ${OPENSCENEGRAPH_LIBRARIES}
+		)
+
+target_include_directories(osgviewer
+		PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+		$<INSTALL_INTERFACE:include/>  # <prefix>/include/mylib
+		PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}
+		)
+
+# Define headers for this library. PUBLIC headers are used for
+# compiling the library, and will be added to consumers' build
+# paths.
+target_include_directories(osgviewer
+		PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+		$<INSTALL_INTERFACE:include/>
+		)
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS osgviewer EXPORT osgviewerConfig
+		ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		)
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# This makes the project importable from the install directory
+# Put config file in per-project dir (name MUST match), can also
+# just go into 'cmake'.
+install(EXPORT osgviewerConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/osgviewer NAMESPACE Robocomp::)
 
 
-include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
-QT_WRAP_CPP( MOC_SOURCES ${incs} )
 
-
-# Python bindings
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-if (PYTHON_BINDINGS_SUPPORT)
-	# Add bindings source code file
-	SET(srcs ${srcs} osgviewer_python.cpp)
-	find_package(Boost COMPONENTS system thread python REQUIRED)
-	find_package(PythonLibs REQUIRED)
-	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
-	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
-	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
-endif (PYTHON_BINDINGS_SUPPORT)
-
-RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${MOC_SOURCES})
-RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
-
-
-target_link_libraries(${OUT_FILE_NAME} ${QT_LIBRARIES} -losg -losgViewer  ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} robocomp_qmat)
-
-
-
-# Python bindings
-set(Boost_USE_STATIC_LIBS   OFF)
-set(Boost_USE_MULTITHREADED ON)
-if (PYTHON_BINDINGS_SUPPORT)
-	# Add bindings source code file
-	SET(srcs ${srcs} innermodel_python.cpp)
-	#find_package(Boost COMPONENTS system thread python REQUIRED)
-	SET(Boost_LIBRARIES -lboost_system -lboost_thread -lboost_python)
-	include_directories(${Boost_INCLUDE_DIRS})
-	link_directories(${Boost_LIBRARY_DIRS})
-	find_package(PythonLibs REQUIRED)
-	MESSAGE(STATUS "osgv PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS}")
-	MESSAGE(STATUS "osgv PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES}")
-	include_directories(${PYTHON_INCLUDE_DIRS})
-	link_directories(${PYTHON_LIBRARIES})
-endif (PYTHON_BINDINGS_SUPPORT)
+# This makes the project importable from the build directory
+export(TARGETS osgviewer FILE osgviewerConfig.cmake)

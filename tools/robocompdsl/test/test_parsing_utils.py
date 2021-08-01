@@ -3,14 +3,11 @@ import sys
 import unittest
 from unittest import TestCase
 
+from config_tests import CURRENT_DIR
 from dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
 from dsl_parsers import parsing_utils
 from dsl_parsers.dsl_factory import DSLFactory
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
-RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
-sys.path.append(ROBOCOMPDSL_DIR)
 
 
 # noinspection PyCompatibility
@@ -50,13 +47,13 @@ class ParsingUtilsTest(unittest.TestCase):
         interfaces = pool.interfaces()
         self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags', 'CommonBehavior'])
 
-    def test_is_agm1_agent(self):
+    def test_is_agm_agent(self):
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "camerasimple.cdsl"))
-        self.assertFalse(component.is_agm1_agent())
+        self.assertFalse(component.is_agm_agent())
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "humanAgent.cdsl"))
-        self.assertTrue(component.is_agm1_agent())
+        self.assertTrue(component.is_agm_agent())
 
     # def test_is_agm2_agent(self):
     #     self.assertRaises(AssertionError, parsing_utils.is_agm2_agent, "CameraSimple")

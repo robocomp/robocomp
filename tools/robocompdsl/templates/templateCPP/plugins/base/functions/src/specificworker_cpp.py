@@ -60,7 +60,7 @@ class specificworker_cpp(TemplateDict):
     # TODO: Extract pieces of code to strings and refactor
     def body_code_from_name(self, name):
         body_code = ""
-        if self.component.is_agm1_agent():
+        if self.component.is_agm_agent():
             #######################################################
             # code to implement subscription to AGMExecutiveTopic #
             #######################################################
@@ -101,23 +101,6 @@ class specificworker_cpp(TemplateDict):
                 body_code = "\treturn 0;"
             elif name == 'reloadConfigAgent':
                 body_code = "\treturn true;"
-
-        elif self.component.is_agm2_agent():
-            mdlw = 'Ice'
-            if name == 'symbolsUpdated':
-                body_code = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification"
-                body_code += ")\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(n, worldModel);\n"
-            elif name == 'edgesUpdated':
-                body_code = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification"
-                body_code += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel.get());\n\t}\n"
-            elif name == 'structuralChange':
-                body_code = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::from" + mdlw + "ToInternal(w, worldModel);\n\t\n\tInnerModel *newIM = AGMInner::extractInnerModel(worldModel);\n"
-                if 'innermodelviewer' in self.component.options:
-                    body_code += "\tif (innerModelViewer)\n\t{\n\t\tosgView->getRootGroup()->removeChild(innerModelViewer);\n\t\tdelete innerModel;\n\t}\n"
-                body_code += "\tinnerModel = newIM;\n"
-                if 'innermodelviewer' in self.component.options:
-                    body_code += "\tinnerModelViewer = new InnerModelViewer(innerModel, \"root\", osgView->getRootGroup(), true);\n"
-
         return body_code
 
 

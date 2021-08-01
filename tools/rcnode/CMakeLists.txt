@@ -1,4 +1,8 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.10 )
+project(rcnode
+        VERSION 2021.2.1
+        DESCRIPTION "RoboComp rcnode tool"
+        LANGUAGES CXX )
 
 
 # Program destination directory

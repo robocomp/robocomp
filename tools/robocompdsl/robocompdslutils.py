@@ -1,10 +1,13 @@
 import os
 import sys
 from distutils import spawn
+from rich.console import Console
 
-sys.path.append("/opt/robocomp/python")
+sys.path.append("/opt/robocomp/python/robocompdsl")
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
+
+console = Console()
 
 
 def get_diff_tool(prefered=None):
@@ -40,12 +43,34 @@ def replaceTagsInFile(path):
 
 def create_directory(directory):
     try:
-        print('Creating', directory,)
+        console.print(f"Creating {directory}")
         os.mkdir(directory)
-        print('')
+        console.print('')
     except OSError:
         if os.path.isdir(directory):
-            print('(already existed)')
+            console.print('(already existed)', style='yellow')
             pass
         else:
             raise RuntimeError('\nCOULDN\'T CREATE %s' % directory)
+
+
+def get_random_available_port(host="localhost"):
+    import random
+    while(True):
+        new_port = random.randrange(10000, 20000)
+        if check_port_availability(host, new_port):
+            return new_port
+
+def check_port_availability(host, port):
+    import socket
+    from contextlib import closing
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+        if sock.connect_ex((host, port)) == 0:
+            return False
+        else:
+            return True
+
+# if __name__ == '__main__':
+#     a = get_random_available_port()
+#     print(a)
+#     print(check_port_availability("localhost", 43107))

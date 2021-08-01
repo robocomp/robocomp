@@ -39,7 +39,7 @@ class genericworker_cpp(TemplateDict):
         if substates is not None:
             for substates in substates:
                 if state == substates['parent']:
-                    if substates['parallel'] is "parallel":
+                    if substates['parallel'] == "parallel":
                         return True
         return False
 

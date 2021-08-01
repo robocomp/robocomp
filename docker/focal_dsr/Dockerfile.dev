@@ -1,0 +1,76 @@
+FROM robocomp/robocomp:focal_fcl_dev
+
+# LABEL about the custom image
+LABEL maintainer="emartinena@unex.es"
+LABEL version="0.1"
+LABEL description="This is custom Docker Image for Robocomp with DSR support in Ubuntu Focal"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+USER root
+### DSR package Dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  cmake \
+  gcc-10 \
+  g++-10 \
+  libasio-dev \
+  libtinyxml2-dev  \
+  libopencv-dev \
+  libqglviewer-dev-qt5 \
+  libqt5svg5-dev \
+  libeigen3-dev \
+  python3-dev \
+  python3-pybind11 \
+  gnupg2 \
+  && rm -rf /var/lib/apt/lists/*
+
+# RUN update-alternatives --auto gcc 
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+RUN python3 -m pip install pyrep
+
+
+# ICE fix
+COPY Connection.h /usr/include/Ice/Connection.h
+
+### Third party dependencies
+RUN curl -S https://raw.githubusercontent.com/robocomp/robocomp/development/libs/dsr/dependencies.sh | bash -x
+RUN rm -r /usr/local/include/cppitertools
+RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
+
+
+#Compilation of DSR libs in Robocomp
+USER robolab
+ENV PATH $PATH:/opt/robocomp/bin/
+RUN export PATH=$PATH:/opt/robocomp/bin/
+RUN cd ~/robocomp/ && git pull && mkdir -p build && cd build && cmake -DFCL_SUPPORT=True -DDSR=True  .. && make -j$(nproc)
+USER root
+RUN cd /home/robolab/robocomp/build && make install
+RUN ldconfig
+
+#Compilation of DSR components
+USER robolab
+WORKDIR /home/robolab/robocomp/components/
+RUN git clone --progress https://github.com/robocomp/dsr-graph.git 
+WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
+USER robolab
+ENV ROBOCOMP=/home/robolab/robocomp
+# RUN mkdir build && cd build && cmake .. && make -j$(nproc)
+# WORKDIR /home/robolab/robocomp/components/dsr-graph/
+USER root
+### DSR package Dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends python3-zeroc-ice psmisc
+RUN cd idserver && cmake . && make -j10
+RUN cd pioneer_dsr && cmake . && make -j10
+RUN cd path_follower && cmake . && make -j10
+RUN cd path_planner_astar && cmake . && make -j10
+RUN cd elastic_band && cmake . && make -j10
+
+
+
+# docker build -f Dockerfile.dev -t robocomp/robocomp:focal_dsr_dev .
+
+
+
+
+

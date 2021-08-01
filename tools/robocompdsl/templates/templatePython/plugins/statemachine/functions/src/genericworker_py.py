@@ -69,7 +69,7 @@ class src_genericworker_py(TemplateDict):
                     if statemachine['substates'] is not None:
                         for substates in statemachine['substates']:
                             if state == substates['parent']:
-                                if substates['parallel'] is "parallel":
+                                if substates['parallel'] == "parallel":
                                     aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates, self." + machine + ")\n"
                                     break
                     if "ParallelStates" in aux:
@@ -82,7 +82,7 @@ class src_genericworker_py(TemplateDict):
                 if statemachine['substates'] is not None:
                     for substates in statemachine['substates']:
                         if state == substates['parent']:
-                            if substates['parallel'] is "parallel":
+                            if substates['parallel'] == "parallel":
                                 aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates,self." + machine + ")\n"
                                 break
                 if "ParallelStates" in aux:
@@ -109,7 +109,7 @@ class src_genericworker_py(TemplateDict):
                                 'parent'] + "_state)\n"
                             for sub in statemachine['substates']:
                                 if state == sub['parent']:
-                                    if sub['parallel'] is "parallel":
+                                    if sub['parallel'] == "parallel":
                                         aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates, self." + \
                                               substates['parent'] + "_state)\n"
                                         break
@@ -122,7 +122,7 @@ class src_genericworker_py(TemplateDict):
                             'initialstate'] + "_state = QtCore.QState(self." + substates['parent'] + "_state)\n"
                         for sub in statemachine['substates']:
                             if state == sub['parent']:
-                                if sub['parallel'] is "parallel":
+                                if sub['parallel'] == "parallel":
                                     aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates, self." + \
                                           substates['parent'] + "_state)\n"
                                     break

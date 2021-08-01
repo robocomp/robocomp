@@ -100,7 +100,7 @@ class specificworker_cpp(TemplateDict):
 
     def agmagent_attributes(self):
         result = ""
-        if self.component.is_agm1_agent() or self.component.is_agm2_agent():
+        if self.component.is_agm_agent():
             result += "active = false;\n"
             result += "worldModel = AGMModel::SPtr(new AGMModel());\n"
             result += "worldModel->name = \"worldModel\";\n"
@@ -108,11 +108,8 @@ class specificworker_cpp(TemplateDict):
 
     def agm_innermodel_association(self):
         result = ""
-        if self.component.is_agm1_agent():
+        if self.component.is_agm_agent():
             result += AGM_INNERMODEL_ASSOCIATION_STR
-        elif self.component.is_agm2_agent():
-            result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
-
         return result
 
 

@@ -148,6 +148,7 @@ class src_specificworker_py(TemplateDict):
         result = ""
         if self.component.statemachine is None:
             result += "self.timer.timeout.connect(self.compute)\n"
+            result += "self.timer.start(self.Period)\n"
         return result
 
     def interface_specific_comment(self):

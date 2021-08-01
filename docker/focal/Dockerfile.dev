@@ -1,9 +1,10 @@
 #Download base image ubuntu 20.04
-FROM ubuntu:focal 
+FROM nvidia/opengl:1.2-glvnd-devel-ubuntu20.04
 
 
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
+ARG ROBOCOMP_BRANCH=development
 
 # Update Ubuntu Software repository
 RUN apt update && apt install -y curl sudo
@@ -19,8 +20,9 @@ RUN export uid=1000 gid=1000 && \
 USER robolab
 WORKDIR /home/robolab/
 # Install Robocomp
-CMD echo $FORCE
-RUN curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -
+# With this ADD the image is regenerated for every change on git
+ADD https://api.github.com/repos/robocomp/robocomp/git/refs/heads/$ROBOCOMP_BRANCH version.json
+RUN curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -s $ROBOCOMP_BRANCH
 WORKDIR /home/robolab/robocomp/
 RUN git annex get \
   files/innermodel/simpleworld.xml \
@@ -31,4 +33,4 @@ RUN git annex get \
 RUN cp -r -L files /home/robolab/files 2>/dev/null || :
 
 # docker build -f Dockerfile.dev -t robocomp/robocomp:focal_dev .
-# docker run -v /tmp/.X11-unix:/tmp/.X11-unix --env="DISPLAY=$DISPLAY" -it robocomp:focal_dev bash
+# docker run -v /tmp/.X11-unix:/tmp/.X11-unix --env="DISPLAY=$DISPLAY" -it robocomp/robocomp:focal_dev bash

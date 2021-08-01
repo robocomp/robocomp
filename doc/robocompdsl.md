@@ -1,3 +1,4 @@
+
 # Using robocompdsl: the command line component generator
 
 **robocompdsl** is the new tool used in RoboComp to automatically generate components and modify their main properties once they have been generated (e.g., communication requirements, UI type). It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away.
@@ -29,17 +30,17 @@ import "import2.idsl";
 
 Component myComponent
 {
-        Communications
-        {
-                implements interfaceName;
-                requires otherName;
-                subscribesTo topicToSubscribeTo;
-                publishes topicToPublish;
-        };
-        language Cpp//Cpp11//Python;
-        gui Qt(QWidget//QDialog//QMainWindow);
-	//options agmagent;
-	//options InnerModelViewer;
+    Communications
+    {
+        implements interfaceName;
+        requires otherName;
+        subscribesTo topicToSubscribeTo;
+        publishes topicToPublish;
+    };
+    language Cpp//Cpp11//python;
+    gui Qt(QWidget//QDialog//QMainWindow);
+    //options dsr, agmagent, InnerModelViewer;
+    statemachine "statemachine.smdsl";
 };
 ```
 
@@ -95,7 +96,7 @@ sudo pip3 install pyparsing==2.2
 ```
 ## Modifying the component to write a simple controller for the robot
 
-Check that the *rcis simulator* is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
+Check that the *rcis simulator* is up and running. You should have two open windows, one with a camera looking at the world and another with the subjective camera of the robot. If not, in a new terminal type,
 
 ```bash
 cd ~/robocomp/files/innermodel
@@ -244,8 +245,3 @@ As you might have learned from the tutorial "[A brief introduction to Components
 ### Component Creation using C++
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/LjHv_Nh16PU/0.jpg)](https://www.youtube.com/watch?v=LjHv_Nh16PU)
-
-
-
-
-

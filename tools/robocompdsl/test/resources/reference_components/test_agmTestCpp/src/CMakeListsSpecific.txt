@@ -10,7 +10,6 @@ SET ( HEADERS
   specificmonitor.h
 )
 
-set(CMAKE_CXX_STANDARD 17)
 
 SET (LIBS ${LIBS}  )
 

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT( rcinnerModelEditor )
+PROJECT( rcinnerModelEditor
+        VERSION 2021.2.1
+        DESCRIPTION "RoboComp rcinnermodeleditor tool"
+        LANGUAGES CXX )
 
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")

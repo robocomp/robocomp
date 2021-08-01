@@ -21,14 +21,18 @@
 
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
+from rich.console import Console
 from genericworker import *
+
+sys.path.append('/opt/robocomp/lib')
+console = Console(highlight=False)
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
-sys.path.append('/opt/robocomp/lib')
 # import librobocomp_qmat
 # import librobocomp_osgviewer
 # import librobocomp_innermodel
+
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
@@ -37,17 +41,16 @@ class SpecificWorker(GenericWorker):
         if startup_check:
             self.startup_check()
         else:
+            self.timer.timeout.connect(self.compute)
             self.timer.start(self.Period)
-            self.defaultMachine.start()
-            self.destroyed.connect(self.t_compute_to_finalize)
 
     def __del__(self):
-        print('SpecificWorker destructor')
+        """Destructor"""
 
     def setParams(self, params):
-        #try:
+        # try:
         #	self.innermodel = InnerModel(params["InnerModelPath"])
-        #except:
+        # except:
         #	traceback.print_exc()
         #	print("Error reading config params")
         return True
@@ -75,39 +78,6 @@ class SpecificWorker(GenericWorker):
     def startup_check(self):
         QTimer.singleShot(200, QApplication.instance().quit)
 
-    # =============== Slots methods for State Machine ===================
-    # ===================================================================
-
-    #
-    # sm_initialize
-    #
-    @QtCore.Slot()
-    def sm_initialize(self):
-        print("Entered state initialize")
-        self.t_initialize_to_compute.emit()
-        pass
-    
-
-    #
-    # sm_compute
-    #
-    @QtCore.Slot()
-    def sm_compute(self):
-        print("Entered state compute")
-        self.compute()
-        pass
-
-
-    #
-    # sm_finalize
-    #
-    @QtCore.Slot()
-    def sm_finalize(self):
-        print("Entered state finalize")
-        pass
-
-    # =================================================================
-    # =================================================================
 
 
     # =============== Methods for Component Implements ==================
@@ -149,4 +119,5 @@ class SpecificWorker(GenericWorker):
     # RoboCompHandDetection.TImage
     # RoboCompHandDetection.TRoi
     # RoboCompHandDetection.Hand
+
 

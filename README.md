@@ -1,11 +1,11 @@
 [RoboComp](http://robocomp.org)
 ===============================
 
-
-
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
+# About
+
+An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
@@ -22,12 +22,14 @@ interfaces in a seamless way. Building new components is done using two domain-s
   * [Installation](#installation)
 - [Testing the installation using the RCIS robotics simulator](#testing-the-installation-using-the-rcis-robotics-simulator)
   * [Installing some RoboLab's components from GitHub](#installing-some-robolab-s-components-from-github)
-  * [Connecting a JoyStick (if no JoyStick available skip to the next section)](#connecting-a-joystick--if-no-joystick-available-skip-to-the-next-section-)
+  * [Connecting a JoyStick (if no JoyStick available skip to the next section)](#connecting-a-joystick)
   * [Using the keyboard as a JoyStick](#using-the-keyboard-as-a-joystick)
-- [Testing the installation using the Coppelia Simulator](#testing-the-installation-using-the--coppelia-simulator--https---wwwcoppeliaroboticscom--)
+- [Testing the installation using the Coppelia Simulator](#testing-the-installation-using-the--coppelia-simulator)
 - [Next steps](#next-steps)
+- [Known issues](#known-issues)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 
 
@@ -40,47 +42,50 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 
 
 ## Requirements
-Make sure you have installed the following packages from the Ubuntu repository (to copy and paste in a terminal use zash):
-
+Make sure you have installed the following packages from the Ubuntu repository:
 ```bash
-    sudo DEBIAN_FRONTEND=noninteractive apt-get update \
-    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
-        ca-certificates \
-        cmake \
-        curl \
-        freeglut3-dev \
-        g++ \
-        gcc-multilib \
-        git \
-        git-annex \
-        libboost-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libgsl-dev \
-        libopenscenegraph-dev \
-        libqt5xmlpatterns5-dev \
-        libqt5opengl5-dev \
-        make \
-        python3 \
-        python3-pip \
-        python3-distutils \
-        python3-prompt-toolkit \
-        python3-pyparsing \
-        python3-setuptools \
-        python3-termcolor \
-        sudo \
-        zeroc-ice-all-dev
+sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+      ca-certificates \
+      cmake \
+      curl \
+      freeglut3-dev \
+      g++ \
+      gcc-multilib \
+      git \
+      git-annex \
+      libboost-dev \
+      libboost-system-dev \
+      libboost-thread-dev \
+      libgsl-dev \
+      libopenscenegraph-dev \
+      libqt5xmlpatterns5-dev \
+      libqt5opengl5-dev \
+      libzeroc-icestorm3.7 \
+      make \
+      python3 \
+      python3-pip \
+      python3-distutils \
+      python3-pyparsing \
+      python3-setuptools \
+      python3-termcolor \
+      python3-zeroc-ice \
+      sudo \
+      zeroc-ice-all-dev \
+      zeroc-icebox 
 
-    sudo pip3 install pyside2
+sudo pip3 install pyside2 rich argcomplete prompt_toolkit
+
+```
+
+And to install the needed python packages:
+```bash
+sudo pip3 install pyside2 rich argcomplete prompt_toolkit
+
 ```
 
 It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
-
-Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
-
-    python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
 ## Installation
@@ -91,7 +96,7 @@ Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the 
 
 Now we will create a symbolic link so RoboComp can find everything. You will have to enter your password:
 
-    sudo ln -s ~ /home/robocomp
+    sudo ln -sf ~ /home/robocomp
     
 (the ~ is in Alt-4)
     
@@ -181,8 +186,8 @@ Note 1: You must have your simulator running in a terminal and only then you can
 
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
-## Testing the installation using the [Coppelia Simulator](https://www.coppeliarobotics.com/) 
-We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is CoppeliaSim because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
+# Testing the installation using the Coppelia Simulator
+We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim]((https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
 
@@ -208,10 +213,9 @@ Please, report any bugs with the github issue system: [Robocomp Issues](https://
 If you have any suggestions to improve the repository, like features or tutorials, please contact us on [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or create a feature request [here](https://github.com/robocomp/robocomp/issues).
 
 
-
-    
-    
-    
-
-
-
+# Known issues
+- Compatibility problem between pyparsing version and Robocomp tools:
+  * One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
+```bash
+python3 -c "import pyparsing; print(pyparsing.__version__)"
+```

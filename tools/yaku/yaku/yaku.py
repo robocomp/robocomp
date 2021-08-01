@@ -4,18 +4,34 @@
 
 import sys
 import argparse
+
 sys.path.append("/opt/robocomp/python")
 from pyaku import yaku_lib
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--append', action='store_true', dest="append",
-                        help="Append the given title to the directory title for the Tab title")
-    parser.add_argument('-e', '--every', action='store_true', dest="every",
-                        help="Rename every open tab to the directory the session is in.")
-    parser.add_argument('title', nargs='?', help="Alternative title for the tab")
-    parser.add_argument('-s', '--save', action='store_true', dest="save",
-                        help="Save all the current tabs_by_name information to an script to restore session.")
+    parser.add_argument(
+        "-a",
+        "--append",
+        action="store_true",
+        dest="append",
+        help="Append the given title to the directory title for the Tab title",
+    )
+    parser.add_argument(
+        "-e",
+        "--every",
+        action="store_true",
+        dest="every",
+        help="Rename every open tab to the directory the session is in.",
+    )
+    parser.add_argument("title", nargs="?", help="Alternative title for the tab")
+    parser.add_argument(
+        "-s",
+        "--save",
+        action="store_true",
+        dest="save",
+        help="Save all the current tabs_by_name information to an script to restore session.",
+    )
     args = parser.parse_args()
     yaku = yaku_lib.Yaku()
     if args.save:

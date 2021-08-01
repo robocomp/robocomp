@@ -63,7 +63,7 @@
 
 // QT includes
 #include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
 
 // ICE includes
 #include <Ice/Ice.h>
@@ -158,6 +158,12 @@ int ::AGMTest::run(int argc, char* argv[])
 	try
 	{
 		topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
+		if (!topicManager)
+		{
+		    cout << "[" << PROGRAM_NAME << "]: TopicManager.Proxy not defined in config file."<<endl;
+		    cout << "	 Config line example: TopicManager.Proxy=IceStorm/TopicManager:default -p 9999"<<endl;
+	        return EXIT_FAILURE;
+		}
 	}
 	catch (const Ice::Exception &ex)
 	{
@@ -323,43 +329,35 @@ int main(int argc, char* argv[])
 	QString prefix("");
 	if (argc > 1)
 	{
-	    QString initIC = QString("--Ice.Config=");
-	    for (int i = 1; i < argc; ++i)
-		{
-		    arg = argv[i];
-            if (arg.find(initIC.toStdString(), 0) == 0)
-            {
-                configFile = QString::fromStdString(arg).remove(0, initIC.size());
-            }
-            else
-            {
-                configFile = QString::fromStdString(argv[1]);
-            }
-        }
 
-        // Search in argument list for --prefix= argument (if exist)
-        QString prfx = QString("--prefix=");
-        for (int i = 2; i < argc; ++i)
-        {
-            arg = argv[i];
-            if (arg.find(prfx.toStdString(), 0) == 0)
-            {
-                prefix = QString::fromStdString(arg).remove(0, prfx.size());
-                if (prefix.size()>0)
-                    prefix += QString(".");
-                printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
-            }
-        }
-
-        // Search in argument list for --test argument (if exist)
-        QString startup = QString("--startup-check");
+		// Search in argument list for arguments
+		QString startup = QString("--startup-check");
+		QString initIC = QString("--Ice.Config=");
+		QString prfx = QString("--prefix=");
 		for (int i = 0; i < argc; ++i)
 		{
 			arg = argv[i];
-			if (arg.find(startup.toStdString(), 0) == 0)
+			if (arg.find(startup.toStdString(), 0) != std::string::npos)
 			{
 				startup_check_flag = true;
 				cout << "Startup check = True"<< endl;
+			}
+			else if (arg.find(prfx.toStdString(), 0) != std::string::npos)
+			{
+				prefix = QString::fromStdString(arg).remove(0, prfx.size());
+				if (prefix.size()>0)
+					prefix += QString(".");
+				printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+			}
+			else if (arg.find(initIC.toStdString(), 0) != std::string::npos)
+			{
+				configFile = QString::fromStdString(arg).remove(0, initIC.size());
+				qDebug()<<__LINE__<<"Starting with config file:"<<configFile;
+			}
+			else if (i==1 and argc==2 and arg.find("--", 0) == std::string::npos)
+			{
+				configFile = QString::fromStdString(arg);
+				qDebug()<<__LINE__<<QString::fromStdString(arg)<<argc<<arg.find("--", 0)<<"Starting with config file:"<<configFile;
 			}
 		}
 

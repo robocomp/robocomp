@@ -1,6 +1,8 @@
 from difflib import SequenceMatcher
 from functools import reduce
-from termcolor import cprint
+from rich.console import Console
+
+console = Console()
 
 class ComponentInspections:
     def __init__(self):
@@ -113,7 +115,7 @@ class ComponentInspections:
                     message = inspection['message']
                 else:
                     message = str(inspection)
-                cprint("NOT PASSED: %s" % message)
+                console.print("NOT PASSED: %s" % message, style='red')
 
     def check_exists(self, object, object_path, params):
         if self.get_value_in_object_path(object_path, object) is None:
@@ -147,11 +149,11 @@ class ComponentInspections:
         for key in nested_object.keys():
             if key not in params['keys']:
                 path = "".join(["[\'%s\']"% key for key in object_path+[key]])
-                cprint("\"%s\" is not a valid key for Component%s" % (key, path), "red")
+                console.print("\"%s\" is not a valid key for Component%s" % (key, path), style="red")
                 best_match = self.__find_best_match(key, params['keys'])
                 if best_match is not None:
                     new_path = "".join(["[\'%s\']" % key for key in object_path + [best_match]])
-                    cprint("May be you want to say Component%s" % new_path, "red")
+                    console.print("May be you want to say Component%s" % new_path, style="red")
                 return False
         if isinstance(nested_object[key], dict):
             return self.check_valid_keys(object, object_path+[key], params)
@@ -162,7 +164,7 @@ class ComponentInspections:
         if isinstance(value, str):
             value = value.casefold()
         if isinstance(params['value'], str):
-            params['value'] =  params['value'].casefold()
+            params['value'] = params['value'].casefold()
         if value != params['value']:
             return False
         else:
@@ -209,4 +211,4 @@ class ComponentInspections:
         try:
             return reduce(dict.get, object_path, object)
         except TypeError:
-            cprint("Path %s not found in object"%object_path, 'red')
+            console.print("Path %s not found in object"%object_path, style='red')

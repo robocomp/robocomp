@@ -150,7 +150,7 @@ CLASS_TYPE_MAP = {
 
 The reason for converting both the AST and these values into instances of specific classes is that this allows us to easily define new methods or properties for those classes. These methods can be used as shortcuts to other elements of the component such as:
 ```python
-    def is_agm1_agent(self):
+    def is_agm_agent(self):
         return self.options.agmagent
 ```
 

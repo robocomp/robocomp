@@ -83,3 +83,11 @@ interfaces/*.ice
 tools/robocompdsl/test/resources/InnerModelManager_generated.ice
 
 components/melex-rodao/
+
+*.cbp
+
+*cmake-build-default/
+
+*cmake-build-debug/
+
+tools/robocompdsl/test/htmlcov/

@@ -5,18 +5,12 @@ import unittest
 from collections import OrderedDict
 
 from pyparsing import ParseException
-sys.path.append("/opt/robocomp/python")
-sys.path.append('/opt/robocomp/share/robocompdsl/')
+import copy
+from config_tests import CURRENT_DIR
 import dsl_parsers.specific_parsers.cdsl.componentfacade as cf
-
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
-RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
-sys.path.append(ROBOCOMPDSL_DIR)
-
 from dsl_parsers.dsl_factory import DSLFactory
 
-
+RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
 
 
 def deep_sort(obj):
@@ -52,6 +46,8 @@ class DSLFactoryTestCase(unittest.TestCase):
 
     def assertNestedDictEqual(self, first, second, ignored_keys=None, msg=None):
         if ignored_keys is not None:
+            first = copy.deepcopy(first)
+            second = copy.deepcopy(second)
             for key in ignored_keys:
                 if key in first:
                     del first[key]

@@ -10,11 +10,21 @@ from . import componentfacade
 
 
 class CDSLParser(DSLParserTemplate):
-    def __init__(self, include_directories=None):
+    def __init__(self, include_directories: list = None) -> None:
         super(CDSLParser, self).__init__()
-        if include_directories is None:
-            include_directories = []
-        self._include_directories = include_directories
+        self.include_directories = include_directories
+
+    @property
+    def include_directories(self):
+        return self._include_directories
+
+    @include_directories.setter
+    def include_directories(self, dir_list):
+        if dir_list is None:
+            dir_list = []
+        assert isinstance(dir_list, list)
+        self._include_directories = dir_list
+
 
     def _create_parser(self):
         OBRACE, CBRACE, SEMI, OPAR, CPAR = list(map(Suppress, "{};()"))
@@ -63,8 +73,8 @@ class CDSLParser(DSLParserTemplate):
         language = LANGUAGE.suppress() - language_options - SEMI
 
         # GUI
-        gui_options = QWIDGET | QMAINWINDOW | QDIALOG
-        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
+        gui_options = (QWIDGET | QMAINWINDOW | QDIALOG)
+        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('widget') - CPAR + SEMI))
         # additional options
         valid_options = INNERMODELVIEWER | AGMAGENT | DSR
         options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
@@ -83,24 +93,19 @@ class CDSLParser(DSLParserTemplate):
         CDSL.ignore(cppStyleComment)
         return CDSL
 
-    def string_to_struct(self, string, **kwargs):
-        try:
-            parsing_result = self.parse_string(string)
-        except ParseSyntaxException as e:
-            raise ValueError("There was some problem parsing the component file.", e.args[1], e.args[2])
+    def string_to_struct(self, string: str, **kwargs) -> componentfacade.ComponentFacade:
+        parsing_result = self.parse_string(string)
         component = componentfacade.ComponentFacade()
         # print 'parseCDSL.component', includeDirectories
-        if self._include_directories is None:
-            self._include_directories = []
         if "include_directories" in kwargs:
-            self._include_directories = kwargs["include_directories"]
+            self.include_directories = kwargs["include_directories"]
         # Set options
         component.options = []
-        try:
+
+        if "options" in parsing_result['component']['content']:
             for op in parsing_result['component']['content']['options']:
                 component.options.append(op.lower())
-        except KeyError:
-            pass
+
 
         # Component name
         component.name = parsing_result['component']['name']
@@ -115,10 +120,8 @@ class CDSLParser(DSLParserTemplate):
 
         component.dsr = False
         component.dsr = 'dsr' in [x.lower() for x in component.options]
-        if component.is_agm1_agent():
+        if component.is_agm_agent():
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if component.is_agm2_agent():
-            imprts.extend(['AGM2.idsl'])
         component.imports.extend(list(map(os.path.basename, sorted(imprts))))
         component.recursiveImports = generate_recursive_imports(list(component.imports), self._include_directories)
         # Language
@@ -147,11 +150,9 @@ class CDSLParser(DSLParserTemplate):
         component.gui = None
         try:
             ui_type = parsing_result['component']['content']['gui']['type']
-            ui_widget = parsing_result['component']['content']['gui']['gui_options']
-            if ui_type.lower() == 'qt' and ui_widget in ['QWidget', 'QMainWindow', 'QDialog']:
+            if ui_type.lower() == 'qt':
+                ui_widget = parsing_result['component']['content']['gui']['widget']
                 component.gui = [ui_type, ui_widget]
-            else:
-                raise ValueError('Wrong UI specification %s' % parsing_result['properties']['gui'])
         except KeyError:
             pass
 
@@ -177,7 +178,7 @@ class CDSLParser(DSLParserTemplate):
                         component.rosInterfaces.append(interface)
                         component.usingROS = True
         # Handle options for communications
-        if component.is_agm1_agent():
+        if component.is_agm_agent():
             component.iceInterfaces += [['AGMCommonBehavior', 'ice'], ['AGMExecutive', 'ice'], ['AGMExecutiveTopic', 'ice'], ['AGMWorldModel', 'ice']]
             if 'AGMCommonBehavior' not in component.implements:
                 component.implements = [['AGMCommonBehavior', 'ice']] + component.implements
@@ -185,43 +186,29 @@ class CDSLParser(DSLParserTemplate):
                 component.requires = [['AGMExecutive', 'ice']] + component.requires
             if 'AGMExecutiveTopic' not in component.subscribesTo:
                 component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
-        if component.is_agm2_agent():
-            agm2agent_requires = [['AGMDSRService', 'ice'], ['AGM2', 'ice']]
-            agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-            if 'AGMDSRService' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
-            if 'AGMDSRTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
-            if 'AGMExecutiveTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
-            if 'AGM2' not in component.iceInterfaces: component.iceInterfaces.append(['AGM2', 'ice'])
-
-            # AGM2 agents REQUIRES
-            for agm2agent_req in agm2agent_requires:
-                if agm2agent_req not in component.requires:
-                    component.requires = [agm2agent_req] + component.requires
-            # AGM2 agents SUBSCRIBES
-            for agm2agent_sub in agm2agent_subscribes_to:
-                if agm2agent_sub not in component.subscribesTo:
-                    component.subscribesTo = [agm2agent_sub] + component.subscribesTo
-        # component = ComponentFacade.from_nested_dict(component)
         self.struct = component
         return component
 
     def __str__(self):
-        struct_str = ""
-        struct_str += 'Component %s\n' % self.struct['name']
+        if self.struct is not None:
+            struct_str = ""
+            struct_str += 'Component: %s\n' % self.struct.name
 
-        struct_str += '\tImports:\n'
-        for imp in self.struct['imports']:
-            struct_str += '\t\t %s\n' % imp
-        # Language
-        struct_str += '\tLanguage:'
-        struct_str += '\t\t %s\n' % self.struct['language']
-        # GUI
-        struct_str += '\tGUI:\n'
-        struct_str += '\t\t %s\n' % self.struct['gui']
-        # Communications
-        struct_str += '\tCommunications:\n'
-        struct_str += '\t\tImplements %s \n' % self.struct['implements']
-        struct_str += '\t\tRequires %s\n' % self.struct['requires']
-        struct_str += '\t\tPublishes %s\n' % self.struct['publishes']
-        struct_str += '\t\tSubscribes %s\n' % self.struct['subscribesTo']
+            struct_str += '\tImports:\n'
+            for imp in self.struct.imports:
+                struct_str += '\t\t %s\n' % imp
+            # Language
+            struct_str += '\tLanguage:'
+            struct_str += '\t\t %s\n' % self.struct.language
+            # GUI
+            struct_str += '\tGUI:\n'
+            struct_str += '\t\t %s\n' % self.struct.gui
+            # Communications
+            struct_str += '\tCommunications:\n'
+            struct_str += '\t\tImplements %s \n' % self.struct.implements
+            struct_str += '\t\tRequires %s\n' % self.struct.requires
+            struct_str += '\t\tPublishes %s\n' % self.struct.publishes
+            struct_str += '\t\tSubscribes %s\n' % self.struct.subscribesTo
+        else:
+            struct_str = "<empty>"
         return struct_str

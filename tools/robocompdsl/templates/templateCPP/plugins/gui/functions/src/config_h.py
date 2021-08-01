@@ -9,6 +9,8 @@ class src_config_h(TemplateDict):
         need_gui = ""
         if self.component.gui is not None:
             need_gui = "#define USE_QTGUI\n\n"
+        else:
+            need_gui = "//#define USE_QTGUI\n\n"
         self['need_gui'] = need_gui
 
 

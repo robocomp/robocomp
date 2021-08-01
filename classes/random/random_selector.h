@@ -1,5 +1,11 @@
 //https://gist.github.com/cbsmith/5538174
 
+// use example
+//
+// random_selector<> selector{};
+// selector(source_container);
+
+
 template <typename RandomGenerator = std::default_random_engine>
 struct RandomSelector
 {

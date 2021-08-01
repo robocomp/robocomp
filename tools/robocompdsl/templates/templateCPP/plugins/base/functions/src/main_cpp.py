@@ -16,6 +16,12 @@ IceStorm::TopicManagerPrx${ptr} topicManager;
 try
 {
 	topicManager = ${type}(communicator()->propertyToProxy("TopicManager.Proxy"));
+	if (!topicManager)
+	{
+	    cout << "[" << PROGRAM_NAME << "]: TopicManager.Proxy not defined in config file."<<endl;
+	    cout << "\t Config line example: TopicManager.Proxy=IceStorm/TopicManager:default -p 9999"<<endl;
+        return EXIT_FAILURE;
+	}
 }
 catch (const Ice::Exception &ex)
 {

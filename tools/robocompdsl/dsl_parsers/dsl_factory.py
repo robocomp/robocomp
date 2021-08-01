@@ -3,7 +3,6 @@ import os
 import traceback
 from os import path
 import pyparsing
-from termcolor import cprint
 
 from dsl_parsers.specific_parsers.cdsl.jcdsl_parser import CDSLJsonParser
 from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser

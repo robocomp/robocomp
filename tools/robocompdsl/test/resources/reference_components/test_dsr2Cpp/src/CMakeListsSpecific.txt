@@ -11,7 +11,6 @@ SET ( HEADERS
   specificmonitor.h
 )
 
-set(CMAKE_CXX_STANDARD 17)
 
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
 SET (LIBS ${LIBS}   dsr_core dsr_gui dsr_api fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)

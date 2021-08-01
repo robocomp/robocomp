@@ -33,17 +33,17 @@ import sys
 
 from dsl_parsers.dsl_factory import DSLFactory
 
-sys.path.append('/opt/robocomp/python')
+sys.path.append('/opt/robocomp/python/robocompdsl')
 
 from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 
 
 try:
-    from termcolor import cprint
-
+    from rich.console import Console
+    console = Console()
 
     def printerr(text):
-        cprint(text, color='red')
+        console.log(text, color='red')
 except ImportError as error:
     def printerr(text):
         print(text)

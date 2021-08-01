@@ -214,15 +214,8 @@ class ComponentFacade:
             self.__statemachine = DSLFactory().from_file(self.statemachine_path)
         return self.__statemachine
 
-    def is_agm1_agent(self):
+    def is_agm_agent(self):
         return self.options.agmagent
-
-    def is_agm2_agent(self):
-        valid = ['agm2agent', 'agm2agentice']
-        for v in valid:
-            if getattr(self.options, v):
-                return True
-        return False
 
     @property
     def ice_interfaces_names(self):

@@ -1,0 +1,13 @@
+module RoboCompRSSIStatus
+{
+  exception HardwareFailedException { string what; };
+  struct TRSSI
+  {
+    float percentage;
+  };
+
+  interface RSSIStatus
+  {
+    TRSSI getRSSIState() throws HardwareFailedException;
+  };
+};
