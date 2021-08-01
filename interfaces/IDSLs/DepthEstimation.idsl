@@ -1,26 +1,19 @@
+import "CameraRGBDSimple.idsl";
 module RoboCompDepthEstimation
 {
-    sequence<byte> ImgType;
-    struct TImage
-    {
-        int width;
-        int height;
-        int depth;
-        ImgType image;
-    };
-    
-    sequence<float> DepthValue;
+    sequence<float> DepthValueType;
     
     struct DepthScene
     {
      
-        DepthValue value;
+        DepthValueType value;
         int width;
         int height;
         int depth;
     };
+    
     interface DepthEstimation
     {
-        idempotent void getDepthEstimation(TImage depthImg, out DepthScene result);
+        idempotent void getDepthEstimation(RoboCompCameraRGBDSimple::TImage image, out DepthScene result);
     };
 };
