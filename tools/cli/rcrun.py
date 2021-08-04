@@ -5,10 +5,15 @@ import argparse, argcomplete
 import os
 import string
 import sys
+
+from rich import console
+import typer
 sys.path.append('/opt/robocomp/python')
 from workspace import Workspace
 from pyaku.yaku_lib import Yaku
 
+app = typer.Typer()
+console = console.Console()
 
 class rcrun:
     def __init__(self, workspace=None):
@@ -108,7 +113,7 @@ def main():
     #find the config file
     '''
         if only one file is present in the etc directory then it will be used
-        else if it has file named config the it will be used 
+        else if it has file named config then it will be used 
         if it has file named generic_config it will be used
         else we will use a random file
         user defined config file will override all the above
@@ -163,6 +168,74 @@ def main():
     Yaku().rename_current_tab(name=component)
     os.system(command)
 
+
+ws = Workspace()
+runner = rcrun()
+
+
+@app.command()
+def start(
+        component_name: str = typer.Argument("", help="Component name")
+):
+    """
+    start component
+    """
+
+
+@app.command()
+def stop(
+        component_name: str = typer.Argument("", help="Component name"),
+        ignore_scripts: bool = typer.Option(False, help="Ignore existing scripts to run")
+):
+    """
+    stop component
+    """
+    if not ws.find_component_exec(component_name):
+        console.log(f"couldn't find the component {component_name} in any of the workspaces")
+        return
+    script_path = runner.find_script("stop", component_name)
+    if script_path and not ignore_scripts:
+        # print("using script {0}".format(script_path))
+        command = script_path
+    else:
+        command = "killall " + str(component_name)
+    os.system(command)
+    return
+
+
+@app.command()
+def fstop(
+        component_name: str = typer.Argument("", help="Component name"),
+        ignore_scripts: bool = typer.Option(False, help="Ignore existing scripts to run")
+):
+    """
+    force stop component
+    """
+    if not ws.find_component_exec(component_name):
+        console.log(f"couldnt find the component {component_name} in any of the workspaces")
+        return
+    script_path = runner.find_script("forcestop", component_name)
+    if script_path and not ignore_scripts:
+        # print("using script {0}".format(script_path))
+        command = script_path
+    else:
+        command = "killall -9 " + str(component_name)
+    os.system(command)
+    return
+
+@app.command()
+def debug(
+        component_name: str = typer.Argument("", help="Component name")
+):
+    """
+    start a component in debug mode
+    """
+
+# cgroup.add_argument('-cf', '--cfile', nargs = 1 , help="use custom ice config file (absolute path)")
+# cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory").completer = rcrun_instance.complete_scripts
+# parser.add_argument('-is','--ignore_scripts', action='store_true',help="ignore all the script files if found")
+
 if __name__ == '__main__':
-    main()
+    app()
+
 
