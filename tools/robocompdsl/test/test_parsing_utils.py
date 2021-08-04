@@ -4,9 +4,9 @@ import unittest
 from unittest import TestCase
 
 from config_tests import CURRENT_DIR
-from dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
-from dsl_parsers import parsing_utils
-from dsl_parsers.dsl_factory import DSLFactory
+from robocompdsl.dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
+from robocompdsl.dsl_parsers import parsing_utils
+from robocompdsl.dsl_parsers.dsl_factory import DSLFactory
 
 
 

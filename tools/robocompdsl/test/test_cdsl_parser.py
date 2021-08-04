@@ -3,7 +3,7 @@ import os
 import unittest
 from pyparsing import ParseSyntaxException, ParseException
 import config_tests
-from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
+from robocompdsl.dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 
 class CDSLParserTestCase(unittest.TestCase):
 

@@ -1,15 +1,10 @@
 import os
 import random
 import shutil
-import sys
 import tempfile
 import unittest
 
-import pyparsing
-
 from config_tests import CURRENT_DIR
-from autogeneration_tests.test_cdsl.test_component_generation import ComponentGenerationChecker
-import robocompdsl
 from filesgenerator import FilesGenerator
 
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")

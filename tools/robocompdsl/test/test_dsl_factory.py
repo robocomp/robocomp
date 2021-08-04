@@ -7,8 +7,8 @@ from collections import OrderedDict
 from pyparsing import ParseException
 import copy
 from config_tests import CURRENT_DIR
-import dsl_parsers.specific_parsers.cdsl.componentfacade as cf
-from dsl_parsers.dsl_factory import DSLFactory
+import robocompdsl.dsl_parsers.specific_parsers.cdsl.componentfacade as cf
+from robocompdsl.dsl_parsers.dsl_factory import DSLFactory
 
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
 
