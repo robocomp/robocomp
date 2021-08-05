@@ -87,7 +87,7 @@ class Workspace:
             component_dir = self.find_component(component)
 
         if component_dir:
-            src_path = os.path.join(component_dir.strip(),'src')
+            src_path = os.path.join(component_dir.strip(), '../../src')
             bin_path = os.path.join(component_dir.strip(),'bin')
             if os.path.isdir(bin_path):
                 bin_file_path = os.path.join(bin_path, component)
@@ -120,7 +120,7 @@ class Workspace:
         else:
             src_path = self.find_component(component)
         if src_path:
-            src_path = os.path.join(src_path, 'src')
+            src_path = os.path.join(src_path, '../../src')
             if os.path.exists(src_path) and os.path.isdir(src_path):
                 return src_path
         return None

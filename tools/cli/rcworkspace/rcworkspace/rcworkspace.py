@@ -7,8 +7,6 @@ from typing import Optional
 
 import typer
 
-sys.path.append('/opt/robocomp/python')
-
 from workspace import Workspace
 
 ws = Workspace()
