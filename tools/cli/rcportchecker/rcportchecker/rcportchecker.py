@@ -25,15 +25,19 @@
 #
 #
 #
+from pathlib import Path
+from typing import Optional
 
-import argparse
+import typer
 import os
 import re
 import sys
 from collections import defaultdict
 
+
 from rich.console import Console
 console = Console()
+app = typer.Typer()
 MIN_ROBOCOMP_PORT = 10000
 
 class BColors:
@@ -47,11 +51,11 @@ class BColors:
     UNDERLINE = '\033[4m'
 
 
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write((BColors.FAIL + 'error: %s\n' + BColors.ENDC) % message)
-        self.print_help()
-        sys.exit(2)
+# class MyParser(argparse.ArgumentParser):
+#     def error(self, message):
+#         sys.stderr.write((BColors.FAIL + 'error: %s\n' + BColors.ENDC) % message)
+#         self.print_help()
+#         sys.exit(2)
 
 
 class RCPortChecker:
@@ -353,49 +357,78 @@ class RCPortChecker:
 
 
 
-
-def main():
-    parser = MyParser(description='Application to look for existing configured interfaces ports on components')
-    parser.add_argument("-v", "--verbose", help="increase output verbosity",
-                        action="store_true")
-    parser.add_argument("-p", "--port", help="List only the selected port information",
-                        type=int)
-    # parser.add_argument("-c", "--components", help="list the diffents ports associated to component",
-    #                     action="store_true")
-    parser.add_argument("-a", "--all",
-                        help="show all ports configured for an interface instead of showing only those with more than one interface per port",
-                        action="store_true")
-    parser.add_argument("-l", "--lower",
-                        help="show all ports with numbers lower than 10000",
-                        action="store_true")
-    parser.add_argument("-i", "--interface",
-                        help="List only interfaces that contains this string",
-                        type=str)
-    parser.add_argument('action', choices=('ports', 'interfaces', 'fix'), help="Show the interfaces by name or by port")
-    parser.add_argument('path', nargs='?',
-                        help="path to look for components config files recursively (default=\"~/robocomp/\")")
-    args = parser.parse_args()
-
-    rcportchecker = RCPortChecker(args.verbose, args.path)
-
-    if args.action == "fix":
-        rcportchecker.other()
+@app.command(name="ports")
+def ports(port: Optional[int] = None,
+          path: Optional[Path] = None,
+          lower: bool = typer.Option(False, "--lower", "-l", help="show all ports with numbers lower than 10000"),
+          verbose: bool = typer.Option(False, "--verbose", "-v", help="increase output verbosity"),
+          show_all: bool = typer.Option(False, "--all", "-a", help="show all ports configured for an interface instead of showing only those with more than one interface per port"),
+          interface: str = ""
+          ):
+    rcportchecker = RCPortChecker(verbose, path)
+    if port is not None:
+        rcportchecker.print_port_info(port, show_all, lower, interface)
     else:
-        if args.interface is not None and args.action == "ports":
-            print(
-                BColors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + BColors.ENDC)
-            parser.print_help()
-            sys.exit()
-        if args.action == "ports":
-            if args.port is not None:
-                rcportchecker.print_port_info(args.port, args.all, args.lower, args.interface)
-            else:
-                rcportchecker.print_port_listing(args.all, args.lower, args.interface)
-        elif args.action == "interfaces":
-            rcportchecker.print_interface_listing(args.all, args.lower, args.interface)
+        rcportchecker.print_port_listing(show_all, lower, interface)
+
+@app.command(name="fix")
+def fix():
+    rcportchecker = RCPortChecker(verbose, path)
+    rcportchecker.other()
+
+@app.command(name="interfaces")
+def interfaces(
+        path: Optional[Path] = None,
+        lower: bool = typer.Option(False, "--lower", "-l", help="show all ports with numbers lower than 10000"),
+        verbose: bool = typer.Option(False, "--verbose", "-v", help="increase output verbosity"),
+        show_all: bool = typer.Option(False, "--all", "-a", help="show all ports configured for an interface instead of showing only those with more than one interface per port"),
+        interface: str = ""
+        ):
+    rcportchecker = RCPortChecker(verbose, path)
+    rcportchecker.print_interface_listing(show_all, lower, interface)
+
+# def main():
+#     parser = MyParser(description='Application to look for existing configured interfaces ports on components')
+#     parser.add_argument("-v", "--verbose", help="increase output verbosity",
+#                         action="store_true")
+#     parser.add_argument("-p", "--port", help="List only the selected port information",
+#                         type=int)
+#     # parser.add_argument("-c", "--components", help="list the diffents ports associated to component",
+#     #                     action="store_true")
+#     parser.add_argument("-a", "--all",
+#                         help="show all ports configured for an interface instead of showing only those with more than one interface per port",
+#                         action="store_true")
+#     parser.add_argument("-l", "--lower",
+#                         help="show all ports with numbers lower than 10000",
+#                         action="store_true")
+#     parser.add_argument("-i", "--interface",
+#                         help="List only interfaces that contains this string",
+#                         type=str)
+#     parser.add_argument('action', choices=('ports', 'interfaces', 'fix'), help="Show the interfaces by name or by port")
+#     parser.add_argument('path', nargs='?',
+#                         help="path to look for components config files recursively (default=\"~/robocomp/\")")
+#     args = parser.parse_args()
+#
+#     rcportchecker = RCPortChecker(args.verbose, args.path)
+#
+#     if args.action == "fix":
+#         rcportchecker.other()
+#     else:
+#         if args.interface is not None and args.action == "ports":
+#             print(
+#                 BColors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + BColors.ENDC)
+#             parser.print_help()
+#             sys.exit()
+#         if args.action == "ports":
+#             if args.port is not None:
+#                 rcportchecker.print_port_info(args.port, args.all, args.lower, args.interface)
+#             else:
+#                 rcportchecker.print_port_listing(args.all, args.lower, args.interface)
+#         elif args.action == "interfaces":
+#             rcportchecker.print_interface_listing(args.all, args.lower, args.interface)
 
 
 
 
 if __name__ == '__main__':
-    main()
+    app()
