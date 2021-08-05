@@ -12,9 +12,7 @@ import typer
 from prompt_toolkit.shortcuts import confirm
 from termcolor import colored
 
-sys.path.append('/opt/robocomp/python')
-
-from workspace import Workspace
+from rcworkspace.workspace import Workspace
 
 app = typer.Typer()
 
@@ -34,13 +32,13 @@ class RCBuild:
             return False
 
         os.chdir(path)
-        build_path = os.path.join(path, 'build')
+        build_path = os.path.join(path, '../../build')
         if not os.path.exists(build_path):
             os.mkdir(build_path)
         self.remove_undesired_files(path)
         os.chdir(build_path)
         if do_clean_first:
-            if os.path.exists('Makefile'):
+            if os.path.exists('../../Makefile'):
                 os.system("make clean")
             if os.path.exists('CMakeCache.txt'):
                 os.remove(os.path.join(build_path, 'CMakeCache.txt'))
@@ -55,9 +53,9 @@ class RCBuild:
                 last_dir = os.path.basename(os.path.normpath(new_path))
                 new_path = new_path[:-len(last_dir)]
                 if 'build' in last_dir or not new_path.strip() == "":
-                    new_path = os.path.join(new_path, "build")
+                    new_path = os.path.join(new_path, "../../build")
                     break
-        elif os.path.isdir(current := os.path.join(path, "build")):
+        elif os.path.isdir(current := os.path.join(path, "../../build")):
                 new_path = current
         else:
             new_path = self.ws.find_component(path)
@@ -65,7 +63,7 @@ class RCBuild:
         if new_path is not None:
             if os.path.exists(cmake_file_path := os.path.join(new_path, "CMakeCache.txt")):
                 os.remove(cmake_file_path)
-            if os.path.exists(cmake_file_path := os.path.join(new_path, "..", "CMakeCache.txt")):
+            if os.path.exists(cmake_file_path := os.path.join(new_path, "../../..", "CMakeCache.txt")):
                 os.remove(cmake_file_path)
             return True
         return False
@@ -146,7 +144,7 @@ def robocomp(
     if clear_build:
         # make clean;
         os.chdir(BUILD_DIR)
-        if os.path.isfile("Makefile"):
+        if os.path.isfile("../../Makefile"):
             subprocess.call(["make", "clean"])
         # TODO: remove cmake cache from build and parent dir
         # cd ..;
