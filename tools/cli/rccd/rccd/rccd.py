@@ -4,7 +4,6 @@ import sys
 import tempfile
 import typer
 
-sys.path.append('/opt/robocomp/python')
 from workspace import Workspace
 
 app = typer.Typer()
@@ -17,7 +16,7 @@ def save_output(output):
     file.close()
 
 
-class rccd:
+class RCcd:
     def __init__(self):
         self.ws = Workspace()
 
@@ -41,7 +40,7 @@ class rccd:
         return self.ws.find_components(searched_component)
 
 
-dir_changer = rccd()
+dir_changer = RCcd()
 
 
 # Horrible hack to be able to change directory in the current terminal session
@@ -65,8 +64,8 @@ def change_parent_process_directory(dest):
     put_text_back_into_terminal_input_buffer("cd "+quote_against_shell_expansion(dest)+"\n")
 
 
-@app.command()
-def cd(
+@app.command(name="cd")
+def cd_exec(
         component_name: str = typer.Argument(..., help="The name of the component, part of a path or part of the name to try to cd to this."),
         option_index: int = typer.Argument(None, help="Index of the selection if multiple options available")
 ):
