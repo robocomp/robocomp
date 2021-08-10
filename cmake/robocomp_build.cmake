@@ -42,7 +42,7 @@ function(idsl_to_iceE RETURN_ICE_PATH IDSL_PATH IFACE_NAME )
     MESSAGE(STATUS "BU Adding_ rule to generate ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice from ${IDSL_PATH}/${IFACE_NAME}.idsl")
     STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}")
     add_custom_command(
-            COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl/main.py" ${IDSL_PATH}/${IFACE_NAME}.idsl ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
+            COMMAND "robocompdsl" ${IDSL_PATH}/${IFACE_NAME}.idsl ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
             DEPENDS ${IDSL_PATH}/${IFACE_NAME}.idsl
             COMMENT "BU robocompdsl ${IDSL_PATH}/${IFACE_NAME}.idsl ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice"
             TARGET ICES_${SPECIFIC_TARGET}
