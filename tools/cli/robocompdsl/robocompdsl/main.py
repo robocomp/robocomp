@@ -124,8 +124,10 @@ def generate(
             sys.exit(0)
         else:
             print(output_path, input_file)
-            print(parser.error("No output path with non .cdsl file"))
+            print("No output path with non .cdsl file")
             sys.exit(-1)
+    if input_file.endswith(".idsl"):
+        include_dirs.append(Path(input_file).absolute().parents[0])
     for i_dir in include_dirs:
         if not i_dir.is_dir():
             console.log(f"{i_dir} directory in -I option  not exists")
