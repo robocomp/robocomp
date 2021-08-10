@@ -104,7 +104,7 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
       IF (EXISTS "${SPATH}/${input_file}.idsl")
         MESSAGE(STATUS "idsl=>ice: Adding rule to generate ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice from ${SPATH}/${input_file}.idsl")
         add_custom_command(
-          COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl.py" ${SPATH}/${input_file}.idsl ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice
+          COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl/main.py" ${SPATH}/${input_file}.idsl ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice
           DEPENDS ${SPATH}/${input_file}.idsl
           COMMENT "idsl=>ice: Generating ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice from ${SPATH}/${input_file}.idsl"
           TARGET ICES_${SPECIFIC_TARGET}
