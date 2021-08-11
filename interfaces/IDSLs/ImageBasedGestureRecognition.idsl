@@ -1,0 +1,23 @@
+module RoboCompImageBasedGestureRecognition
+{
+	sequence <byte> ImgType;
+	struct TVideo
+	{
+		int width;
+		int height;
+		int depth;
+		int numFrames;
+		ImgType images;
+	};
+	sequence <float> floatList;
+	sequence <int> intList;
+	struct GestureResult
+	{
+		floatList gestureProb;
+		intList gestureIndex;
+	};
+	interface ImageBasedGestureRecognition
+	{
+		GestureResult getGesture (TVideo image);
+	};
+};
