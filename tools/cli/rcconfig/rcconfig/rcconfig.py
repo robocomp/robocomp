@@ -39,6 +39,8 @@ def load_config():
 
 RC_CONFIG = load_config()
 
+# TODO: implement command to print value
+
 @app.command("set-src-dir")
 def set_robocomp_src_dir(robocomp_src_dir: Path = None):
     if robocomp_src_dir is None:
