@@ -7,7 +7,7 @@ from typing import Optional
 
 import typer
 
-from workspace import Workspace
+from rcworkspace.workspace import Workspace
 
 ws = Workspace()
 execute_default = True

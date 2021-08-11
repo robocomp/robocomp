@@ -2,7 +2,10 @@
 import json
 import os
 import string
+from abc import ABC, abstractmethod
 from collections import defaultdict
+from enum import Enum
+from pathlib import Path
 
 from prompt_toolkit.shortcuts import confirm
 from prompt_toolkit.validation import Validator
@@ -25,6 +28,80 @@ dir_validator = Validator.from_callable(
     move_cursor_to_end=True,
 )
 
+from dataclasses import dataclass
+
+class ComponentCheck(ABC):
+    @classmethod
+    @abstractmethod
+    def check(cls, component_dir: Path, component=None):
+        """Abstract method"""
+
+class ComponentCDSLCheck(ComponentCheck):
+    @classmethod
+    def check(cls, component_dir: Path, component=None):
+        cdsl_files = defaultdict(list)
+        for item in os.listdir(component_dir):
+            if not os.path.isdir(item) and item.endswith(".cdsl"):
+                filepath = os.path.join(component_dir, item)
+                cdsl_files[component_dir].append(filepath)
+                component.cdsl_file_path = filepath
+        return len(cdsl_files) > 0, component
+
+class ComponentCMakeListsCheck(ComponentCheck):
+    @classmethod
+    def check(cls, component_dir: Path, component=None):
+        if "CMakeLists.txt" in os.listdir(component_dir):
+            component.cmakelists_file_path = os.path.join(component_dir, "CMakeLists.txt")
+            return True, component.cmakelists_file_path
+        return False, component
+
+class ComponentConfigCheck(ComponentCheck):
+    @classmethod
+    def check(cls, component_dir: Path, component=None):
+        config_files = defaultdict(list)
+        dir_list = os.listdir(component_dir)
+        if "etc" in dir_list:
+            full_path = os.path.join(component_dir, "etc")
+            if os.path.isdir(full_path):
+                for file in os.listdir(full_path):
+                    if "config" in file:
+                        filepath = os.path.join(full_path, file)
+                        config_files[component_dir].append(filepath)
+                        component.config_file_path = filepath
+        return len(config_files) > 0, component
+
+class ComponentNoTrashCheck(ComponentCheck):
+    @classmethod
+    def check(cls, component_dir: Path, component=None):
+        return '.local/share/Trash' not in component_dir, component
+
+@dataclass(init=False)
+class Component:
+    """Class for keeping track of a component in workspace"""
+    name: str
+    path: Path
+    bin_dir_path: Path
+    bin_file_path: Path
+    cdsl_file_path: Path
+    cmakelists_file_path: Path
+    config_file_path: Path
+    language: Enum('Python', 'C++')
+    checks = [ComponentCDSLCheck, ComponentNoTrashCheck, ComponentConfigCheck, ComponentCMakeListsCheck]
+
+
+
+    @classmethod
+    def create_component(cls, path):
+        component = Component()
+        for current_check in cls.checks:
+            result, component = current_check.check(path, component)
+            if not result:
+                return False, None
+        return True, Component
+
+
+
+
 class Workspace:
     #TODO: convert to an unique dict with workspaces as key and components as values.
     workspace_paths = []
@@ -46,7 +123,7 @@ class Workspace:
 
     def find_components(self, searched_component):
         if not self.components:
-            #TODO: add options to interactive search (interactive_workspace_init) or add (add_workspace)
+            # TODO: add options to interactive search (interactive_workspace_init) or add (add_workspace)
             print('rccd needs to have components dir configured.')
             answer = confirm('Do you want to configure it now?')
             if answer:
@@ -88,7 +165,7 @@ class Workspace:
 
         if component_dir:
             src_path = os.path.join(component_dir.strip(), '../../src')
-            bin_path = os.path.join(component_dir.strip(),'bin')
+            bin_path = os.path.join(component_dir.strip(), 'bin')
             if os.path.isdir(bin_path):
                 bin_file_path = os.path.join(bin_path, component)
                 if os.access(bin_file_path, os.X_OK):
@@ -200,18 +277,14 @@ class Workspace:
         return False
 
     def get_recursive_components_in_dir(self, initial_path, print_path=False):
-        components_parents_dirs = defaultdict(list)
+        components_parents_dirs = {}
         for subdir, dirs, files in os.walk(initial_path):
-            if 'CMakeLists.txt' in files and 'etc' in dirs \
-                    and not subdir.startswith('test_')\
-                    and '.local/share/Trash' not in subdir:
-                for file in files:
-                    if file.endswith(".cdsl"):
-                        filepath= os.path.join(subdir,file)
-                        components_parents_dirs[subdir].append(filepath)
-                        if print_path:
-                            print(f'Found {filepath}')
+            if (result := Component.create_component(subdir)) and result[0]:
+                components_parents_dirs[subdir] = result[1]
+                if print_path:
+                    print(f'Found {subdir}')
         return components_parents_dirs
+
 
     def ask_for_path_selection(self, components_dir_list):
         print("Options")
@@ -241,14 +314,14 @@ class Workspace:
                 return workspace_path
         return ""
 
-    def add_workspace(self, initial=None, accept_all=False):
+    def add_workspace(self, initial=None, accept_all=False, interactive=False) -> None:
         if initial is None:
             initial = os.getcwd()
         else:
             initial = os.path.abspath(initial)
         existing_workspace = self.search_parent_in_workspaces(initial)
         if not existing_workspace:
-            if accept_all:
+            if accept_all or not interactive:
                 response = initial
             else:
                 session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
@@ -439,7 +512,6 @@ class Workspace:
         except FileNotFoundError:
             pass
 
-
     def _load_attr(self, filename):
         home = os.path.expanduser("~")
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
@@ -448,6 +520,7 @@ class Workspace:
             config_path = os.path.join(home, ".config/RoboComp")
             os.makedirs(config_path)
             os.chmod(config_path, 0o777)
+
         try:
             config_file = open(config_file_path, "r")
             attr = json.load(config_file)
