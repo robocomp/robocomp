@@ -18,7 +18,7 @@ def generate_recursive_imports(initial_idsls, include_directories=None):
         new_idsl_path = idsl_robocomp_path(idsl_basename, include_directories)
         from robocompdsl.dsl_parsers.dsl_factory import DSLFactory
         try:
-            imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+            imported_module = DSLFactory().from_file(new_idsl_path, include_directories = include_directories)  # IDSLParsing.gimmeIDSL(attempt)
         except pyparsing.ParseException as e:
             console.log(f"Parsing error in file {Text(new_idsl_path, style='red')} while generating recursive imports.")
             console.log(f"Exception info: {Text(e.args[2], style='red')} in line {e.lineno} of:\n{Text(e.args[0].rstrip(), styled='magenta')}")

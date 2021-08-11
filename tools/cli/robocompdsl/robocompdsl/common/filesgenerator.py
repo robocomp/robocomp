@@ -68,7 +68,7 @@ class FilesGenerator:
 
     def __load_ast(self):
         try:
-            self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
+            self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, include_directories=self.include_dirs)
         except ValueError as e:
             console.log(f"Parsing error in file {text.Text(self.dsl_file, style='red')} while generating AST.")
             console.log(f"Exception info: {text.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{text.Text(e.args[2].rstrip(), style='magenta')}")

@@ -71,7 +71,9 @@ class IDSLParser(DSLParserTemplate):
     def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
         result_dict = OrderedDict()
-
+        self.include_directories = []
+        if "include_directories" in kwargs:
+            self.include_directories = kwargs["include_directories"]
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
             result_dict['name'] = parsing_result['module']['name']
@@ -83,7 +85,7 @@ class IDSLParser(DSLParserTemplate):
         if 'imports' in parsing_result:
             # print result_dict['name'], parsing_result['imports']
             result_dict['imports'] = parsing_result['imports'].asList()
-            result_dict['recursive_imports'] = generate_recursive_imports(list(parsing_result['imports']))
+            result_dict['recursive_imports'] = generate_recursive_imports(list(parsing_result['imports']), self.include_directories)
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 
