@@ -26,7 +26,4 @@ INSTALL(CODE "message(STATUS \"First execution of rcconfig\")
 INSTALL(CODE "message(STATUS \"Root installation of robocompdsl\")
     execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/robocompdsl/)
 ")
-
-INSTALL(CODE "message(STATUS \"First execution of rcworkspace\")
-    execute_process(COMMAND rcworkspace add ${CMAKE_SOURCE_DIR}/components/ --accept-all)
-")
+execute_process(COMMAND rcworkspace add ${CMAKE_SOURCE_DIR}/components/ --accept-all)
