@@ -4,14 +4,15 @@ execute_process(COMMAND python3 -c "from distutils.sysconfig import get_python_l
 INSTALL(FILES "robocomp.pth" DESTINATION ${PYTHON_SITE_PATH} )
 
 
-execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rccd/)
-execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/robocompdsl/)
 execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcbuild/)
+execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rccd/)
+execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcconfig/)
 execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcrun/)
 execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcworkspace/)
-execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcconfig/)
+execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/robocompdsl/)
+execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_LIST_DIR}/rcportchecker/)
 
-INSTALL( DIRECTORY "rcbuildvalidator/resources" DESTINATION /opt/robocomp/share/rcbuildvalidator )
+
 #INSTALL(PROGRAMS "rced.py" DESTINATION /opt/robocomp/bin RENAME rced )
 #INSTALL(PROGRAMS "rccomp.py" DESTINATION /opt/robocomp/bin RENAME rccomp )
 #INSTALL(PROGRAMS "rcfind.py" DESTINATION /opt/robocomp/bin RENAME rcfind )

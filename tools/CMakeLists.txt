@@ -1,6 +1,5 @@
 cmake_minimum_required( VERSION 3.10 )
 
-add_subdirectory(yaku)
 add_subdirectory(rcinnerModelSimulator)
 add_subdirectory(rcmanager)
 add_subdirectory(rcmanagerSimple)

@@ -9,8 +9,8 @@ import sys
 from rich import console
 import typer
 sys.path.append('/opt/robocomp/python')
-from workspace import Workspace
-from pyaku.yaku_lib import Yaku
+from rcworkspace.workspace import Workspace
+from pyaku.pyaku import Yaku
 
 app = typer.Typer()
 console = console.Console()

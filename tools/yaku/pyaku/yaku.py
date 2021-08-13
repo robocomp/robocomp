@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-import sys
 import argparse
 
-sys.path.append("/opt/robocomp/python")
-from pyaku import yaku_lib
+from pyaku import pyaku
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-a",
@@ -33,10 +30,13 @@ if __name__ == "__main__":
         help="Save all the current tabs_by_name information to an script to restore session.",
     )
     args = parser.parse_args()
-    yaku = yaku_lib.Yaku()
+    yaku = pyaku.Yaku()
     if args.save:
         yaku.create_yakuake_start_shell_script()
     elif args.every:
         yaku.rename_all_tabs(args.title, args.append)
     else:
         yaku.rename_current_tab(args.title, args.append)
+
+if __name__ == "__main__":
+   main()

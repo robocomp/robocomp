@@ -198,7 +198,7 @@ class ProcessHandler():
         try:
             proc = subprocess.Popen(shlex.split("yakuake"), shell=False)
         except WindowsError:
-            print "Yakuake is not supported on windows systems"
+            print("Yakuake is not supported on windows systems")
         self.tabTitleToSessionId = dict()
         self.sessionIdToTabTitle = dict()
 
@@ -213,7 +213,7 @@ class ProcessHandler():
 
             while foregroundProcessId == sessionProcessId:
                 foregroundProcessId = self.get_foreground_process_id(tabTitle)
-        except Exception, e:
+        except Exception as e:
             raise e
         return (tabTitle, foregroundProcessId)
 
@@ -234,7 +234,7 @@ class ProcessHandler():
                     foregroundProcessId = sessionProcessId
                     while foregroundProcessId == sessionProcessId:
                         foregroundProcessId = self.get_foreground_process_id(tabTitle)
-                except Exception, e:
+                except Exception as e:
                     raise e
                 return (tabTitle, foregroundProcessId)
         ret = self.start_process_in_new_session(tabTitle, command)
@@ -244,19 +244,19 @@ class ProcessHandler():
         try:
             processId = self.get_foreground_process_id(tabTitle)
             proc = subprocess.Popen(shlex.split('kill -9 ' + str(processId)), shell=False)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def add_session(self, tabTitle):
         try:
-            proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession'), \
+            proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession'),
                                     stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
             (sessionId, error) = proc.communicate()
             proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/tabs_by_name org.kde.yakuake.setTabTitle ' + \
                                                 str(sessionId) + ' "' + tabTitle + '"'), shell=False)
             self.tabTitleToSessionId[tabTitle] = sessionId
             self.sessionIdToTabTitle[sessionId] = tabTitle
-        except Exception, e:
+        except Exception as e:
             raise e
         return (tabTitle, sessionId)
 
@@ -264,7 +264,7 @@ class ProcessHandler():
         try:
             proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.removeSession ' \
                                                 + str(self.tabTitleToSessionId[tabTitle])), shell=False)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def get_foreground_process_id(self, tabTitle):

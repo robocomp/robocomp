@@ -22,7 +22,7 @@ qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "%s"
 qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess0 "%s"
 """
 
-TERMINA_SPLIT_SHELL_CODE = """
+TERMINAL_SPLIT_SHELL_CODE = """
 """
 
 
