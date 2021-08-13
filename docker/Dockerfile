@@ -1,13 +1,11 @@
-ARG my_arg
 ARG base_image="nvidia/opengl"
 ARG base_tag="base-ubuntu20.04"
 ARG branch="development"
 ARG robocomp_version="dsr-components"
 
-FROM ${base_image}:${base_tag} AS base
+FROM ${base_image}:${base_tag} AS dependencies-version
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
-ARG branch
 # Update Ubuntu Software repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates \
@@ -53,6 +51,8 @@ RUN export uid=1000 gid=1000 && \
     echo "robolab ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/robolab-user && \
     chown ${uid}:${gid} -R /home/robolab
 
+FROM dependencies-version AS base-version
+ARG branch
 USER robolab
 WORKDIR /home/robolab/
 # Install Robocomp
@@ -60,15 +60,16 @@ RUN echo ${branch}
 ADD https://api.github.com/repos/robocomp/robocomp/git/refs/heads/${branch} version.json
 RUN git clone -b ${branch} https://github.com/robocomp/robocomp.git
 
+ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
+RUN export PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
 RUN sudo pip install /home/robolab/robocomp/tools/cli/robocompdsl/
-RUN sudo pip install /home/robolab/robocomp/tools/cli/rcconfig/
+RUN pip install /home/robolab/robocomp/tools/cli/rcconfig/
 RUN rcconfig
 RUN cd robocomp && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
 RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 RUN sudo ldconfig
 WORKDIR robocomp
-ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
-ENV ROBOCOMP=~/robocomp
+ENV ROBOCOMP=/opt/robocomp/
 RUN git annex get \
   files/innermodel/simpleworld.xml \
   files/osgModels/textures/wood.jpg \
@@ -78,7 +79,7 @@ RUN git annex get \
 RUN cp -r -L files /home/robolab/files 2>/dev/null || :
 
 
-FROM base AS fcl-version
+FROM base-version AS fcl-version
 USER root
 RUN apt update && apt-get install --no-install-recommends --yes \
   libfcl-dev

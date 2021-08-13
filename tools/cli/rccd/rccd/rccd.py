@@ -4,7 +4,7 @@ import sys
 import tempfile
 import typer
 
-from workspace import Workspace
+from rcworkspace.workspace import Workspace
 
 app = typer.Typer()
 

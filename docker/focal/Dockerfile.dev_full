@@ -50,7 +50,7 @@ RUN export uid=1000 gid=1000 && \
 USER robolab
 WORKDIR /home/robolab/
 # Install Robocomp
-CMD echo $FORCE
+ADD https://api.github.com/repos/robocomp/robocomp/git/refs/heads/$ROBOCOMP_BRANCH version.json
 RUN git clone https://github.com/robocomp/robocomp.git
 
 RUN cd robocomp && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install

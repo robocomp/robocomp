@@ -8,11 +8,13 @@ import subprocess
 import sys
 from typing import Optional
 
+import rcdocker.rcdocker
 import typer
 from prompt_toolkit.shortcuts import confirm
 from termcolor import colored
 
 from rcworkspace.workspace import Workspace
+from rcconfig.rcconfig import RC_CONFIG
 
 app = typer.Typer()
 
@@ -105,15 +107,19 @@ def build_docs(
 
 
 @app.command(name="comp")
-def build_components(
+def build_component(
     component: Optional[str] = typer.Argument(None, help='Name of the component to build, if omitted current dir is used.'),
-    do_clean: Optional[bool] = typer.Option(False, '--install', help="Clean the compilation files (CMake and Make generated files.")
+    do_clean: Optional[bool] = typer.Option(False, '--install', help="Clean the compilation files (CMake and Make generated files."),
+    isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image")
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
     else:
         component_path = component
-    builder.build_component(component_path, do_clean)
+    if isolated:
+        rcdocker.rcdocker.build_component_in_container(component_path)
+    else:
+        builder.build_component(component_path, do_clean)
 
 
 @app.command(name="clean")
@@ -154,8 +160,7 @@ def robocomp(
         # mkdir build;
         returncode = subprocess.call(["mkdir", "-p", BUILD_DIR])
     # cd build;
-    # TODO: Replace by robocomp source code dir
-    os.chdir(BUILD_DIR)
+    os.chdir(RC_CONFIG["ROBOCOMP_SRC"])
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;
     returncode = subprocess.call(["cmake", f"-DDSR={str(dsr).upper()}", f"-DFCL_SUPPORT={str(fcl).upper()}", ".."])
     # make -j10
