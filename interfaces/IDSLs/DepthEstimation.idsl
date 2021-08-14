@@ -1,7 +1,7 @@
 import "CameraRGBDSimple.idsl";
 module RoboCompDepthEstimation
 {
-    sequence<float> DepthValueType;
+    sequence<byte> DepthValueType;
     
     struct DepthScene
     {
