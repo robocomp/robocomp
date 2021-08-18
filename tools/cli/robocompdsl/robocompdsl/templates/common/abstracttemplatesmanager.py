@@ -4,6 +4,7 @@ from abc import ABC
 from collections import ChainMap
 from string import Template
 import re
+from pathlib import Path
 
 from robocompdsl.dsl_parsers.parsing_utils import communication_is_ice
 import rich
@@ -86,9 +87,9 @@ class CustomTemplate(Template):
                 identifiers.append(result[3])
         return identifiers
 
-
-TEMPLATES_DIR = '/opt/robocomp/python/robocompdsl/templates/'
-ALT_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+if not (TEMPLATES_DIR := Path('/opt/robocomp/python/robocompdsl/templates/')).exists():
+    if not (TEMPLATES_DIR := Path(__file__).absolute().parent.parent).absolute().exists():
+        print(f"NO TEMPLATE DIR FOUND FOR ROBOCOMPDSL!!!: {__file__}")
 
 
 class AbstractTemplatesManager(ABC):
@@ -110,11 +111,7 @@ class AbstractTemplatesManager(ABC):
         pass
 
     def _template_to_file(self, template, output_file, interface_name=None):
-        try:
-            istream = open(template, 'r')
-        except FileNotFoundError:
-            new_template_path = template.replace(TEMPLATES_DIR, ALT_TEMPLATES_DIR)
-            istream = open(new_template_path, 'r')
+        istream = open(template, 'r')
         content = istream.read()
         istream.close()
         template_dict = self._get_template_dict(template, interface_name)
@@ -122,18 +119,18 @@ class AbstractTemplatesManager(ABC):
         try:
             file_content = template_object.substitute(**template_dict)
         except KeyError as e:
-            raise KeyError(f"Template keyword {str(e)} not found for Template file {template}")
+            raise KeyError(f"Template keyword {str(e)} not found in {template_dict} for Template file {template}")
 
         with open(output_file, 'w') as ostream:
             ostream.write(file_content)
 
     def _get_template_dict(self, template, interface_name=None):
         template_dict = {}
-        full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
-        template_name = template.replace(full_path, "")
+        full_path = TEMPLATES_DIR / self.files['template_path'] / template
+        print(f"===========USING TEMPLATENAME: {TEMPLATES_DIR} - {self.files['template_path']} - {full_path} - {full_path.name}")
         # look for a method in the class with the name of the file
         for plugin in self.plugins:
-            new_template_dict = plugin.get_template_dict(template_name, self.ast, interface_name)
+            new_template_dict = plugin.get_template_dict(full_path.name, self.ast, interface_name)
             for entry, value in new_template_dict.items():
                 if entry in template_dict:
                     template_dict[entry] += new_template_dict[entry]
