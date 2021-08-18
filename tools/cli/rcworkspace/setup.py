@@ -10,5 +10,5 @@ setup(
     author='Esteban Martinena',
     author_email='emartinena@unex.es',
     description='rcworkspace command line',
-    entry_points={'console_scripts': ['rcworkspace = rcworkspace.rcworkspace:app']}
+    entry_points={'console_scripts': ['rcworkspace = rcworkspace.main:app']}
 )
