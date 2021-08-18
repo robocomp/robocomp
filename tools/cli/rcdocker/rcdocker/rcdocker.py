@@ -6,7 +6,13 @@ from pathlib import Path
 import docker
 import typer
 from docker import APIClient
-from rcworkspace import rcworkspace
+import datetime
+import os
+import apt
+from termcolor import cprint, colored
+from robocomp import is_interactive
+from rcconfig.rcconfig import RC_CONFIG
+from rcworkspace.workspace import Workspace
 
 app = typer.Typer()
 
@@ -14,15 +20,6 @@ docker_client = docker.from_env()
 
 DEBUG = True
 
-
-import datetime
-import os
-import apt
-from termcolor import cprint, colored
-
-from rcconfig.rcconfig import RC_CONFIG
-from rccd import rccd
-print(rccd)
 
 CURRENT_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 INSTALLATION_PATH = "/opt/robocomp/share/rcbuildvalidator/"
@@ -227,15 +224,17 @@ def run_on_image(image_str, command, volumes_=None, force_build=False):
 def build_component_in_container(component_name, component_path=None, robocomp_version="robocomp/dsr:ubuntu-20.04"):
     if component_path is None:
         if component_name:
-            component_path = rcworkspace.Workspace().find_component(component_name)
-            path_in_container = component_path
-            if path_in_container.startswith(str(Path.home())):
-                path_in_container = path_in_container[len(str(Path.home()))+1:]
-            volumes = {
-                component_path: {'bind': str(Path("/home/robolab/") / path_in_container), 'mode': 'rw'},
-            }
-            command = f"sh -x -c \"cd {path_in_container} && mkdir -p build && cd build && cmake .. && make\""
-            run_on_image(robocomp_version, command, volumes)
+            if component_path := Workspace().find_component_path(component_name, is_interactive()):
+                path_in_container = component_path
+                try:
+                    path_in_container = path_in_container.relative_to(Path.home())
+                except ValueError:
+                    pass
+                volumes = {
+                    component_path: {'bind': str(Path("/home/robolab/") / path_in_container), 'mode': 'rw'},
+                }
+                command = f"sh -x -c \"cd {path_in_container} && mkdir -p build && cd build && cmake .. && make\""
+                run_on_image(robocomp_version, command, volumes)
         else:
             raise Exception()
 
