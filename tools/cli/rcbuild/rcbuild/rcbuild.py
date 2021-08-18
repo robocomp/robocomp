@@ -154,6 +154,8 @@ def robocomp(
         # mkdir build;
         execute_command(f"mkdir -p {BUILD_DIR}")
 
+    # install robocomp cli tools
+    execute_command(f"sudo pip install {Path(RC_CONFIG['ROBOCOMP_SRC'])/'tools'/'cli'}")
     # cd build;
     os.chdir(BUILD_DIR)
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;

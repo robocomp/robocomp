@@ -10,7 +10,10 @@ from rich import console
 import typer
 sys.path.append('/opt/robocomp/python')
 from rcworkspace.workspace import Workspace
-from pyaku.pyaku import Yaku
+try:
+    from pyaku.pyaku import Yaku
+except ModuleNotFoundError:
+    Yaku = False
 
 app = typer.Typer()
 console = console.Console()
@@ -165,7 +168,8 @@ def main():
 
     
     print("executing : "+command)
-    Yaku().rename_current_tab(name=component)
+    if Yaku:
+        Yaku().rename_current_tab(name=component)
     os.system(command)
 
 

@@ -33,6 +33,8 @@ def load_config():
         config_file = open(config_file_path, "r")
         config = json.load(config_file)
         config_file.close()
+        if "ROBOCOMP_SRC" not in config:
+            config["ROBOCOMP_SRC"] = Path.home() / "robocomp"
         return config
     except FileNotFoundError:
         return {}
