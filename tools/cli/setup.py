@@ -25,6 +25,8 @@ setup(
             "templates/*",
             "templates/**/*",
             "templates/**/**/*",
+            "templates/**/**/**/*",
+            "templates/**/**/**/**/*",
             "dsl_parsers/*",
             "dsl_parsers/**/*",
             "dsl_parsers/**/**/*",
@@ -59,7 +61,7 @@ setup(
             'rcdocker = rcdocker.rcdocker:app',
             'rcportchecker = rcportchecker.rcportchecker:app'
             'rcrun = rcrun.rcrun:app',
-            'rcworkspace = rcworkspace.rcworkspace:app',
+            'rcworkspace = rcworkspace.main:app',
             'robocompdsl = robocompdsl.main:app',
         ]
     }

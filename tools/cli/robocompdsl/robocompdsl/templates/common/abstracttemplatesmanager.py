@@ -127,7 +127,6 @@ class AbstractTemplatesManager(ABC):
     def _get_template_dict(self, template, interface_name=None):
         template_dict = {}
         full_path = TEMPLATES_DIR / self.files['template_path'] / template
-        print(f"===========USING TEMPLATENAME: {TEMPLATES_DIR} - {self.files['template_path']} - {full_path} - {full_path.name}")
         # look for a method in the class with the name of the file
         for plugin in self.plugins:
             new_template_dict = plugin.get_template_dict(full_path.name, self.ast, interface_name)
