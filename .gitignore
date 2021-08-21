@@ -3,7 +3,7 @@ bin
 bin/
 bin-debug/
 bin-release/
-build/*
+*/build/*
 CloudPrimitives.cpp
 CloudPrimitives.h
 cmake_install.cmake
@@ -76,7 +76,7 @@ ui_**.pyc
 
 *CMakeCache.txt
 
-*build/
+*/build/
 
 interfaces/*.ice
 
@@ -91,3 +91,9 @@ components/melex-rodao/
 *cmake-build-debug/
 
 tools/robocompdsl/test/htmlcov/
+
+*.egg-info/
+
+tools/cli/rcbuild/build/
+
+build/
