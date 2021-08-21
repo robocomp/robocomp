@@ -19,9 +19,7 @@ jobs:
           images: robocomp/robocomp
 
       - uses: docker/setup-buildx-action@v1
-        id: dependencies-builder
-        with:
-          buildkitd-flags: --debug
+        id: dependencies-builder   
 
       - uses: docker/setup-buildx-action@v1
         id: base-builder
