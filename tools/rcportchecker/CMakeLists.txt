@@ -4,5 +4,5 @@ PROJECT( rcportchecker
         DESCRIPTION "RoboComp rcportchecker tool"
         LANGUAGES CXX )
 
-INSTALL(PROGRAMS "rcportchecker.py" DESTINATION /opt/robocomp/bin RENAME rcportchecker )
-INSTALL(FILES "rcportchecker.py" DESTINATION /opt/robocomp/python )
+INSTALL(PROGRAMS "rcportchecker/rcportchecker.py" DESTINATION /opt/robocomp/bin RENAME rcportchecker )
+INSTALL(FILES "rcportchecker/rcportchecker.py" DESTINATION /opt/robocomp/python )
