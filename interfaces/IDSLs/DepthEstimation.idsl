@@ -9,7 +9,6 @@ module RoboCompDepthEstimation
         DepthValueType value;
         int width;
         int height;
-        int depth;
     };
     
     interface DepthEstimation
