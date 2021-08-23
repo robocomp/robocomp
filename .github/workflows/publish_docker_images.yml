@@ -19,7 +19,7 @@ jobs:
           images: robocomp/robocomp
           tags: |
             type=ref,prefix=latest__, suffix=__dependencies, event=branch
-            type=sha, suffix=__{{branch}}__dependencies
+            type=sha, prefix={{branch}}__dependencies__
 
       - uses: docker/setup-buildx-action@v1
         id: dependencies-builder
@@ -61,7 +61,7 @@ jobs:
           images: robocomp/robocomp
           tags: |
             type=ref,prefix=latest__, suffix=__base, event=branch
-            type=sha, suffix=__{{branch}}__base
+            type=sha, prefix={{branch}}__base__
 
       - uses: docker/setup-buildx-action@v1
         id: base-builder
@@ -106,7 +106,7 @@ jobs:
           images: robocomp/robocomp
           tags: |
             type=ref,prefix=latest__, suffix=__dsr, event=branch
-            type=sha, suffix=__{{branch}}__dsr
+            type=sha, prefix={{branch}}__dsr__
 
       - uses: docker/setup-buildx-action@v1
         id: dsr-builder
