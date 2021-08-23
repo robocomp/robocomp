@@ -1,0 +1,135 @@
+name: Publish Robocomp Docker Images
+
+on: push
+jobs:
+  robocomp-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: robocomp/robocomp
+          tags: |
+            type=ref,prefix=latest__, suffix=__dependencies, event=branch
+            type=sha, suffix=__{{branch}}__dependencies
+
+      - uses: docker/setup-buildx-action@v1
+        id: dependencies-builder
+
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build against dependencies-builder
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.dependencies-builder.outputs.name }}
+          context: docker
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args:  |
+            base_image=nvidia/opengl
+            base_tag=base-ubuntu20.04
+            branch=${{ steps.extract_branch.outputs.branch }}
+            robocomp_version=dependencies
+  robocomp-base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: robocomp/robocomp
+          tags: |
+            type=ref,prefix=latest__, suffix=__base, event=branch
+            type=sha, suffix=__{{branch}}__base
+
+      - uses: docker/setup-buildx-action@v1
+        id: base-builder
+
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build against base-builder
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.base-builder.outputs.name }}
+          context: docker
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args:  |
+            base_image=nvidia/opengl
+            base_tag=base-ubuntu20.04
+            branch=${{ steps.extract_branch.outputs.branch }}
+            robocomp_version=base
+
+
+
+  robocomp-dsr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: robocomp/robocomp
+          tags: |
+            type=ref,prefix=latest__, suffix=__dsr, event=branch
+            type=sha, suffix=__{{branch}}__dsr
+
+      - uses: docker/setup-buildx-action@v1
+        id: dsr-builder
+
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build against dsr-builder
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.dsr-builder.outputs.name }}
+          context: docker
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args:  |
+            base_image=nvidia/opengl
+            base_tag=base-ubuntu20.04
+            branch=${{ steps.extract_branch.outputs.branch }}
+            robocomp_version=dsr
+
+
