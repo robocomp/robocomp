@@ -17,6 +17,23 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: robocomp/robocomp
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
+      - name: Docker meta
+        id: meta2
+        uses: docker/metadata-action@v3
+        with:
+          images: robocomp/robocomp
+          tags: |
+            type=ref,prefix=latest_, event=branch
+
 
       - uses: docker/setup-buildx-action@v1
         id: dependencies-builder   
@@ -40,7 +57,7 @@ jobs:
           builder: ${{ steps.dependencies-builder.outputs.name }}
           context: docker
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}__dependencies
+          tags: ${{ steps.meta.outputs.tags }}__dependencies, ${{ steps.meta2.outputs.tags }}__dependencies
           labels: ${{ steps.meta.outputs.labels }}
           build-args:  |
             base_image=nvidia/opengl
@@ -54,7 +71,7 @@ jobs:
           builder: ${{ steps.base-builder.outputs.name }}
           context: docker
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}__base
+          tags: ${{ steps.meta.outputs.tags }}__base, ${{ steps.meta2.outputs.tags }}__base
           labels: ${{ steps.meta.outputs.labels }}
           build-args:  |
             base_image=nvidia/opengl
@@ -68,7 +85,7 @@ jobs:
           builder: ${{ steps.dsr-builder.outputs.name }}
           context: docker
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}__dsr
+          tags: ${{ steps.meta.outputs.tags }}__dsr, ${{ steps.meta2.outputs.tags }}__dsr
           labels: ${{ steps.meta.outputs.labels }}
           build-args:  |
             base_image=nvidia/opengl
