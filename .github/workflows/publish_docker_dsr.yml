@@ -37,7 +37,7 @@ jobs:
           builder: ${{ steps.dsr-builder.outputs.name }}
           context: docker
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}__dsr, ${{ steps.meta2.outputs.tags }}__dsr
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args:  |
             base_image=nvidia/opengl

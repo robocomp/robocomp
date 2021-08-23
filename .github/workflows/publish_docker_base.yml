@@ -37,7 +37,7 @@ jobs:
           builder: ${{ steps.base-builder.outputs.name }}
           context: docker
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}__base, ${{ steps.meta2.outputs.tags }}__base
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args:  |
             base_image=nvidia/opengl
