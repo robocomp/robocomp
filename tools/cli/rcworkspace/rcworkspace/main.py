@@ -11,7 +11,7 @@ from rcworkspace.workspace import Workspace
 
 ws = Workspace()
 execute_default = True
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Tool to find and check available components.", fg=typer.colors.GREEN))
 
 @app.command()
 def initialize():

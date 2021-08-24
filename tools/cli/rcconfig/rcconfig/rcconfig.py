@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import typer
 
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Config robocomp variables system wide.", fg=typer.colors.GREEN))
 
 
 def save_config():

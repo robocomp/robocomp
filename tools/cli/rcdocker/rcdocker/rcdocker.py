@@ -14,7 +14,7 @@ from robocomp import is_interactive
 from rcconfig.rcconfig import RC_CONFIG
 from rcworkspace.workspace import Workspace
 
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Docker wrapper for Robocomp images and commands.", fg=typer.colors.GREEN))
 
 docker_client = docker.from_env()
 

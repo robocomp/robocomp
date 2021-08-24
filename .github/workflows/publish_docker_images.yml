@@ -88,8 +88,6 @@ jobs:
             branch=${{ steps.extract_branch.outputs.branch }}
             robocomp_version=base
 
-
-
   robocomp-dsr:
     runs-on: ubuntu-latest
     steps:

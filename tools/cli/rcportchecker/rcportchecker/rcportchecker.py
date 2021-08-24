@@ -37,7 +37,7 @@ from collections import defaultdict
 
 from rich.console import Console
 console = Console()
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Tool to check components and interface ports.", fg=typer.colors.GREEN))
 MIN_ROBOCOMP_PORT = 10000
 
 class BColors:

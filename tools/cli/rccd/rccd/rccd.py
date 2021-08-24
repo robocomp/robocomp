@@ -8,7 +8,7 @@ from typing import Optional
 from rcworkspace.workspace import Workspace
 from robocomp import is_interactive
 
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Change directory to Robocomp components", fg=typer.colors.GREEN))
 
 
 def save_output(output):
