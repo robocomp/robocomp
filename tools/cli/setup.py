@@ -56,10 +56,10 @@ setup(
         'console_scripts': [
             'robocomp = robocomp.robocomp:app',
             'rcbuild = rcbuild.rcbuild:app',
-            'rccd = rccd.rccd:app'
+            'rccd = rccd.rccd:app',
             'rcconfig = rcconfig.rcconfig:app',
             'rcdocker = rcdocker.rcdocker:app',
-            'rcportchecker = rcportchecker.rcportchecker:app'
+            'rcportchecker = rcportchecker.rcportchecker:app',
             'rcrun = rcrun.rcrun:app',
             'rcworkspace = rcworkspace.main:app',
             'robocompdsl = robocompdsl.main:app',

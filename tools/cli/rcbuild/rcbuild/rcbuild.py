@@ -17,7 +17,7 @@ import rcdocker.rcdocker
 
 app = typer.Typer(short_help=typer.style("Command to build components or robocomp itself", fg=typer.colors.GREEN), help=typer.style("Robocomp command to build components or robocomp itself. There are also several "
                                    "options to clean, rebuild or install.\n"
-                                   "The name of the component to be used doesn't need to be a full path. The passed name"
+                                   "The name of the component to be used doesn't need to be a full path. The passed name "
                                    "will be looked for inside the defined workspaces.", fg=typer.colors.GREEN))
 
 # TODO: Move to rcconfig py file
