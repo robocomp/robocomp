@@ -13,6 +13,7 @@ export PATH=$PATH:/opt/robocomp/bin
 export PYTHONIOENCODING=utf-8
 sudo [ -d /opt/robocomp ] && sudo rm -r /opt/robocomp
 cd robocomp
+sudo pip3 install tools/cli/
 mkdir build
 cd build
 cmake ..

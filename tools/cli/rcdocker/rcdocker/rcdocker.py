@@ -14,7 +14,7 @@ from robocomp import is_interactive
 from rcconfig.rcconfig import RC_CONFIG
 from rcworkspace.workspace import Workspace
 
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Docker wrapper for Robocomp images and commands.", fg=typer.colors.GREEN))
 
 docker_client = docker.from_env()
 
@@ -112,7 +112,6 @@ def build_robocomp_dependencies_image(version: str = typer.Argument("20.04")):
                        robocomp_version="dependencies",
                        push=True)
 
-@app.command("regexp")
 def string_to_docker_image(input_str: str ):
     import re
     # regex = r"^(?P<month>\w+)\s(?P<day>\d+)\,?\s(?P<year>\d+)"
@@ -239,51 +238,51 @@ def build_component_in_container(component_name, component_path=None, robocomp_v
             raise Exception()
 
 
-@app.command()
-def orensbruli():
-    image_name = "robocomp/robocomp"
-    tag = "focal_fcl_dev"
-    branch = "development"
-    if check_robocomp_image_exists(image_name, tag):
-        options = ""
-        if DEBUG:
-            options = "-l -x"
-        volumes = {
-            '/etc/group': {'bind': '/etc/group', 'mode': 'ro'},
-            '/etc/passwd': {'bind': '/etc/passwd', 'mode': 'ro'},
-            '/etc/shadow': {'bind': '/etc/shadow', 'mode': 'ro'},
-            '/etc/sudoers.d': {'bind': '/etc/sudoers.d', 'mode': 'ro'},
-            '/tmp/.X11-unix': {'bind': '/tmp/.X11-unix', 'mode': 'rw'}
-        }
-        print(colored(
-            f"Checking build of __ for Robocomp ({branch}) in {image_name}:",
-            "green"))
-        status_code = 0
-        retries = 0
-        while retries < 3:
-            try:
-                container = docker_client.containers.run(
-                    f"{image_name}:{tag}",
-                    f"robocomp",
-                    name="robocomp_robocomp",
-                    working_dir="/home/robolab/",
-                    user="robolab:robolab",
-                    environment=["DISPLAY"],
-                    volumes=volumes,
-                    detach=True,
-                    stderr=True
-                )
-                for line in container.logs(stream=True):
-                    print(line.strip().decode("utf-8"))
-
-                exit_dode = container.wait()
-            except docker.errors.APIError as e:
-                if e.status_code == 409:
-                    print(f"{e}\nContainer exists . Trying to stop...")
-                else:
-                    print(e)
-                stop_and_remove_container("/robocomp_robocomp")
-                retries += 1
+# @app.command()
+# def orensbruli():
+#     image_name = "robocomp/robocomp"
+#     tag = "focal_fcl_dev"
+#     branch = "development"
+#     if check_robocomp_image_exists(image_name, tag):
+#         options = ""
+#         if DEBUG:
+#             options = "-l -x"
+#         volumes = {
+#             '/etc/group': {'bind': '/etc/group', 'mode': 'ro'},
+#             '/etc/passwd': {'bind': '/etc/passwd', 'mode': 'ro'},
+#             '/etc/shadow': {'bind': '/etc/shadow', 'mode': 'ro'},
+#             '/etc/sudoers.d': {'bind': '/etc/sudoers.d', 'mode': 'ro'},
+#             '/tmp/.X11-unix': {'bind': '/tmp/.X11-unix', 'mode': 'rw'}
+#         }
+#         print(colored(
+#             f"Checking build of __ for Robocomp ({branch}) in {image_name}:",
+#             "green"))
+#         status_code = 0
+#         retries = 0
+#         while retries < 3:
+#             try:
+#                 container = docker_client.containers.run(
+#                     f"{image_name}:{tag}",
+#                     f"robocomp",
+#                     name="robocomp_robocomp",
+#                     working_dir="/home/robolab/",
+#                     user="robolab:robolab",
+#                     environment=["DISPLAY"],
+#                     volumes=volumes,
+#                     detach=True,
+#                     stderr=True
+#                 )
+#                 for line in container.logs(stream=True):
+#                     print(line.strip().decode("utf-8"))
+#
+#                 exit_dode = container.wait()
+#             except docker.errors.APIError as e:
+#                 if e.status_code == 409:
+#                     print(f"{e}\nContainer exists . Trying to stop...")
+#                 else:
+#                     print(e)
+#                 stop_and_remove_container("/robocomp_robocomp")
+#                 retries += 1
 
 
 @app.callback()

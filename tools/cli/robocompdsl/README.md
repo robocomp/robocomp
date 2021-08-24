@@ -1,4 +1,3 @@
-
 RoboCompDSL's User Guide
 ============
 

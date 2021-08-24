@@ -15,7 +15,7 @@ try:
 except ModuleNotFoundError:
     Yaku = False
 
-app = typer.Typer()
+app = typer.Typer(help=typer.style("Shortcut tool to run Robocomp components.", fg=typer.colors.GREEN))
 console = console.Console()
 
 class rcrun:

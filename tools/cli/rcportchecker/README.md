@@ -3,9 +3,7 @@ rcportchecker
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## What the `rcportchecker` does?
-
-The `rcportchecker` is a tool for checking the used and available ports for Robocomp components interfaces. This tool looks for the config files of the components in the local machine or the given path and show a list of configured components interfaces and it ports or a list of ports and the associated interfaces.
+`rcportchecker` is a tool for checking the used and available ports for Robocomp components interfaces. This tool looks for the config files of the components in the local machine or the given path and show a list of configured components interfaces and it ports or a list of ports and the associated interfaces.
 This tool can also be used to check if a particular port is available or used in any config file.
 It's not uncommon to have different instances of the same component running in different ports, but one port can only be used by one interface at the same execution time. This tool help the Robocomp developer to find available ports and also to find some possible conflicts when executing several components at the same time.
 
@@ -13,7 +11,7 @@ It's not uncommon to have different instances of the same component running in d
 
 Executing the `rcportchecker` without parameters or the `-h` option the full command help is shown:
 ```shell
-rcportchecker.py -h
+$ rcportchecker.py -h
 ```
 ```console
 usage: rcportchecker.py [-h] [-v] [-p PORT] [-a] [-l]
