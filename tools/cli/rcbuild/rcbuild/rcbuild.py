@@ -20,7 +20,7 @@ app = typer.Typer(short_help=typer.style("Command to build components or robocom
                                    "The name of the component to be used doesn't need to be a full path. The passed name"
                                    "will be looked for inside the defined workspaces.", fg=typer.colors.GREEN))
 
-# TODO: Move to robocomp config py file
+# TODO: Move to rcconfig py file
 ROBOCOMP_INSTALL_DIR = "/opt/robocomp"
 BUILD_DIR = Path(RC_CONFIG["ROBOCOMP_SRC"]) / "build"
 
