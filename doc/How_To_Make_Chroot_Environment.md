@@ -47,7 +47,7 @@ Another practical use for chroot is to test an especific program or library in a
 - **type**  The type of the chroot. Valid types are ‘plain’, ‘directory’, ‘file’, ‘block-device’ and ‘lvm-snapshot’. If empty or omitted, the default type is ‘plain’.
 - **users** list of users that are allowed access to the chroot.
 
-See [schroot.config](http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html) for further information.
+See [schroot.config](http://manpages.ubuntu.com/manpages/impish/en/man5/schroot.conf.5.html) for further information.
 
 4. Run Debootstrap. This step will download and unpack a basic ubuntu or debian system to the chroot directory we created in step 2.
 
@@ -130,7 +130,7 @@ You can generate a more complete sources.list file in these pages: [Ubuntu](http
 
   [PerlGeek troubleshooting](http://perlgeek.de/en/article/set-up-a-clean-utf8-environment)
 
-  [Schroot conf manual](http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html)
+  [Schroot conf manual](http://manpages.ubuntu.com/manpages/impish/en/man5/schroot.conf.5.html)
 
   [Debootstap manual](http://manpages.ubuntu.com/manpages/trusty/en/man8/debootstrap.8.html)
 

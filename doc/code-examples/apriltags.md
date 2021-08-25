@@ -22,7 +22,7 @@ The *AprilTags.cdsl* file specifies how *apriltagsComp* has been generated and h
 
 This files tells us that the component requires -will be calling- three RoboComp interfaces: Camera, RGBDBus y RGBD, which are normal and depth camera's interfaces written in RoboComp's IDSL language. You can find those files in *~/robocomp/interfaces/IDSLs*. Also, the component will publish the data defined in the *AprilTags* interface and will implement the *GetAprilTags* interface. This means that using images provided by a component implementing the camera or RGBD interfaces, it will try to detect any tags in them and compute their 6D pose. Finally, it will publish a vector with all the tags id's and poses to the Ice's STORM broker, and also it will attend any direct requests (remote procedure calls) received from other components through the *GetAprilTags* interface. So it is a rather serviceable and handy component!
 
-To access **apriltagsComp** you need to install from *http://github.org/robocomp* the repository named *robocomp-robolab*.
+To access **apriltagsComp** you need to install from *https://github.com/robocomp* the repository named *robocomp-robolab*.
 
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
@@ -69,7 +69,7 @@ you can find an example of a configuration file. We can find there the following
 AprilTagsFamily is a set of tags, There are different families like 36h10,25h9,16h5 however *tagCodes36h11* is recommended. Each tag has an ID that is printed inside the surrounding square using Hamming code. Instructions to print tags and other tag families can be found [here](http://april.eecs.umich.edu/wiki/index.php/AprilTags). The algorithm needs the real size of the tag to estimate its position and orientation in space. We can give the component tags of different sizes, As long as they correspond to different ranges of IDs, as specified in the configuration file above.
 
 ## Starting the component
-To start the component we need a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*, Tutorial can be found [here](virtualapriltagstutorial.md). Once RCIS is up and running, It will provide the RGBD.idsl interface (not Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the *generic_config* file in the repository, We can copy it to the component's home directory, So changes will remain untouched by future git pulls:
+To start the component we need a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*, Tutorial can be found [here](apritagstutorial.md). Once RCIS is up and running, It will provide the RGBD.idsl interface (not Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the *generic_config* file in the repository, We can copy it to the component's home directory, So changes will remain untouched by future git pulls:
 
     cp ~/robocomp/components/robocomp-robolab/components/apriltagsComp
     cp /etc/generic_config config

@@ -1,4 +1,5 @@
-	///////////////////////////////////
+```cpp
+    ///////////////////////////////////
 	/// Kinematic transformation methods
 	////////////////////////////////////
   
@@ -95,5 +96,5 @@
 		return jacobianS(listaJoint, motores, endEffector);
 	}
 #endif
-
+```
 

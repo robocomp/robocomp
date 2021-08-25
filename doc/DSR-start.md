@@ -1,6 +1,6 @@
 # Tutorial to start with DSR configurations
 
-This tutorial will guide you through the process of deploying and extending DSR configurations (DSRc). DSRc are sets of agents (a kind of RoboComp component) that share a distributed graph (aka G) data structure. See [robocomp-dsr](https://github.com/robocomp/robocomp/tree/development/classes/dsr) for a detailed description, the theory behind DSR and the installation instructions. 
+This tutorial will guide you through the process of deploying and extending DSR configurations (DSRc). DSRc are sets of agents (a kind of RoboComp component) that share a distributed graph (aka G) data structure. See [robocomp-dsr](https://github.com/robocomp/robocomp/tree/development/libs/dsr) for a detailed description, the theory behind DSR and the installation instructions. 
 
 To have a minimal set of agents acting as the running brain of a (simulated) robot we need four elements:
 

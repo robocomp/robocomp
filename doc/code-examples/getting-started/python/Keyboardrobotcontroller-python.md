@@ -53,5 +53,5 @@ Save the code and simulate the innermodel simpleworld.xml and run the component 
 
 	python src/<componentname>.py --Ice.Config=etc/config
 
-The code for the entire component can be found [here](https://github.com/robocomp/robocomp-robolab/tree/master/components/keyboardrobotcontroller)
+The code for the entire component can be found [here](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/keyboardrobotcontroller)
 

@@ -54,7 +54,7 @@ This will generate a CDSL file with the following content:
         gui Qt(QWidget);
     };
 
-> If you are using [Kate](https://kate-editor.org) or [KDevelop](https://www.kdevelop.org), you can add our [Syntax Highlighting File](https://github.com/robocomp/robocomp/blob/highlyunstable/tools/robocompdsl/kate/cdsl.xml).
+> If you are using [Kate](https://kate-editor.org) or [KDevelop](https://www.kdevelop.org), you can add our [Syntax Highlighting File](https://github.com/robocomp/robocomp/blob/development/tools/cli/robocompdsl/kate/cdsl.xml).
 
 > Just copy **cdsl.xml** to /home/**your-linux-user**/.local/share/katepart5/syntax/cdsl.xml (Kate)
 
@@ -578,7 +578,7 @@ With Subscriber we has no problems with parameters. The use of data types of you
 
 Send us any questions or problems you may have.
 
-Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/RobocompRosChatter.md).
+Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/development/doc/RobocompRosChatter.md).
 
 ## ICE/ROS Middleware Interfaces
 
