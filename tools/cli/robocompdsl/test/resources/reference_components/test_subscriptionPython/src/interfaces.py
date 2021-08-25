@@ -6,7 +6,10 @@ console = Console()
 
 
 Ice.loadSlice("-I ./src/ --all ./src/IMU.ice")
+import RoboCompIMU
 Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
+import RoboCompIMUPub
+
 
 import imupubI
 

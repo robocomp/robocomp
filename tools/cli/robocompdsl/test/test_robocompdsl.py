@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from config_tests import CURRENT_DIR
-from filesgenerator import FilesGenerator
+from robocompdsl.common.filesgenerator import FilesGenerator
 
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
 TEST_DIR = os.path.join(CURRENT_DIR, "..", "autogeneration_tests", "test_cdsl")
