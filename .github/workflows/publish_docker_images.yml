@@ -1,6 +1,11 @@
 name: Publish Robocomp Docker Images
 
 on: push
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   robocomp-dependencies:
     runs-on: ubuntu-latest
