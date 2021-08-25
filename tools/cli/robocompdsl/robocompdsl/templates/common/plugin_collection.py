@@ -33,6 +33,8 @@ class Plugin(object):
                     for _, the_class in inspect.getmembers(module, lambda x: inspect.isclass(x) and issubclass(x, TemplateDict) and x.__name__!="TemplateDict"):
                         # print(f"Loading plugin: {relative_path}")
                         self.classes[relative_path] = the_class
+        if len(self.classes) == 0:
+            raise ValueError(f"Could not find any file for plugin from {self.abs_path} {self.classes}")
 
     def get_template_dict(self, file, ast, interface_name=None):
         file = file.replace(".", "_")+".py"
@@ -42,7 +44,6 @@ class Plugin(object):
             else:
                 return self.classes[file](ast)
         else:
-            raise ValueError(f"Could not plugin file {file}")
             return {}
 
 

@@ -73,6 +73,12 @@ class FilesGenerator:
             console.log(f"Parsing error in file {text.Text(self.dsl_file, style='red')} while generating AST.")
             console.log(f"Exception info: {text.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{text.Text(e.args[2].rstrip(), style='magenta')}")
             exit(1)
+        except FileNotFoundError as e:
+            console.log(f"Dependency file not found for {text.Text(self.dsl_file, style='red')} while generating AST.")
+            console.log(
+                f"Exception info: {text.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{text.Text(e.args[2].rstrip(), style='magenta')}")
+            exit(1)
+
 
     def __create_files(self, test=False):
         new_existing_files = {}

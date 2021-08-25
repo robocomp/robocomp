@@ -1,7 +1,7 @@
 import datetime
 
 from robocompdsl.templates.common.templatedict import TemplateDict
-import templates.templateCPP.plugins.base.functions.function_utils as utils
+from robocompdsl.templates.templateCPP.plugins.base.functions import function_utils as utils
 
 
 INTERFACE_METHOD_STR = """

@@ -126,15 +126,20 @@ class AbstractTemplatesManager(ABC):
 
     def _get_template_dict(self, template, interface_name=None):
         template_dict = {}
-        full_path = TEMPLATES_DIR / self.files['template_path'] / template
+        full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
+        template_name = template.replace(str(full_path), "")
         # look for a method in the class with the name of the file
         for plugin in self.plugins:
-            new_template_dict = plugin.get_template_dict(full_path.name, self.ast, interface_name)
-            for entry, value in new_template_dict.items():
-                if entry in template_dict:
-                    template_dict[entry] += new_template_dict[entry]
-                else:
-                    template_dict[entry] = new_template_dict[entry]
+            if new_template_dict := plugin.get_template_dict(template_name, self.ast, interface_name):
+                for entry, value in new_template_dict.items():
+                    if entry in template_dict:
+                        template_dict[entry] += new_template_dict[entry]
+                    else:
+                        template_dict[entry] = new_template_dict[entry]
+            else:
+                pass
+                # Too much output
+                # console.log(f"Could not get template dict for {template} file in plugin {plugin} - {interface_name}")
         return template_dict
 
 

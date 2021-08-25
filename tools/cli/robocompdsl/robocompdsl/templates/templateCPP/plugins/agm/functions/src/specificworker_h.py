@@ -1,6 +1,6 @@
 import datetime
 
-import dsl_parsers.parsing_utils as p_utils
+import robocompdsl.dsl_parsers.parsing_utils as p_utils
 from robocompdsl.templates.templateCPP.plugins.base.functions import function_utils as utils
 from robocompdsl.templates.common.templatedict import TemplateDict
 

@@ -27,6 +27,7 @@ setup(
             "templates/**/**/*",
             "templates/**/**/**/*",
             "templates/**/**/**/**/*",
+            "templates/**/**/**/**/**/*",
             "dsl_parsers/*",
             "dsl_parsers/**/*",
             "dsl_parsers/**/**/*",
