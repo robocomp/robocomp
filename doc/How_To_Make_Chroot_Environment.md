@@ -132,9 +132,7 @@ You can generate a more complete sources.list file in these pages: [Ubuntu](http
 
   [Schroot conf manual](http://manpages.ubuntu.com/manpages/impish/en/man5/schroot.conf.5.html)
 
-  [Debootstap manual](http://manpages.ubuntu.com/manpages/trusty/en/man8/debootstrap.8.html)
-
-  [Sources.list for Ubuntu](http://repogen.simplylinux.ch/)
+  [Debootstap manual](http://manpages.ubuntu.com/manpages/impish/en/man8/debootstrap.8.html)
 
   [Sources.list for Debian](http://debgen.simplylinux.ch/)
 
