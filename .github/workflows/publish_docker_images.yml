@@ -1,4 +1,4 @@
-name: Publish Robocomp Docker Images
+name: "Docker Images"
 
 on: push
 

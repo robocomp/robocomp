@@ -1,5 +1,5 @@
 ---
-name: Check Docs
+name: "Docs Links Checker"
 on:
   push:
     paths:
