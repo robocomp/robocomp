@@ -14,9 +14,12 @@ concurrency:
 jobs:
   make-generation-test:
     runs-on: ubuntu-latest
-    container: "robocomp/robocomp:development__dsr__latest"
+    container:
+      image: "robocomp/robocomp:development__dsr__latest"
+      options: --user robolab
+
     steps:
-      - run: "su robolab && cd tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && python3 test_component_generation.py -g"
+      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && python3 test_component_generation.py -g"
   fail-on-image-fail:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
