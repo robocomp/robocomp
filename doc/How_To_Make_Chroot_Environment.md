@@ -115,12 +115,6 @@ If the problem persist check out this [page](http://perlgeek.de/en/article/set-u
 
 `sudo cp /etc/resolv.conf /var/chroot/trusty_x64/etc/resolv.conf`
 
-* You might want to have the proper sources.list in order to be able to install packages from Ubuntu official repositories like universe or multiverse, and the security updates. If you make a chroot installation, the sources.list will be the most basic one, like:
-
-`deb http://archive.ubuntu.com/ubuntu trusty main`
-
-You can generate a more complete sources.list file in these pages: [Ubuntu](http://repogen.simplylinux.ch/
-) and [Debian](http://debgen.simplylinux.ch/).
 
 ## External Links
 
@@ -133,7 +127,5 @@ You can generate a more complete sources.list file in these pages: [Ubuntu](http
   [Schroot conf manual](http://manpages.ubuntu.com/manpages/impish/en/man5/schroot.conf.5.html)
 
   [Debootstap manual](http://manpages.ubuntu.com/manpages/impish/en/man8/debootstrap.8.html)
-
-  [Sources.list for Debian](http://debgen.simplylinux.ch/)
 
 
