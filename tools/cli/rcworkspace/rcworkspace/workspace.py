@@ -58,7 +58,9 @@ class Workspace:
         return components_found
 
     def find_component(self, searched_component, interactive=False):
-        component = None
+        component = self.components[searched_component] if searched_component in self.components else None
+        if component is not None:
+            return component
         components_found = self.find_components(searched_component)
         if components_found is not None:
             if len(components_found) == 1:
@@ -214,8 +216,9 @@ class Workspace:
     def update_components_in_workspaces(self, workspace=None):
         old_components_paths = self.components.keys()
         if workspace is None:
-            for workspace in self.workspace_paths:
-                self.components.update(self.get_recursive_components_in_dir(workspace))
+            for existing_workspace in self.workspace_paths:
+                res = self.get_recursive_components_in_dir(existing_workspace)
+                self.components.update(res)
             print(f"Updating workspaces")
         else:
             self.components.update(self.get_recursive_components_in_dir(workspace))

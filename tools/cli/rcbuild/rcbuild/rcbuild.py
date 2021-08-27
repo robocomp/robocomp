@@ -56,7 +56,9 @@ class RCBuild:
         return False
 
     def remove_undesired_files(self, path: Path) -> bool:
-        return self.remove_cmakecache_files(path)
+        if component := self.ws.find_component(path, is_interactive()):
+            return component.clean_build()
+        return False
 
     def build_docs(self, component, install=False, installpath='/opt/robocomp'):
         path = self.ws.find_component(component)
@@ -117,7 +119,8 @@ def clean(
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
-        typer.secho(f"Using current path as component ({component_path})", fg=typer.colors.YELLOW)
+    else:
+        component_path = component
     if not builder.remove_undesired_files(component_path):
         print("Nothing to be removed")
 
