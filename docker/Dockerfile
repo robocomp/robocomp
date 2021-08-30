@@ -62,10 +62,8 @@ RUN git clone -b ${branch} https://github.com/robocomp/robocomp.git
 
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
 RUN export PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
-RUN sudo pip install /home/robolab/robocomp/tools/cli/robocompdsl/
-RUN pip install /home/robolab/robocomp/tools/cli/rcconfig/
-RUN rcconfig
-RUN cd robocomp && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
+RUN sudo pip3 install /home/robolab/robocomp/tools/cli/
+RUN cd robocomp && rcconfig init && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
 RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 RUN sudo ldconfig
 WORKDIR robocomp

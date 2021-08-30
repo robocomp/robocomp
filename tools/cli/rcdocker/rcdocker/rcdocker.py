@@ -132,7 +132,7 @@ def build_image(
         image_tag = f"{base_name}-{base_tag}"
     new_tag = f"robocomp/{robocomp_version}:{image_tag}"
     for line in cli.build(
-            path=str(Path(RC_CONFIG["ROBOCOMP_SRC"]) / "docker"),
+            path=str(RC_CONFIG.ROBOCOMP_SRC_DIR / "docker"),
             dockerfile="Dockerfile",
             rm=True,
             tag=new_tag,

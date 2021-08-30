@@ -28,9 +28,13 @@ class RCBuild:
     def __init__(self):
         self.ws = Workspace()
 
-    def build_component(self, bcomponent, do_clean_first):
-        if component := self.ws.find_component(bcomponent, is_interactive()):
-            component.build()
+    def build_component(self, bcomponent, do_clean_first=False, reg_exp=False, all_comps=False):
+        if all_comps:
+            components = self.ws.find_components(bcomponent, reg_exp=reg_exp)
+            for component in components:
+                component.build(clean=do_clean_first)
+        elif component := self.ws.find_component(bcomponent, is_interactive(), reg_exp=reg_exp):
+            component.build(clean=do_clean_first)
 
     def remove_cmakecache_files(self, path: Path):
         if 'build' in path:
@@ -97,7 +101,9 @@ def build_docs(
 def build_component(
     component: Optional[str] = typer.Argument(None, help='Name of the component to build, if omitted current dir is used.'),
     do_clean: Optional[bool] = typer.Option(False, '--clean', help="Clean the compilation files (CMake and Make generated files."),
-    isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image")
+    isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image"),
+    reg_exp: Optional[bool] = typer.Option(False, '-r', '--reg-exp', help="Use regular expression to find components"),
+    all_comps: Optional[bool] = typer.Option(False, '-a', '--all', help="build all components matching name")
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
@@ -106,7 +112,7 @@ def build_component(
     if isolated:
             rcdocker.rcdocker.build_component_in_container(component)
     else:
-        builder.build_component(component_path, do_clean)
+        builder.build_component(component_path, do_clean, reg_exp, all_comps)
 
 
 @app.command(name="clean",

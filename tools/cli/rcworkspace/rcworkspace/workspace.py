@@ -2,6 +2,7 @@
 import dataclasses
 import json
 import os
+import re
 from pathlib import Path
 
 from prompt_toolkit.shortcuts import confirm
@@ -29,9 +30,8 @@ dir_validator = Validator.from_callable(
 class Workspace:
     # TODO: convert to an unique dict with workspaces as key and components as values.
     workspace_paths = []
-    components = []
-    numOfws = 0
-    robocomp_dir = ''
+    components = {}
+    interfaces = []
 
     ''' constructor'''
 
@@ -49,19 +49,22 @@ class Workspace:
         self.load_workspaces_paths()
         self.load_components()
 
-    def find_components(self, searched_component):
+    def find_components(self, searched_component, reg_exp=False):
         components_found = None
         if not self.components:
             print('No workspace have been configured')
         if self.components:
-            components_found = [component for c_path, component in self.components.items() if str(searched_component) in c_path]
+            if reg_exp:
+                components_found = [component for c_path, component in self.components.items() if re.match(".*"+searched_component+".*", c_path)]
+            else:
+                components_found = [component for c_path, component in self.components.items() if str(searched_component) in c_path]
         return components_found
 
-    def find_component(self, searched_component, interactive=False):
+    def find_component(self, searched_component, interactive=False, reg_exp=False):
         component = self.components[searched_component] if searched_component in self.components else None
         if component is not None:
             return component
-        components_found = self.find_components(searched_component)
+        components_found = self.find_components(searched_component, reg_exp=reg_exp)
         if components_found is not None:
             if len(components_found) == 1:
                 component = components_found[0]
@@ -135,6 +138,12 @@ class Workspace:
                     print(f'Found {subdir}')
         return components_parents_dirs
 
+    def get_recursive_interfaces_in_dir(self, initial_path, print_path=False):
+        interface_files = []
+        if (initial_path:= Path(initial_path)).is_dir():
+            interface_files += list(map(str,initial_path.rglob("*.idsl")))
+        return interface_files
+
     def ask_for_path_selection(self, components_dir_list):
         print("Options")
         print("[0] .")
@@ -188,6 +197,7 @@ class Workspace:
                 return
 
             new_components = self.get_recursive_components_in_dir(response)
+            new_interfaces = self.get_recursive_interfaces_in_dir(response)
 
             if len(new_components) == 0:
                 print(f"No component found in {response}. Workspaces not updated.")
@@ -195,6 +205,13 @@ class Workspace:
             else:
                 print("%s\n%d components found in %s" % (colored('\n'.join(new_components), 'green'),
                                                          len(new_components),
+                                                         response))
+            if len(new_interfaces) == 0:
+                print(f"No interface file found in {response}. Workspaces not updated.")
+                return
+            else:
+                print("%s\n%d interface files found in %s" % (colored('\n'.join(new_interfaces), 'green'),
+                                                         len(new_interfaces),
                                                          response))
 
             if accept_all or interactive is False:
@@ -205,6 +222,7 @@ class Workspace:
             if answer:
                 print(f"{response} added to workspaces")
                 self.components.update(new_components)
+                self.interfaces.append(new_interfaces)
                 self.workspace_paths.append(response)
                 self.save_workspace()
             else:
@@ -212,6 +230,7 @@ class Workspace:
         else:
             print(f"{initial} is already part of an existing workspace ({existing_workspace})")
             self.update_components_in_workspaces(existing_workspace)
+            self.update_interfaces_in_workspaces(existing_workspace)
 
     def update_components_in_workspaces(self, workspace=None):
         old_components_paths = self.components.keys()
@@ -227,6 +246,23 @@ class Workspace:
         print(f"Found {colored(len(new_components), 'green')} new components")
         if len(new_components) > 0:
             print(colored('\n'.join(new_components), 'green'))
+        self.save_workspace()
+
+    def update_interfaces_in_workspaces(self, workspace=None):
+        old_interfaces = self.interfaces
+        if workspace is None:
+            for existing_workspace in self.workspace_paths:
+                res = self.get_recursive_interfaces_in_dir(existing_workspace)
+                self.interfaces = list(set(res+old_interfaces))
+            print(f"Updating workspaces")
+        else:
+            res = self.get_recursive_interfaces_in_dir(workspace)
+            self.interfaces = list(set(res + old_interfaces))
+            print(f"Updating workspace {workspace}")
+        new_interfaces = list(set(self.interfaces) - set(old_interfaces))
+        print(f"Found {colored(len(new_interfaces), 'green')} new interfaces")
+        if len(new_interfaces) > 0:
+            print(colored('\n'.join(new_interfaces), 'green'))
         self.save_workspace()
 
     def delete_workspace(self, workspace_path: Path = None, interactive=False):
