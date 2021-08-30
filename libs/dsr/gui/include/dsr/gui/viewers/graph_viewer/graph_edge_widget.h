@@ -248,7 +248,7 @@ private:
         {
             QSpinBox *spin = new QSpinBox();
             spin->setMinimum(0);
-            spin->setMaximum(std::numeric_limits<uint32_t>::max());
+            spin->setMaximum(std::numeric_limits<int32_t>::max());
             spin->setValue((int)v.uint());
             setCellWidget(rc, 1, spin);
             widget_map[k] = spin;
