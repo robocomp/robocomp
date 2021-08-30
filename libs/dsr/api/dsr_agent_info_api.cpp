@@ -4,6 +4,7 @@
 
 #include <dsr/api/dsr_agent_info_api.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 namespace DSR {
 
@@ -42,6 +43,7 @@ namespace DSR {
         auto str = "Participant_" + std::to_string(G->get_agent_id()) + " ( " + G->get_agent_name() + " )";
         pid_t pid = getpid();
 
+
         int nprocs = -1;
         int64_t memory_kb = -1;
         float cpu = -1.0;
@@ -52,18 +54,26 @@ namespace DSR {
             str.erase(0, str.find_first_not_of(w));
         };
 
+        struct stat sts;
+        if (stat(std::string("/proc/"+ std::to_string(pid) ).c_str(), &sts) == -1 && errno == ENOENT) {
+            std::cout << __FILE__ << ":" << __LINE__ << " PROCESS DOES NOT EXIST" << std::endl;
+        }
+
         try {
             std::string memory_kb_and_cpu = exec(
                     ("top -p " + std::to_string(pid) +" -b -c -n1 | grep  "+ std::to_string(pid) + " | awk '{print $6 \";\" $9}'").c_str());
 
             trim(memory_kb_and_cpu);
             const char delimiter = ';';
-            const uint32_t pos = memory_kb_and_cpu.find(delimiter);
-            memory_kb = std::stoi(memory_kb_and_cpu.substr(0, pos));
-            memory_kb_and_cpu.erase(0, pos+1);
-            std::replace(memory_kb_and_cpu.begin(), memory_kb_and_cpu.end(), ',', '.');
-            cpu = std::stof(memory_kb_and_cpu);
-
+            const auto pos = memory_kb_and_cpu.find(delimiter);
+            if (pos != std::string::npos) {
+                memory_kb = std::stoi(memory_kb_and_cpu.substr(0, pos));
+                memory_kb_and_cpu.erase(0, pos + 1);
+                std::replace(memory_kb_and_cpu.begin(), memory_kb_and_cpu.end(), ',', '.');
+                cpu = std::stof(memory_kb_and_cpu);
+            } else {
+                std::cerr << "Error parsing top output. " << __FILE__ << ":" << __LINE__  << std::endl;
+            }
         } catch (const std::runtime_error &e)
         {
             std::cerr << "Error in popen. " << __FILE__ << ":" << __LINE__  << std::endl;
@@ -75,14 +85,17 @@ namespace DSR {
         try {
             std::string number_of_process = exec(("echo $((`pstree -p "+ std::to_string(pid) +" | wc -l` + 1))").c_str());
             trim(number_of_process);
-            nprocs = std::stoi(number_of_process);
-
+            if (!number_of_process.empty()) {
+                nprocs = std::stoi(number_of_process);
+            } else {
+                std::cerr << "Error in pstree. " << __FILE__ << ":" << __LINE__  << std::endl;
+            }
         } catch (const std::runtime_error &e)
         {
             std::cerr << "Error in popen. " << __FILE__ << ":" << __LINE__  << std::endl;
         } catch (...)
         {
-            std::cerr << "Error in stoi or stof. " << __FILE__ << ":" << __LINE__  << std::endl;
+            std::cerr << "Error in stoi. " << __FILE__ << ":" << __LINE__  << std::endl;
         }
 
 
