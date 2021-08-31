@@ -95,7 +95,7 @@ Remember that viriatoPyrep, idserver and viriatoDSR must be running to proceed w
 * move into "my-agents" and create "my_first_agent". cd into it.
   ```bash
   cd my-agents
-  mkdir my_first-agent
+  mkdir my_first_agent
   cd my_first_agent
   ```
 * execute: robocompdsl my_first_agent.cdsl. A new file will be created with that name
