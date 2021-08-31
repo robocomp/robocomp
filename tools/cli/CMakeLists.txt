@@ -11,8 +11,5 @@ INSTALL(CODE "message(STATUS \"Installing rccd in ~/.bashrc and ~/.zshrc\")
 execute_process(COMMAND sh \"${CMAKE_CURRENT_LIST_DIR}/setup.sh\")")
 INSTALL(CODE "message(STATUS \"Installing autocompletion in ~/.bashrc\")
 execute_process(COMMAND activate-global-python-argcomplete)")
-INSTALL(CODE "message(STATUS \"First execution of rcconfig\")
-    execute_process(COMMAND rcconfig )
-")
 
 execute_process(COMMAND rcworkspace add ${CMAKE_SOURCE_DIR}/components/ --accept-all)
