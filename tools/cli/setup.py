@@ -51,14 +51,14 @@ setup(
     # long_description=open('README.md').read(),
     # long_description_content_type='text/markdown',
     install_requires=[
-        'typer', 'docker'
+        'typer', 'docker', 'pyyaml', 'prompt_toolkit'
     ],
     entry_points={
         'console_scripts': [
             'robocomp = robocomp.robocomp:app',
             'rcbuild = rcbuild.rcbuild:app',
             'rccd = rccd.rccd:app',
-            'rcconfig = rcconfig.rcconfig:app',
+            'rcconfig = rcconfig.main:app',
             'rcdocker = rcdocker.rcdocker:app',
             'rcportchecker = rcportchecker.rcportchecker:app',
             'rcrun = rcrun.rcrun:app',

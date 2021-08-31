@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
@@ -5,6 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
+import typer
 from robocomp import execute_command
 
 
@@ -136,17 +138,22 @@ class ComponentDir:
             self._build_path = self.path / "build"
         return self._build_path
 
-    def build(self, clean=False):
+    def build(self, nproc=None, clean=False):
+        if nproc is None:
+            nproc = int(multiprocessing.cpu_count() / 2)
+        print()
+        typer.secho(f"Starting build of {self.name}", fg=typer.colors.GREEN)
+        typer.secho(f"=============================", fg=typer.colors.GREEN)
         self.build_path.mkdir(exist_ok=True)
         if clean:
             self.clean_build()
         os.chdir(self.build_path)
         print(f"Working on dir {os.getcwd()}")
         execute_command('cmake ..')
-        execute_command('make')
+        execute_command(f'make -j {nproc}')
 
     def clean_build(self, delete_bin=True, delete_new=True, delete_ice=True):
-        # TODO: make more generic. config file to select files to delete
+        # TODO: make more generic. config file to select files to delete?
         # TODO: interactive mode
         items_to_remove = []
         if self.build_path:
@@ -162,13 +169,18 @@ class ComponentDir:
         if delete_ice and self.path and self.path.is_dir():
             for ice_file in self.path.rglob('*.ice'):
                 items_to_remove.append(str(ice_file))
-
         if delete_new and self.path and self.path.is_dir():
             for new_file in self.path.rglob('*.new'):
                 items_to_remove.append(str(new_file))
-
         for build_dir in self.path.rglob('cmake-build-*'):
             items_to_remove.append(str(build_dir))
-        if items_to_remove:
-            execute_command(f"rm -r {' '.join(items_to_remove)}")
+        # generated_interface_files = self.src_path.glob('*I.h')
+        # for interface_file in generated_interface_files:
+        #     interface_name = interface_file.name.split('I')[0]
+        #     cpp_file = self.src_path / (interface_name+"I.cpp")
+        #     if interface_name.islower() and cpp_file.is_file():
+        #         items_to_remove.append(str(interface_file))
+        #         items_to_remove.append(str(cpp_file))
+        for item in items_to_remove:
+            execute_command(f"rm -r {item}")
         return bool(len(items_to_remove))
