@@ -30,7 +30,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       sudo \
       zeroc-ice-all-dev \
       zeroc-icebox \
-  && rm -rf /var/lib/apt/lists/*
+  && sudo rm -rf /var/lib/apt/lists/*
 
 # Some incompatibility from pyside2 (5.15) and default qt installation (5.14)
 sudo pip3 install rich typer
