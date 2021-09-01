@@ -19,6 +19,7 @@ on:
     branches: [ development ]
   schedule:
     - cron: '27 12 * * 3'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -40,7 +41,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v4.9
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
@@ -69,7 +72,7 @@ jobs:
       run: cmake -E make_directory ${{github.workspace}}/build
 
     - name: Robocomp dependencies install
-      run: curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/resources/robocomp_prerequisites_install.sh | bash
+      run: curl -sL https://raw.githubusercontent.com/robocomp/robocomp/${{ steps.branch-name.outputs.current_branch }}/tools/install/resources/robocomp_prerequisites_install.sh | bash
 
     - name: Robocomp tools install
       shell: bash

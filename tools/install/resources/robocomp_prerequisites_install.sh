@@ -36,4 +36,4 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
 sudo pip3 install rich typer
 
 # pyside2-tools have removed pyside2-uic
-sudo echo "uic -g python \$@" > /usr/bin/pyside2-uic && chmod a+x  /usr/bin/pyside2-uic
+echo "uic -g python \$@"  | sudo tee -a /usr/bin/pyside2-uic && sudo chmod a+x /usr/bin/pyside2-uic
