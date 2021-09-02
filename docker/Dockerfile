@@ -31,6 +31,8 @@ ARG branch
 RUN cd ~ && export ROBOCOMP_BRANCH=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/robocomp_install.sh | bash -s $branch
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
+ENV ROBOCOMP=/home/robolab/robocomp
+RUN export ROBOCOMP=/home/robolab/robocomp
 RUN export PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
 #RUN sudo pip3 install /home/robolab/robocomp/tools/cli/
 #RUN cd robocomp && rcconfig init && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
@@ -106,7 +108,6 @@ USER robolab
 WORKDIR /home/robolab/robocomp/components/
 RUN git clone --progress https://github.com/robocomp/dsr-graph.git
 WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
-ENV ROBOCOMP=/home/robolab/robocomp
 RUN cd idserver && cmake . && make -j10
 RUN cd pioneer_dsr && cmake . && make -j10
 RUN cd path_follower && cmake . && make -j10
