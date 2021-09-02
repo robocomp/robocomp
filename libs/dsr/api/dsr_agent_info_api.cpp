@@ -5,6 +5,7 @@
 #include <dsr/api/dsr_agent_info_api.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/times.h>
 
 namespace DSR {
 
@@ -37,7 +38,7 @@ namespace DSR {
         }
         return result;
     }
-
+    
     void AgentInfoAPI::create_or_update_agent()
     {
         auto str = "Participant_" + std::to_string(G->get_agent_id()) + " ( " + G->get_agent_name() + " )";
@@ -67,23 +68,31 @@ namespace DSR {
             const char delimiter = ';';
             const auto pos = memory_kb_and_cpu.find(delimiter);
             if (pos != std::string::npos) {
-                memory_kb = std::stoi(memory_kb_and_cpu.substr(0, pos));
-                memory_kb_and_cpu.erase(0, pos + 1);
-                std::replace(memory_kb_and_cpu.begin(), memory_kb_and_cpu.end(), ',', '.');
-                cpu = std::stof(memory_kb_and_cpu);
+                try {
+                    memory_kb = std::stoi(memory_kb_and_cpu.substr(0, pos));
+                    memory_kb_and_cpu.erase(0, pos + 1);
+                    std::replace(memory_kb_and_cpu.begin(), memory_kb_and_cpu.end(), ',', '.');
+                    try {
+                        cpu = std::stof(memory_kb_and_cpu);
+                    } catch (...)
+                    {
+                        std::cerr << "Error in stof (parsing value "<< memory_kb_and_cpu << ")." << __FILE__ << ":" << __LINE__  << std::endl;
+                    }
+                } catch (...)
+                {
+                    std::cerr << "Error in stoi (parsing value "<< memory_kb_and_cpu.substr(0, pos) << ")." << __FILE__ << ":" << __LINE__  << std::endl;
+                }
             } else {
                 std::cerr << "Error parsing top output. " << __FILE__ << ":" << __LINE__  << std::endl;
             }
         } catch (const std::runtime_error &e)
         {
             std::cerr << "Error in popen. " << __FILE__ << ":" << __LINE__  << std::endl;
-        } catch (...)
-        {
-            std::cerr << "Error in stoi or stof. " << __FILE__ << ":" << __LINE__  << std::endl;
         }
 
+        std::string number_of_process;
         try {
-            std::string number_of_process = exec(("echo $((`pstree -p "+ std::to_string(pid) +" | wc -l` + 1))").c_str());
+            number_of_process = exec(("echo $((`pstree -p "+ std::to_string(pid) +" | wc -l` + 1))").c_str());
             trim(number_of_process);
             if (!number_of_process.empty()) {
                 nprocs = std::stoi(number_of_process);
@@ -95,7 +104,7 @@ namespace DSR {
             std::cerr << "Error in popen. " << __FILE__ << ":" << __LINE__  << std::endl;
         } catch (...)
         {
-            std::cerr << "Error in stoi. " << __FILE__ << ":" << __LINE__  << std::endl;
+            std::cerr << "Error in stoi. (parsing value "<< number_of_process << ")." << __FILE__ << ":" << __LINE__  << std::endl;
         }
 
 
