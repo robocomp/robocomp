@@ -27,6 +27,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       python3-pyparsing \
       python3-setuptools \
       python3-termcolor \
+      python3-zeroc-ice \
       sudo \
       zeroc-ice-all-dev \
       zeroc-icebox \
