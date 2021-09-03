@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelimu.h"
+#include "innermodel/innermodelimu.h"
 
 InnerModelIMU::InnerModelIMU(QString id_, uint32_t _port, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {

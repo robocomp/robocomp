@@ -1,89 +1,81 @@
-set(LIB_NAME innermodel)
-set(LIB_DESC "RoboComp InnerModel library")
-set(LIB_DEPS qmat osgviewer)
+cmake_minimum_required( VERSION 3.10 )
+project(innermodel
+		VERSION 2021.3.1
+		DESCRIPTION "RoboComp InnerModel library"
+		LANGUAGES CXX )
 
-set(srcs
-	innermodel.cpp
-	innermodelreader.cpp
-	innermodelviewer.cpp
-	innermodeldraw.cpp
-	innermodelexception.cpp
-	innermodelnode.cpp
-	innermodeltransform.cpp
-	innermodeljoint.cpp
-	innermodelomnirobot.cpp
-	innermodeldifferentialrobot
-	innermodelprismaticjoint.cpp
-	innermodelplane.cpp
-	innermodelcamera.cpp
-	innermodelrgbd.cpp
-	innermodellaser.cpp
-	innermodelimu.cpp
-	innermodelpointcloud.cpp
-	innermodelmesh.cpp
-	innermodeltouchsensor.cpp
-	innermodeldisplay.cpp
-)
 
-set(incs
-    ${CMAKE_CURRENT_BINARY_DIR}/include/${LIB_NAME}/innermodelconfig.h
-    include/${LIB_NAME}/innermodel.h
-    include/${LIB_NAME}/innermodelreader.h
-    include/${LIB_NAME}/innermodelviewer.h
-    include/${LIB_NAME}/innermodeldraw.h
-    include/${LIB_NAME}/innermodelcamera.h
-    include/${LIB_NAME}/innermodeldifferentialrobot.h
-    include/${LIB_NAME}/innermodelexception.h
-    include/${LIB_NAME}/innermodelimu.h
-    include/${LIB_NAME}/innermodeljoint.h
-    include/${LIB_NAME}/innermodelmesh.h
-    include/${LIB_NAME}/innermodelnode.h
-    include/${LIB_NAME}/innermodelomnirobot.h
-    include/${LIB_NAME}/innermodelplane.h
-    include/${LIB_NAME}/innermodelpointcloud.h
-    include/${LIB_NAME}/innermodelprismaticjoint.h
-    include/${LIB_NAME}/innermodellaser.h
-    include/${LIB_NAME}/innermodelrgbd.h
-    include/${LIB_NAME}/innermodeltouchsensor.h
-    include/${LIB_NAME}/innermodeltransform.h
-    include/${LIB_NAME}/innermodelmesh.h
-    include/${LIB_NAME}/innermodeldisplay.h
-)
+find_package(Qt5 COMPONENTS Gui Core Xml REQUIRED)
 
-# FCL
-option (FCL_SUPPORT "Build with FCL support" OFF)
+add_library(innermodel SHARED)
+add_library(Robocomp::innermodel ALIAS innermodel)
+
+target_sources(innermodel
+		PRIVATE
+		innermodel.cpp
+		innermodelreader.cpp
+		innermodelviewer.cpp
+		innermodeldraw.cpp
+		innermodelexception.cpp
+		innermodelnode.cpp
+		innermodeltransform.cpp
+		innermodeljoint.cpp
+		innermodelomnirobot.cpp
+		innermodeldifferentialrobot
+		innermodelprismaticjoint.cpp
+		innermodelplane.cpp
+		innermodelcamera.cpp
+		innermodelrgbd.cpp
+		innermodellaser.cpp
+		innermodelimu.cpp
+		innermodelpointcloud.cpp
+		innermodelmesh.cpp
+		innermodeltouchsensor.cpp
+		innermodeldisplay.cpp)
+target_link_libraries(innermodel
+		PRIVATE
+		Qt5::Gui Qt5::Xml
+		Robocomp::osgviewer
+		PUBLIC
+		Qt5::Core
+		qmat)
+
+
+## FCL
+#SET(FCL_SUPPORT ON CACHE BOOL "Build FCL shared library" FORCE)
+#MESSAGE(STATUS "FCL_SUPPORT Build with FCL support ${FCL_SUPPORT}")
+
 if (FCL_SUPPORT)
-	SET (FCL_LIBS -lfcl )
-	ADD_DEFINITIONS(-DFCL_SUPPORT=1)
-	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT  =  1" )
-	SET (FCL_SUPPORT_VALUE "1")
+	target_link_libraries(innermodel
+			PRIVATE fcl )
+	target_compile_definitions(innermodel
+			PRIVATE FCL_SUPPORT=1)
+	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT=1" )
 else (FCL_SUPPORT)
-	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT  = 0" )
-	SET (FCL_SUPPORT_VALUE "0")
+	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT=0" )
 endif (FCL_SUPPORT)
 
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include include/innermodel )
-configure_file ("include/${LIB_NAME}/innermodelconfig.in.h"  "include/${LIB_NAME}/innermodelconfig.h" )
+# Define headers for this library. PUBLIC headers are used for
+# compiling the library, and will be added to consumers' build
+# paths.
+target_include_directories(innermodel
+		PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+		$<INSTALL_INTERFACE:include/>
+		)
 
-# Python bindings
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-if (PYTHON_BINDINGS_SUPPORT)
-	# Add bindings source code file
-	SET(srcs ${srcs} innermodel_python.cpp)
-	find_package(Boost COMPONENTS system thread python REQUIRED)
-	find_package(PythonLibs 2.7 REQUIRED)
-	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
-	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
-	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
-endif (PYTHON_BINDINGS_SUPPORT)
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS innermodel EXPORT innermodelConfig
+		ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
-set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}/libs ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# This makes the project importable from the install directory
+# Put config file in per-project dir (name MUST match), can also
+# just go into 'cmake'.
+install(EXPORT innermodelConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/innermodel NAMESPACE Robocomp::)
 
 
-RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${incs} )
-RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
-
-target_link_libraries( ${OUT_FILE_NAME} ${QT_LIBRARIES} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} -losg -losgViewer robocomp_qmat ${FCL_LIBS} )
+# This makes the project importable from the build directory
+export(TARGETS innermodel FILE innermodelConfig.cmake)

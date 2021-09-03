@@ -94,6 +94,10 @@
 #include <vector>
 
 
+template<typename ... T>
+concept only_rvalues  = (std::negation< std::bool_constant<std::is_lvalue_reference<T&&>::value> >::value  && ...);
+
+
 //Base Virtual Object to store any kind of callable objects and its arguments.
 class function_wrapper_base
 {
@@ -160,9 +164,9 @@ public:
         return tasks.size();
     }
 
-    template <typename Function, typename... Arguments,
-            typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value /*&& std::is_same<std::result_of_t<Function(Arguments...)>, void>::value*/>>
+    template <typename Function, typename... Arguments>
     void spawn_task(Function &&fn, Arguments &&... args)
+        requires (only_rvalues<Arguments&& ...> && std::is_invocable<Function &&, Arguments &&...>::value)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
         task_queue_lock.lock();
@@ -172,9 +176,9 @@ public:
         cv.notify_one();
     }
 
-    template <typename Function, typename... Arguments,
-            typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value>>
+    template <typename Function, typename... Arguments>
     auto spawn_task_waitable(Function &&fn, Arguments &&... args)
+        requires (only_rvalues<Arguments&& ...> && std::is_invocable<Function &&, Arguments &&...>::value)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
 

@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodellaser.h"
+#include "innermodel/innermodellaser.h"
 #include <innermodel/innermodel.h>
 
 InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModel *innermodel_, InnerModelNode *parent_) :  InnerModelNode(id_, parent_) , innermodel(innermodel_)

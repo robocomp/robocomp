@@ -1,5 +1,5 @@
 # Sources set
-LIST ( APPEND SOURCES
+SET( SPECIFIC_SOURCES
 	specificworker.cpp
 	specificmonitor.cpp
 	pickhandler.cpp
@@ -22,7 +22,7 @@ LIST ( APPEND HEADERS
 
 #add_definitions(-g  -std=gnu++17 -pedantic-errors)
 SET(CMAKE_CXX_FLAGS " -std=c++17 -O3 -pthread ")
-SET(LIBS ${LIBS} -lpthread -lboost_system )
+SET(LIBS ${LIBS} -lpthread -lboost_system -lboost_python )
 
 # FCL
 if (FCL_SUPPORT)

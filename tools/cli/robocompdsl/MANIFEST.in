@@ -1,0 +1,1 @@
+recursive-include robocompdsl/templates *.txt *.py *.md DoxyFile config *.h *.H *.cpp *.CPP *.ui *.ICE *.PY

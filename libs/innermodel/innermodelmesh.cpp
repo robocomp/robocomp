@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelmesh.h"
+#include "innermodel/innermodelmesh.h"
 
 
 InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable,  InnerModelNode *parent_) : InnerModelNode(id_, parent_)

@@ -1,0 +1,40 @@
+
+/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
+   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+
+defaultMachine{
+    states compute;
+    initial_state initialize;
+    end_state finalize;
+    transitions{
+        initialize => compute;
+        compute => compute;
+        compute => finalize;
+    };
+};
+
+
+/* --------------------------------------------------------------
+   This is the accepted syntax for the State Machine definition 
+
+name_machine{
+    [states name_state *[, name_state];]
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};
+
+[:parent_state [parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};]
+
+------------------------------------------------------------------ */

@@ -1,13 +1,50 @@
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.10 )
+project(robocomp_libs
+        VERSION 2021.3.1
+        DESCRIPTION "Robocomp libs"
+        LANGUAGES CXX )
 
-collect_library_directory_names(${RoboComp_LIBS_DIR} "CMakeLists.txt" RoboComp_MODULES_NAMES RoboComp_MODULES_DIRS doc)
+include(GNUInstallDirs)
 
-set(RoboComp_MODULES_NAMES_UNSORTED ${RoboComp_MODULES_NAMES})
+add_subdirectory(qmat)
 
-topological_sort(RoboComp_MODULES_NAMES RoboComp_ _DEPENDS)
+add_subdirectory(osgviewer)
 
-sort_relative(RoboComp_MODULES_NAMES_UNSORTED RoboComp_MODULES_NAMES RoboComp_MODULES_DIRS)
+add_subdirectory(innermodel)
 
-foreach(subdir ${RoboComp_MODULES_DIRS})
-  add_subdirectory(${RoboComp_LIBS_DIR}/${subdir})
-endforeach(subdir)
+# TEST app for the libs
+add_executable(testlibs EXCLUDE_FROM_ALL)
+target_sources(testlibs
+        PRIVATE
+        test_libs.cpp
+        )
+
+target_link_libraries(testlibs
+        PRIVATE
+        Robocomp::innermodel
+        Robocomp::osgviewer
+        )
+
+IF(DSR)
+    add_subdirectory(dsr)
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+    add_executable(testdsr)
+    target_sources(testdsr
+            PRIVATE
+            test_dsr.cpp
+            )
+
+    target_link_libraries(testdsr
+            PRIVATE
+            Robocomp::dsr_api
+            Robocomp::dsr_gui
+            Qt5::Widgets
+            )
+ENDIF(DSR)
+
+#add_subdirectory(innermodel-python3)
+
+
+
+
+

@@ -18,7 +18,7 @@
 */
 
 
-#include <innermodeldraw.h>
+#include <innermodel/innermodeldraw.h>
 
 void InnerModelDraw::addMesh_ignoreExisting(InnerModelViewer *innerViewer, QString item, QString base, QVec t, QVec r, QString path, QVec scale)
 {

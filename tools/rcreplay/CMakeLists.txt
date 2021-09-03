@@ -1,8 +1,8 @@
-cmake_minimum_required( VERSION 2.6 )
-
-MACRO( ROBOCOMP_WRAP_PYTHON_UI )
-  FOREACH( input_file ${ARGN} )
-    MESSAGE(STATUS "Adding rule to generate ui_${input_file}.py from ${input_file}.ui" )
+cmake_minimum_required( VERSION 3.10 )
+project(rcreplay
+		VERSION 2021.2.1
+		DESCRIPTION "RoboComp rcreplay tool"
+		LANGUAGES CXX )
     ADD_CUSTOM_COMMAND (
       OUTPUT ui_${input_file}.py
       COMMAND pyside2-uic ${input_file}.ui -o ui_${input_file}.py

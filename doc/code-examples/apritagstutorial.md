@@ -1,6 +1,6 @@
 # aprilTagsComp : Tutorial to simulate virtual apriltags
 
-If you haven't already, Then do read about aprilTagsComp [here](code-examples/apriltags.md ) for better understanding. In this tutorial you will learn the actual functionality of apriltags.
+If you haven't already, Then do read about aprilTagsComp [here](./apriltags.md ) for better understanding. In this tutorial you will learn the actual functionality of apriltags.
 
 First make sure you have installed apriltags. Please follow the steps that is given in *INSTALL_APRILTAGS_LIB.TXT*. Then move to the apriltagscomp folder
 

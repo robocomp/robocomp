@@ -6,7 +6,7 @@ module RoboCompCameraSimple
 
   struct TImage
   {
-
+    bool compressed;  // opencv jpeg compression
     int width;
     int height;
     int depth;
@@ -15,6 +15,6 @@ module RoboCompCameraSimple
 
   interface CameraSimple
   {
-    idempotent void getImage(out TImage im) throws HardwareFailedException;
+    TImage getImage() throws HardwareFailedException;
   };
 };

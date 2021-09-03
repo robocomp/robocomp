@@ -1,0 +1,538 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from collections import OrderedDict
+from time import sleep
+
+import dbus
+import os
+import shlex
+import subprocess
+
+
+TAB_SHELL_CODE = """
+#create new tab for %s
+qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession
+#get id of open session
+sess0=`qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.activeSessionId`
+#run command on active session
+qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand " cd %s"
+#run command on active session
+qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "%s"
+#change the title of session
+qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess0 "%s"
+"""
+
+TERMINAL_SPLIT_SHELL_CODE = """
+"""
+
+
+def get_command_return(command):
+    proc = subprocess.Popen(
+        command,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        shell=True,
+        executable="/bin/bash",
+    )
+    proc.wait()
+    (result, error) = proc.communicate()
+    return result, error
+
+def get_last_child(pid):
+    last_pid = pid
+    while True:
+        child_pids, _ = get_command_return("pgrep -P %s" % last_pid)
+        if not child_pids:
+            return last_pid
+        else:
+            child_pids = child_pids.decode("utf-8")
+            if "\n" in child_pids:
+                result = []
+                for child_pid in child_pids.split("\n"):
+                    if child_pid == "":
+                        continue
+                    more_childs = get_last_child(int(child_pid))
+                    if isinstance(more_childs, list):
+                        result.extend(more_childs)
+                    else:
+                        result.append(more_childs)
+                return result
+            else:
+                last_pid = int(child_pids)
+
+
+class YakuakeDBus(object):
+    __instance = None
+
+    def __new__(cls):
+        if YakuakeDBus.__instance is None:
+            YakuakeDBus.__instance = object.__new__(cls)
+        YakuakeDBus.__instance.s_dbus = dbus.SessionBus()
+        YakuakeDBus.__instance.tabs = YakuakeDBus.__instance.s_dbus.get_object(
+            "org.kde.yakuake", "/yakuake/tabs", "org.kde.yakuake"
+        )
+        YakuakeDBus.__instance.sessions = YakuakeDBus.__instance.s_dbus.get_object(
+            "org.kde.yakuake", "/yakuake/sessions", "org.kde.yakuake"
+        )
+        YakuakeDBus.__instance.konsole_sessions = {}
+        return YakuakeDBus.__instance
+
+    def session(self, session_id: int):
+        if session_id not in self.konsole_sessions:
+            self.konsole_sessions[session_id] = self.s_dbus.get_object(
+                "org.kde.yakuake",
+                "/Sessions/%s" % (session_id),
+                "org.kde.konsole.Session",
+            )
+        return self.konsole_sessions[session_id]
+
+
+class KonsoleSession:
+    def __init__(self, terminal_id):
+        self.konsole_session_id = terminal_id + 1
+        self.terminal_id = terminal_id
+        dbus_session = YakuakeDBus().session(self.konsole_session_id)
+        self.foreground_pid = dbus_session.foregroundProcessId()
+        self.session_pid = dbus_session.processId()
+        # Not executing the command
+        self.child_pid = get_last_child(self.foreground_pid)
+        self.__current_directory = ""
+        self.__last_command = ""
+        self.__running_command = ""
+
+
+    @property
+    def current_directory(self):
+        if not isinstance(self.child_pid, int):
+            print(
+                f"Terminal id {self.terminal_id} have more than one child for foreground pid {self.foreground_pid}"
+            )
+            print("Can't find current directory")
+        else:
+            pwdx_command = "pwdx %s" % self.child_pid
+            pwd, error = get_command_return(pwdx_command)
+            pwd = pwd.split()[1].strip()
+            self.__current_directory = pwd.decode("utf-8")
+        return self.__current_directory
+
+    @property
+    def last_command(self):
+        if self.foreground_pid == self.session_pid:
+            self.__last_command = self.get_last_executed_command(self.terminal_id)
+        else:
+            self.__last_command = self.running_command
+        return self.__last_command
+
+    @property
+    def running_command(self):
+        if self.foreground_pid != self.session_pid:
+            ps_command = "pstree -p -A %s" % self.child_pid
+            command, error = get_command_return(ps_command)
+            self.__running_command = command.decode("utf-8").strip().split('(')[-2]
+        return self.__running_command
+
+    def get_last_executed_command(self, terminal_id):
+        return ""
+        # TODO: shell history is not related with each session. Need to find a different way to get the last executed command
+        # tmp_path = "/tmp/yaku_commands_%d.txt" % terminal_id
+        # # WARNING: leading space character in echo command is imprtant to avoid this been saved in history
+        # # https://stackoverflow.com/questions/6475524/how-do-i-prevent-commands-from-showing-up-in-bash-history
+        # YakuakeDBus().sessions.runCommandInTerminal(
+        #     int(terminal_id), f" echo !:0 !:* > {tmp_path}"
+        # )
+        # sleep(0.1)
+        #
+        # for retrie in range(5):
+        #     try:
+        #         with open(tmp_path) as command_file:
+        #             file_lines = command_file.read().splitlines()
+        #             if len(file_lines) > 0:
+        #                 return file_lines[0]
+        #             # print("Tab title: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.title,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
+        #             break
+        #     except:
+        #         if retrie == 4:
+        #             print('Could not get command from terminal "%s"' % str(terminal_id))
+        # return ""
+
+
+class YakuakeSessionStack:
+    def __init__(self):
+        self.__dbus = dbus.SessionBus()
+        self.__dbus_sessions_obj = YakuakeDBus().sessions
+        self.__active_session_id = -1
+        self.__terminal_session_id = -1
+        self.sessions = OrderedDict()
+        self.open_tabs = YakuakeDBus().tabs
+
+    @property
+    def active_session_id(self) -> int:
+        self.__active_session_id = self.__dbus_sessions_obj.activeSessionId()
+        return self.__active_session_id
+
+    @property
+    def active_terminal_id(self) -> int:
+        self.__active_terminal_id = self.__dbus_sessions_obj.activeTerminalId()
+        return self.__active_terminal_id
+
+    def add_session(self):
+        self.__dbus_sessions_obj.addSession()
+
+    def add_session_quad(self):
+        self.__dbus_sessions_obj.addSessionQuad()
+
+    def add_session_two_horizontal(self):
+        self.__dbus_sessions_obj.addSessionTwoHorizontal()
+
+    def add_session_two_vertical(self):
+        self.__dbus_sessions_obj.addSessionTwoVertical()
+
+    def raise_session(self, session_id: int):
+        self.__dbus_sessions_obj.raiseSession()
+
+    def remove_session(self, session_id: int):
+        self.__dbus_sessions_obj.removeSession()
+
+    def remove_terminal(self, terminal_id: int):
+        self.__dbus_sessions_obj.removeTerminal()
+
+    def split_session_left_right(self, session_id: int):
+        self.__dbus_sessions_obj.splitSessionLeftRight()
+
+    def split_session_top_bottom(self, session_id: int):
+        self.__dbus_sessions_obj.splitSessionTopBottom()
+
+    def split_terminal_left_right(self, terminal_id: int):
+        self.__dbus_sessions_obj.splitTerminalLeftRight()
+
+    def split_terminal_top_bottom(self, terminal_id: int):
+        self.__dbus_sessions_obj.splitTerminalTopBottom()
+
+    def try_grow_terminal_right(self, terminal_id: int, pixels: int = 10):
+        self.__dbus_sessions_obj.tryGrowTerminalRight(terminal_id, pixels)
+
+    def try_grow_terminal_left(self, terminal_id: int, pixels: int = 10):
+        self.__dbus_sessions_obj.tryGrowTerminalLeft(terminal_id, pixels)
+
+    def try_grow_terminal_top(self, terminal_id: int, pixels: int = 10):
+        self.__dbus_sessions_obj.tryGrowTerminalTop(terminal_id, pixels)
+
+    def try_grow_terminal_bottom(self, terminal_id: int, pixels: int = 10):
+        self.__dbus_sessions_obj.tryGrowTerminalBottom(terminal_id, pixels)
+
+    def session_id_list(self) -> list:
+        session_ids_text = self.__dbus_sessions_obj.sessionIdList()
+        session_ids = map(int, session_ids_text.split(","))
+        return list(session_ids)
+
+    def terminal_id_list(self) -> list:
+        terminal_ids_text = self.__dbus_sessions_obj.terminalIdList()
+        terminal_ids = map(int, terminal_ids_text.split(","))
+        return list(terminal_ids)
+
+    def terminal_ids_for_session_id(self, session_id: int) -> int:
+        terminal_ids_text = self.__dbus_sessions_obj.terminalIdsForSessionId(session_id)
+        terminal_ids = map(int, terminal_ids_text.split(","))
+        return list(terminal_ids)
+
+    def session_id_for_terminal_id(self, terminal_id: int) -> int:
+        return int(self.__dbus_sessions_obj.sessionIdForTerminalId(terminal_id))
+
+    def run_command(self, command: str):
+        self.__dbus_sessions_obj.runCommand(command)
+
+    def run_command_in_terminal(self, terminal_id: int, command: str):
+        self.__dbus_sessions_obj.runCommandInTerminal(terminal_id, command)
+
+    def is_session_closable(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.isSessionClosable(session_id)
+
+    def set_session_closable(self, session_id: int, closable: bool):
+        self.__dbus_sessions_obj.setSessionClosable(session_id, closable)
+
+    def has_unclosable_sessions(self) -> bool:
+        return self.__dbus_sessions_obj.hasUnclosableSessions()
+
+    def is_session_keyboard_input_enabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.isSessionKeyboardInputEnabled(session_id)
+
+    def set_session_keyboard_input_enabled(self, session_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setSessionKeyboardInputEnabled(session_id, enabled)
+
+    def is_terminal_keyboard_input_enabled(self, terminal_id: int) -> bool:
+        return self.__dbus_sessions_obj.isTerminalKeyboardInputEnabled(terminal_id)
+
+    def set_terminal_keyboard_input_enabled(self, terminal_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setTerminalKeyboardInputEnabled(terminal_id, enabled)
+
+    def has_terminals_with_keyboard_input_enabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithKeyboardInputEnabled(session_id)
+
+    def has_terminals_with_keyboard_input_disabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithKeyboardInputDisabled(
+            session_id
+        )
+
+    def is_session_monitor_activity_enabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.isSessionMonitorActivityEnabled(session_id)
+
+    def set_session_monitor_activity_enabled(self, session_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setSessionMonitorActivityEnabled(session_id, enabled)
+
+    def is_terminal_monitor_activity_enabled(self, terminal_id: int) -> bool:
+        return self.__dbus_sessions_obj.isTerminalMonitorActivityEnabled(terminal_id)
+
+    def set_terminal_monitor_activity_enabled(self, terminal_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setTerminalMonitorActivityEnabled(terminal_id, enabled)
+
+    def has_terminals_with_monitor_activity_enabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithMonitorActivityEnabled(
+            session_id
+        )
+
+    def has_terminals_with_monitor_activity_disabled(self, session_id) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithMonitorActivityDisabled(
+            session_id
+        )
+
+    def is_session_monitor_silence_enabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.isSessionMonitorSilenceEnabled(session_id)
+
+    def set_session_monitor_silence_enabled(self, session_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setSessionMonitorSilenceEnabled(session_id, enabled)
+
+    def is_terminal_monitor_silence_enabled(self, terminal_id: int) -> bool:
+        return self.__dbus_sessions_obj.isTerminalMonitorSilenceEnabled(terminal_id)
+
+    def set_terminal_monitor_silence_enabled(self, terminal_id: int, enabled: bool):
+        self.__dbus_sessions_obj.setTerminalMonitorSilenceEnabled(terminal_id, enabled)
+
+    def has_terminals_with_monitor_silence_enabled(self, session_id) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithMonitorSilenceEnabled(
+            session_id
+        )
+
+    def has_terminals_with_monitor_silence_disabled(self, session_id: int) -> bool:
+        return self.__dbus_sessions_obj.hasTerminalsWithMonitorSilenceDisabled(
+            session_id
+        )
+
+
+class YakuakeTabStack:
+    def __init__(self):
+        self.__dbus = dbus.SessionBus()
+        self.open_tabs = YakuakeDBus().tabs
+        self.session_stack = YakuakeSessionStack()
+        self.tabs_by_name = OrderedDict()
+        self.tabs_by_index = OrderedDict()
+        self.tabs_by_session = OrderedDict()
+
+    def load_open_tabs_info(self):
+        next_index = 0
+        session_id = None
+        while session_id != -1:
+            session_id = self.session_at_tab(next_index)
+            if session_id != -1:
+                tab = YakuakeTab(next_index, session_id)
+                self.tabs_by_index[next_index] = tab
+                self.tabs_by_session[session_id] = tab
+                next_index += 1
+
+        for index, tab in self.tabs_by_index.items():
+            self.load_tab_info(tab)
+
+    def session_at_tab(self, index: int) -> int:
+        return int(
+            self.__dbus.get_object(
+                "org.kde.yakuake", "/yakuake/tabs", "org.kde.yakuake"
+            ).sessionAtTab(index)
+        )
+
+    def tab_title(self, session_id):
+        return self.__dbus.get_object(
+            "org.kde.yakuake", "/yakuake/tabs", "org.kde.yakuake"
+        ).tabTitle(session_id)
+
+    def terminal_ids_for_index(self, index):
+        tab = self.tabs_by_index[index]
+        session_id = tab.yakuake_session_id
+        return self.session_stack.terminal_ids_for_session_id(session_id)
+
+    def load_tab_info(self, tab):
+        tab.title = self.tab_title(tab.yakuake_session_id)
+        tab.terminal_ids = self.terminal_ids_for_index(tab.index)
+        for terminal_id in tab.terminal_ids:
+            konsole_terminal = KonsoleSession(terminal_id)
+            tab.terminals[terminal_id] = konsole_terminal
+        same_name_count = 0
+        new_name = tab.title
+        while new_name in self.tabs_by_name:
+            same_name_count += 1
+            new_name = tab.title + "_" + str(same_name_count)
+        self.tabs_by_name[new_name] = tab
+
+    def rename_tab_by_index(self, index: int, title: str):
+        YakuakeDBus().tabs.setTabTitle(index, title)
+
+    def rename_all_tabs(self, name=None, append=False):
+        self.load_open_tabs_info()
+        for index, tab in self.tabs_by_index.items():
+            final_name = tab.get_new_title()
+            YakuakeDBus().tabs.setTabTitle(tab.yakuake_session_id, final_name)
+
+
+class YakuakeTab:
+    def __init__(self, index, session_id):
+        self.index = index
+        self.yakuake_session_id = session_id
+        self.terminal_ids = []
+        self.terminals = {}
+        self.__last_command = None
+        self.__running_command = None
+        self.__current_directory = None
+        self.title = ""
+        self.tmp_path = ""
+
+    @property
+    def current_directory(self):
+        if len(self.terminals) > 0:
+            lower_terminal_id = sorted(self.terminals)[0]
+            self.__current_directory = self.terminals[
+                lower_terminal_id
+            ].current_directory
+        return self.__current_directory
+
+    @property
+    def last_command(self):
+        if len(self.terminals) > 0:
+            lower_terminal_id = sorted(self.terminals)[0]
+            self.__last_command = self.terminals[
+                lower_terminal_id
+            ].last_command
+        return self.__last_command
+
+    @property
+    def running_command(self):
+        if len(self.terminals) > 0:
+            lower_terminal_id = sorted(self.terminals)[0]
+            self.__running_command = self.terminals[
+                lower_terminal_id
+            ].running_command
+        return self.__running_command
+
+    def get_new_title(self,  name=None, append=False):
+        pwd = self.current_directory
+        dir_name = os.path.basename(os.path.normpath(pwd))
+        if name is None:
+            final_name = dir_name
+            if self.last_command:
+                final_name += "_" + self.last_command
+            elif self.running_command:
+                final_name += "_" + self.running_command
+        else:
+            if append:
+                final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
+            else:
+                final_name = name
+
+        if len(self.terminals) > 1:
+            final_name += "_+" + str(len(self.terminals) - 1)
+        self.title = final_name
+        return final_name
+
+class Yaku:
+    def __init__(self):
+        self.__dbus = dbus.SessionBus()
+        self.session_stack = YakuakeSessionStack()
+        self._tabs_stack = None
+        self.yakuake_process_id = self.get_yakuake_pid()
+        self.yakuake_shell_children = self.get_yakuake_children()
+
+    def get_yakuake_pid(self):
+        subprocess.check_output(["pidof", "yakuake"])
+
+    def get_yakuake_children(self):
+        yakuake_pid = self.get_yakuake_pid()
+        child_pids, _ = get_command_return("pgrep -P %s" % yakuake_pid)
+        child_pids = child_pids.decode("utf-8")
+        result = []
+        if "\n" in child_pids:
+            for child_pid in child_pids.split("\n"):
+                if child_pid == "":
+                    continue
+                more_childs = get_last_child(int(child_pid))
+                if isinstance(more_childs, list):
+                    result.extend(more_childs)
+                else:
+                    result.append(more_childs)
+        return result
+
+
+    def toggle_window_state(self):
+        self.__dbus.toggleWindowState()
+
+    @property
+    def tabs_stack(self):
+        if self._tabs_stack is None:
+            self._tabs_stack = YakuakeTabStack()
+            if len(self._tabs_stack.tabs_by_index) == 0:
+                self._tabs_stack.load_open_tabs_info()
+        return self._tabs_stack
+
+    def rename_tab(self, name=None, append=False, session_id=None):
+        if session_id is None:
+            session_id = self.session_stack.active_session_id
+        pwd = self.tabs_stack.tabs_by_session[session_id].current_directory
+        dir_name = os.path.basename(os.path.normpath(pwd))
+        running_command = self.tabs_stack.tabs_by_session[session_id].runnng_command
+        if name is None:
+            final_name = dir_name
+            if running_command is not None:
+                final_name+="_"+running_command
+        else:
+            if append:
+                final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
+            else:
+                final_name = name
+        if len(self.tabs_stack.tabs_by_session[session_id].terminals) > 1:
+            final_name += " +"
+        YakuakeDBus().tabs.setTabTitle(session_id, final_name)
+
+    def rename_current_tab(self, name=None, append=False):
+        self.rename_tab(name, append)
+
+    # @staticmethod
+    # def rename_all_tabs(title=None, append=False):
+
+    def create_yakuake_start_shell_script(self, tabs_to_restore=None):
+        if tabs_to_restore is None:
+            if len(self.tabs_stack.tabs_by_index) == 0:
+                self.tabs_stack.load_open_tabs_info()
+            tabs_to_restore = self.tabs_stack.tabs_by_name
+        shell_script_content = ""
+        for tab in tabs_to_restore.values():
+            for terminal in tab.terminals.values():
+                if (
+                    terminal.last_command != "" or terminal.current_directory != ""
+                ) and ("Shell" not in tab.title and "Consola" not in tab.title):
+                    tab_title = tab.title
+                    if len(tab.terminals) > 1:
+                        tab_title += str(terminal.konsole_session_id)
+                    shell_script_content += TAB_SHELL_CODE % (
+                        tab_title,
+                        terminal.current_directory,
+                        terminal.last_command,
+                        tab_title,
+                    )
+        with open("./new_deplyment.sh", "w") as f:
+            f.write(shell_script_content)
+        print("Script saved in ./new_deployment.sh")
+
+    def rename_all_tabs(self, name=None, append=False):
+        self.tabs_stack.rename_all_tabs(name, append)
+
+
+if __name__ == "__main__":
+    yaku = Yaku()
+    yaku.rename_all_tabs()
+    # print(yaku.tabs_by_name)

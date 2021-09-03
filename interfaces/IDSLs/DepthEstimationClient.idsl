@@ -1,0 +1,26 @@
+module RoboCompDepthEstimationClient
+{
+    sequence<byte> ImgType;
+    struct TImage
+    {
+        int width;
+        int height;
+        int depth;
+        ImgType image;
+    };
+    
+    sequence<float> DepthMap;
+    
+    struct Depth
+    {
+     
+        DepthMap output;
+        int width;
+        int height;
+        int depth;
+    };
+    interface DepthEstimationClient
+    {
+        idempotent void getDepthEstimation(TImage depthImg, out Depth depth);
+    };
+};

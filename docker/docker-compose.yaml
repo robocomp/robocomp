@@ -1,0 +1,36 @@
+version: '2'
+services:
+    idserver:
+        network_mode: host
+        image: robocomp/robocomp:focal_dsr
+        entrypoint: sh -c "cd components/idserver && (./bin/idserver /dsr_etc/idserver_config)"
+        environment: 
+            - DISPLAY=$DISPLAY
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - ./etc:/dsr_etc/
+        user: robolab
+        depends_on:
+            - rcnode
+
+    viriatoDSR:
+        network_mode: host
+        image: robocomp/robocomp:focal_dsr
+        entrypoint: sh -c "cd components/viriatoDSR/ && (./bin/viriatoDSR /dsr_etc/viriato_dsr_config)"
+        environment: 
+            - DISPLAY=$DISPLAY
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - ./etc:/dsr_etc/
+        user: robolab
+        depends_on:
+            - rcnode
+
+    rcnode:
+        network_mode: host
+        image: robocomp/robocomp:focal_dsr
+        entrypoint: sh -c "rcnode"
+        ports:
+            - 9999:9999
+            - 9998:9998
+            

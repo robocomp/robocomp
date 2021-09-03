@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelpointcloud.h"
+#include "innermodel/innermodelpointcloud.h"
 
 InnerModelPointCloud::InnerModelPointCloud(QString id_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {

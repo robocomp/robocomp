@@ -10,11 +10,21 @@ module RoboCompCoppeliaUtils
                     float rz;
                 };
 
+                struct SpeedType
+                {
+                    float vx;
+                    float vy;
+                    float vz;
+                    float vrx;
+                    float vry;
+                    float vrz;
+                };
                 enum TargetTypes { Info, Hand, HeadCamera };
 
                 interface CoppeliaUtils
                 {
                     void addOrModifyDummy(TargetTypes type, string name, PoseType pose);
+                    void setDummySpeed(TargetTypes type, string name, SpeedType speed);
                 };
         };
 
