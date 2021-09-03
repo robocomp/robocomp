@@ -127,11 +127,15 @@ def build_image(
         branch="tools_refactoring",
         robocomp_version="dsr-components",
         push=False):
-    cli = APIClient(base_url='unix:///var/run/docker.sock')
+    docker_cli = APIClient(base_url='unix:///var/run/docker.sock')
     if image_tag is None:
         image_tag = f"{base_name}-{base_tag}"
+    # TODO: check that image tag exists
+    # TODO: set new_tag to the new nomenclature
+    # TODO: check that image tag and basetag/basename are not given at the same time
     new_tag = f"robocomp/{robocomp_version}:{image_tag}"
-    for line in cli.build(
+    print(f"Trying to build image for Robocomp({branch}), version:{robocomp_version} on top of {image_tag}")
+    for line in docker_cli.build(
             path=str(RC_CONFIG.ROBOCOMP_SRC_DIR / "docker"),
             dockerfile="Dockerfile",
             rm=True,

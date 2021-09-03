@@ -8,6 +8,10 @@ from pathlib import Path
 
 import typer
 from robocomp import execute_command
+try:
+    from pyaku.pyaku import Yaku
+except ModuleNotFoundError:
+    Yaku = False
 
 
 class ComponentCheck(ABC):
@@ -41,17 +45,25 @@ class ComponentConfigCheck(ComponentCheck):
         config_files = defaultdict(list)
         if full_path := component_dir / "etc":
             if full_path.is_dir():
-                for file in list(full_path.iterdir()):
-                    if "config" in str(file.name):
-                        filepath = full_path / file
-                        config_files[component_dir].append(filepath)
-                        component._config_file_path = filepath
-        return len(config_files) > 0, component
+                if full_path.glob("config"):
+                    filepath = full_path / "config"
+                    component._config_file_path = filepath
+                else:
+                    for file in list(full_path.iterdir()):
+                        if "config" in str(file.name):
+                            filepath = full_path / file
+                            config_files[component_dir].append(filepath)
+                            component._config_file_path = filepath
+        return component._config_file_path is not None, component
 
 class ComponentNoTrashCheck(ComponentCheck):
     @classmethod
     def check(cls, component_dir: Path, component=None):
         return '.local/share/Trash' not in str(component_dir.absolute()), component
+
+class LanguageType(Enum):
+    PYTHON = 1
+    CPP = 2
 
 class ComponentDir:
     """Class for keeping track of a component in workspace"""
@@ -61,7 +73,7 @@ class ComponentDir:
         self.cdsl_file_path: Path = None
         self.cmakelists_file_path: Path = None
 
-        self.language: Enum('Python', 'C++') = None
+        self._language: LanguageType = None
 
         self.path: Path = None
         self._etc_path = None
@@ -109,13 +121,13 @@ class ComponentDir:
                 bin_file_path = self.bin_path / self.name
                 if os.access(bin_file_path, os.X_OK):
                     self._bin_file_path = bin_file_path
-                    self.language = 'C++'
+                    self._language = LanguageType.CPP
             elif self.src_path.is_dir():
                 python_main_path = self.src_path / (self.name+".py")
                 if python_main_path.exists():
                     self._bin_file_path = python_main_path
-                    self.language = 'Python'
-        return self.bin_file_path
+                    self._language = LanguageType.PYTHON
+        return self._bin_file_path
 
     @property
     def etc_path(self):
@@ -127,8 +139,8 @@ class ComponentDir:
     def config_file_path(self):
         if self._config_file_path is None:
             if self.etc_path.is_dir():
-                config_file_path = self.etc_path / self.name
-                if os.access(config_file_path, os.X_OK):
+                config_file_path = self.etc_path / "config"
+                if config_file_path.is_file():
                     self._config_file_path = config_file_path
         return self._config_file_path
 
@@ -137,6 +149,13 @@ class ComponentDir:
         if self._build_path is None:
             self._build_path = self.path / "build"
         return self._build_path
+
+    @property
+    def language(self) -> LanguageType:
+        if self._language is None:
+            # getting the value forces the property to be updated
+            self.bin_file_path
+        return self._language
 
     def build(self, nproc=None, clean=False):
         if nproc is None:
@@ -184,3 +203,12 @@ class ComponentDir:
         for item in items_to_remove:
             execute_command(f"rm -r {item}")
         return bool(len(items_to_remove))
+
+    def run_component(self, use_yaku=True):
+        if self.language == LanguageType.PYTHON:
+            if Yaku:
+                yaku = Yaku()
+                yaku.run_in_new_tab(f"cd {self.path}; python3 {self.bin_file_path} {self.config_file_path}&", self.name)
+            else:
+                os.chdir(self.path)
+                execute_command(f"python3 {self.bin_file_path} {self.config_file_path}")
