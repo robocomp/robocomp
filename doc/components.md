@@ -22,7 +22,7 @@ You need to define what is a generic component and consequently how its internal
 
 ## Robocomp Components
 
-In RoboComp (2005- ) we have created our own component model, inspired by the [ORCA](http://orca-robotics.sourceforge.net/) model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses [Ice](http://www.zeroc.com) and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as [DDS](http://portals.omg.org/dds/).
+In RoboComp (2005- ) we have created our own component model, inspired by the [ORCA](http://orca-robotics.sourceforge.net/) model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses [Ice](http://www.zeroc.com) and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as [DDS](https://www.dds-foundation.org/).
 
 RoboComp's components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction. 
 

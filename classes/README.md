@@ -5,7 +5,7 @@ that are of common use among the components and tools that compose it.
 In this directory you can find these classes defined.
 
 
-## [DoubleBuffer](./DoubleBuffer)
+## [DoubleBuffer](./doublebuffer)
 This class is a generic container for a thread-safe, timed, threaded doublebuffer used to transfer data between threads.
 For example, between the main thread of a component and the (threaded) middleware stubs.  
 

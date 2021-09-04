@@ -3,6 +3,10 @@
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Docs Links Checker](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml)
+[![CodeQL Analysis](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml)
+[![Docker Images](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml)
+[![Component generation test](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml)
 # About
 
 An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
@@ -35,8 +39,9 @@ interfaces in a seamless way. Building new components is done using two domain-s
 
 # Installation from source
 
-Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.  
+Tested in Ubuntu 20.04 and 20.10.  
 **Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
+**Note:** RoboComp is not compatible with Ubuntu 18.04. RoboComp needs to be compiled using cmake >= 3.16. It's not available in Ubuntu 18.04.
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 
@@ -45,83 +50,22 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 Make sure you have installed the following packages from the Ubuntu repository:
 ```bash
 sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
-      ca-certificates \
-      cmake \
-      curl \
-      freeglut3-dev \
-      g++ \
-      gcc-multilib \
-      git \
-      git-annex \
-      libboost-dev \
-      libboost-system-dev \
-      libboost-thread-dev \
-      libgsl-dev \
-      libopenscenegraph-dev \
-      libqt5xmlpatterns5-dev \
-      libqt5opengl5-dev \
-      libzeroc-icestorm3.7 \
-      make \
-      python3 \
-      python3-pip \
-      python3-distutils \
-      python3-pyparsing \
-      python3-setuptools \
-      python3-termcolor \
-      python3-zeroc-ice \
       sudo \
-      zeroc-ice-all-dev \
-      zeroc-icebox 
-
-sudo pip3 install pyside2 rich argcomplete prompt_toolkit
-
+      curl \
+      ca-certificates
 ```
 
-And to install the needed python packages:
+And to install the rest of robocomp you can use the script:
 ```bash
-sudo pip3 install pyside2 rich argcomplete prompt_toolkit
+cd ~
+curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -s
 
 ```
 
-It is recommendable to install the following packages::
-
-    sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
-    
-
-## Installation
-
-*cd* to your home directory (you are probably in it already) and type:
-
-    git clone https://github.com/robocomp/robocomp.git
-
-Now we will create a symbolic link so RoboComp can find everything. You will have to enter your password:
-
-    sudo ln -sf ~ /home/robocomp
-    
-(the ~ is in Alt-4)
-    
-Edit your ~/.bashrc file 
-
-    gedit ~/.bashrc
-
-Add these lines at the end:
-
-    export ROBOCOMP=~/robocomp
-    export PATH=$PATH:/opt/robocomp/bin
-   
-make bash process the modified file by typing: 
-
-    source ~/.bashrc
-
-Done! Now let's compile and install the whole thing:
-
-    sudo [ -d /opt/robocomp ] && rm -r /opt/robocomp
-    cd robocomp
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo env "PATH=$PATH" make install
+If you are going to develop with Robocomp it's recommendable to install the following packages too:
+```bash
+sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
+```
 
 If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
 
@@ -148,12 +92,12 @@ Congratulations! RCIS should be up and running with a simple robot endowed with 
  
 #### Installing some RoboLab's components from GitHub
 
-The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:
+The software of the robots using RoboComp is composed of different components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:
 
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
     
-The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
+The RoboLab's set of basic robotics components are now downloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
 ## Connecting a JoyStick (if no JoyStick available skip to the next section)
 
@@ -187,7 +131,7 @@ Note 1: You must have your simulator running in a terminal and only then you can
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
 # Testing the installation using the Coppelia Simulator
-We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim]((https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
+We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim](https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
 
@@ -219,3 +163,7 @@ If you have any suggestions to improve the repository, like features or tutorial
 ```bash
 python3 -c "import pyparsing; print(pyparsing.__version__)"
 ```
+
+- Ubuntu 18.04 and CMake > 3.16
+  * Robocomp is currently using the syntax for cmake 3.16. It's the default version in Ubuntu 20.04, but it's not available in Ubuntu 18.04.
+
