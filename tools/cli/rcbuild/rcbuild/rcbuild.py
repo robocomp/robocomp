@@ -12,7 +12,7 @@ import typer
 
 from robocomp import execute_command, is_interactive
 from rcworkspace.workspace import Workspace
-from rcconfig.rcconfig import RC_CONFIG
+from rcconfig.main import RC_CONFIG
 import rcdocker.rcdocker
 
 app = typer.Typer(short_help=typer.style("Command to build components or robocomp itself", fg=typer.colors.GREEN), help=typer.style("Robocomp command to build components or robocomp itself. There are also several "
@@ -22,7 +22,7 @@ app = typer.Typer(short_help=typer.style("Command to build components or robocom
 
 # TODO: Move to rcconfig py file
 ROBOCOMP_INSTALL_DIR = "/opt/robocomp"
-BUILD_DIR = Path(RC_CONFIG["ROBOCOMP_SRC"]) / "build"
+BUILD_DIR = RC_CONFIG.ROBOCOMP_SRC_DIR / "build"
 
 class RCBuild:
     def __init__(self):
@@ -154,17 +154,17 @@ def robocomp(
         if (BUILD_DIR.parent / "CMakeCache.txt").exists():
             execute_command(f"rm {BUILD_DIR.parent / 'CMakeCache.txt'}")
         # cd ..;
-        os.chdir(RC_CONFIG["ROBOCOMP_SRC"])
+        os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
         # sudo rm -r build;
         execute_command(f"/usr/bin/sudo rm -r {BUILD_DIR}")
 
-    os.chdir(RC_CONFIG["ROBOCOMP_SRC"])
+    os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
     if not BUILD_DIR.exists():
         # mkdir build;
         execute_command(f"mkdir -p {BUILD_DIR}")
 
     # install robocomp cli tools
-    execute_command(f"sudo pip install {Path(RC_CONFIG['ROBOCOMP_SRC'])/'tools'/'cli'}")
+    execute_command(f"sudo pip install {RC_CONFIG.ROBOCOMP_SRC_DIR/'tools'/'cli'}")
     # cd build;
     os.chdir(BUILD_DIR)
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;
