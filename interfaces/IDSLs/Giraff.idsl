@@ -1,4 +1,4 @@
-module Giraff
+module RoboCompGiraff
 {
     exception HardwareFailedException { string what; };
 
