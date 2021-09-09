@@ -176,7 +176,7 @@ class YakuakeSessionStack:
         return self.__active_terminal_id
 
     def add_session(self):
-        self.__dbus_sessions_obj.addSession()
+        return self.__dbus_sessions_obj.addSession()
 
     def add_session_quad(self):
         self.__dbus_sessions_obj.addSessionQuad()
@@ -484,9 +484,9 @@ class Yaku:
             session_id = self.session_stack.active_session_id
         pwd = self.tabs_stack.tabs_by_session[session_id].current_directory
         dir_name = os.path.basename(os.path.normpath(pwd))
-        running_command = self.tabs_stack.tabs_by_session[session_id].runnng_command
         if name is None:
             final_name = dir_name
+            running_command = self.tabs_stack.tabs_by_session[session_id].running_command
             if running_command is not None:
                 final_name+="_"+running_command
         else:
@@ -530,6 +530,13 @@ class Yaku:
 
     def rename_all_tabs(self, name=None, append=False):
         self.tabs_stack.rename_all_tabs(name, append)
+
+    def run_in_new_tab(self, command:str, name=None):
+        session_id = self.session_stack.add_session()
+        self.rename_tab(name, False, session_id)
+        terminal_sessions = self.session_stack.terminal_ids_for_session_id(session_id=session_id)
+        self.session_stack.run_command_in_terminal(terminal_id=terminal_sessions[0], command=command)
+
 
 
 if __name__ == "__main__":

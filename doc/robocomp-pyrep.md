@@ -52,7 +52,7 @@ pip3 install .
 
 -   The main _RoboComp_ bridges that currently exists :
     -   [omniPyrep](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep/omniPyrep).
-    -   [pioneerPyrep](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep/pioneerPyrep).
+    -   [pioneerPyrep](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep/pioneer_pyrep).
     -   [viriatoPyrep](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep/viriatoPyrep).
     -   [viriatoGraspingPyrep](https://github.com/robocomp/grasping/tree/master/components/viriatoGraspingPyrep) : testbench for _6D object pose estimation_ and _grasping_.
 

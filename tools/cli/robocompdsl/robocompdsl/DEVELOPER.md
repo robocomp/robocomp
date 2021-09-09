@@ -206,7 +206,7 @@ Given one of the two languages that can be generated, let's see for example for 
 Some of these code pieces to fill in the templates require some complex functions that are put in its own file in this directory, with the same name of the corresponding template file.
 
 So, for example, we can find a template file in [templates/templateCPP/files/src/specificworker.cpp](templates/templateCPP/files/src/specificworker.cpp)
-and its corresponding function file in [templates/templateCPP/functions/src/specificworker_cpp.py](./templates/templateCPP/functions/src/specificworker_cpp.py).
+and its corresponding function file in [templates/templateCPP/plugins/base/functions/src/specificworker_cpp.py](templates/templateCPP/plugins/base/functions/src/specificworker_cpp.py).
 
 Some template files do not have their corresponding function file. The reason for this is that they may not have variables in the template file or the functions to generate the code are very simple.
 
@@ -265,8 +265,6 @@ Among the automatic tests, there are some in particular that compare the recentl
 On the other hand, this has the disadvantage that when new features are added to robocompdsl these already generated files that are used as reference must be updated, once it is clear that the new generation works correctly.
 
 In test/resources/reference_components you can find the code of the components against which the new generation of code is compared.
-
-The automatic tests are also executed as part of robocomp's Continuous Integration (CI) process and their results can be seen here: http://robocomp-ci.unex.es
 
 The manual part of the robocompdsl tests is found in autogeneration_tests/test_cdsl.
 In this directory you can find a script called test_component_generation.py and a series of subdirectories with .cdsl and .smdsl files. The idea is that through test_component_generation.py you can trigger the generation, compilation and startup test of the components defined in all subdirectories. Once this process is finished, a summary of how it went is shown.

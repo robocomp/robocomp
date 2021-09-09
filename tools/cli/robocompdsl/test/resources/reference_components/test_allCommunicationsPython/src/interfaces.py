@@ -12,6 +12,7 @@ import RoboCompAprilTags
 Ice.loadSlice("-I ./src/ --all ./src/CameraSimple.ice")
 import RoboCompCameraSimple
 Ice.loadSlice("-I ./src/ --all ./src/GenericBase.ice")
+import RoboCompGenericBase
 Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
 import RoboCompHandDetection
 Ice.loadSlice("-I ./src/ --all ./src/JointMotor.ice")

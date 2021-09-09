@@ -1,5 +1,5 @@
 # Endpoints for subscriptions interfaces
-IMUPubTopic.Endpoints=tcp -p 0
+IMUPubTopic.Endpoints=tcp -p 14199
 
 
 

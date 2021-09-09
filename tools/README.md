@@ -7,7 +7,7 @@ Detailed information on each tool can be found in the corresponding README.md fi
 ### Yakuake script
 
 
-This is a simple script to automatically start RoboComp's favourite terminal tool, [Yakuake](https://yakuake.kde.org/), with two named tabs running Ice's pub/sub broker Storm through our *rcnode* script and a component named *comp1*.
+This is a simple script to automatically start RoboComp's favourite terminal tool, [Yakuake](https://apps.kde.org/es/yakuake/), with two named tabs running Ice's pub/sub broker Storm through our *rcnode* script and a component named *comp1*.
 
 ```sh
 #!/bin/bash

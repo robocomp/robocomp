@@ -38,4 +38,4 @@ Now everything is set up. make sure you have some key in `OPENPGP Keys` section 
 ![](./launchpad.png)
 
 # Signing Robocomp
-For uploading a source package , change the **PPA\_PGP\_KEY** in [package_details.cmake](../cmake/package_details.cmake#L26) to the full name of the PGP key. Now run `make spackage` in the end it should ask you the password of the PGP key you provided
+For uploading a source package , change the **PPA\_PGP\_KEY** in [package_details.cmake](../../cmake/package_details.cmake#L26) to the full name of the PGP key. Now run `make spackage` in the end it should ask you the password of the PGP key you provided

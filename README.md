@@ -3,9 +3,13 @@
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Docs Links Checker](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml)
+[![CodeQL Analysis](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml)
+[![Docker Images](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml)
+[![Component generation test](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml)
 # About
 
-An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
+An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/) and many other collaborators from the Google Summer of Code program.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
@@ -127,7 +131,7 @@ Note 1: You must have your simulator running in a terminal and only then you can
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
 # Testing the installation using the Coppelia Simulator
-We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim]((https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
+We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim](https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
 

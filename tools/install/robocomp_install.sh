@@ -1,8 +1,7 @@
 cat /etc/issue
-
-source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/resources/robocomp_prerequisites_install.sh)
-
 ROBOCOMP_BRANCH="${ROBOCOMP_BRANCH:-development}"
+source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$ROBOCOMP_BRANCH/tools/install/resources/robocomp_prerequisites_install.sh)
+
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
@@ -14,6 +13,7 @@ export PYTHONIOENCODING=utf-8
 sudo [ -d /opt/robocomp ] && sudo rm -r /opt/robocomp
 cd robocomp
 sudo pip3 install tools/cli/
+rcconfig init
 mkdir build
 cd build
 cmake ..

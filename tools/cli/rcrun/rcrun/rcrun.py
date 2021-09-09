@@ -5,6 +5,7 @@ import argparse, argcomplete
 import os
 import string
 import sys
+from typing import Optional, List
 
 from rich import console
 import typer
@@ -179,11 +180,14 @@ runner = rcrun()
 
 @app.command()
 def start(
-        component_name: str = typer.Argument("", help="Component name")
+        component_names: Optional[List[str]] = typer.Argument(None, help="Lost of component names")
 ):
     """
     start component
     """
+    for component_name in component_names:
+        component = ws.find_component(component_name)
+        component.run_component(use_yaku=True)
 
 
 @app.command()
@@ -216,7 +220,7 @@ def fstop(
     force stop component
     """
     if not ws.find_component_exec(component_name):
-        console.log(f"couldnt find the component {component_name} in any of the workspaces")
+        console.log(f"couldn't find the component {component_name} in any of the workspaces")
         return
     script_path = runner.find_script("forcestop", component_name)
     if script_path and not ignore_scripts:

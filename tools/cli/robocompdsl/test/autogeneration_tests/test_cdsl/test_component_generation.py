@@ -157,7 +157,7 @@ class ComponentGenerationChecker:
             # print(stderr)
             return command_output.returncode
 
-    def remove_genetared_files(self, current_dir, dry_run=True):
+    def remove_genetared_files(self, current_dir=".", dry_run=True):
         """
         Remove all files but .smdsl, .cdsl and .log from the given dir.
         :param current_dir: Directory to look for files to remove.
@@ -211,7 +211,7 @@ class ComponentGenerationChecker:
                         break
                     if cdsl_file:
                         # With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
-                        self.remove_genetared_files("", self.dry_run)
+                        self.remove_genetared_files(dry_run=self.dry_run)
                         if clean_only:
                             console.log("\tCleaned", 'green')
                             os.chdir("..")
@@ -257,7 +257,7 @@ class ComponentGenerationChecker:
                             self.results[current_dir]['generation'] = False
                             global_result = False
                         if not dirty:
-                            self.remove_genetared_files("", self.dry_run)
+                            self.remove_genetared_files(dry_run=self.dry_run)
                     print("")
                     os.chdir("..")
         os.chdir(previous_dir)

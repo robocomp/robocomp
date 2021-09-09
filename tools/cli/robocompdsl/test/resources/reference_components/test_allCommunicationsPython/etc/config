@@ -1,14 +1,14 @@
 # Endpoints for implements interfaces
-HandDetection.Endpoints=tcp -p 21222
+HandDetection.Endpoints=tcp -p 14670
 
 
 # Endpoints for subscriptions interfaces
-AprilTagsTopic.Endpoints=tcp -p 0
+AprilTagsTopic.Endpoints=tcp -p 18177
 
 
 # Proxies for required interfaces
-CameraSimpleProxy = camerasimple:tcp -h localhost -p 10005
-RGBDProxy = rgbd:tcp -h localhost -p 10096
+CameraSimpleProxy = camerasimple:tcp -h localhost -p 13510
+RGBDProxy = rgbd:tcp -h localhost -p 11938
 
 
 

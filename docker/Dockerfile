@@ -6,43 +6,14 @@ ARG robocomp_version="dsr-components"
 FROM ${base_image}:${base_tag} AS dependencies-version
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
-# Update Ubuntu Software repository
-RUN apt-get update && apt-get install -y --no-install-recommends \
+ARG branch
+RUN apt-get update && apt-get install -y --no-install-recommends  \
       ca-certificates \
-      cmake \
       curl \
-      freeglut3-dev \
-      g++ \
-      gcc-multilib \
-      git \
-      git-annex \
-      libboost-dev \
-      libboost-system-dev \
-      libboost-thread-dev \
-      libgsl-dev \
-      libopenscenegraph-dev \
-      libpyside2-dev \
-      libqt5opengl5-dev \
-      libqt5xmlpatterns5-dev \
-      libzeroc-icestorm3.7 \
-      make \
-      python3 \
-      python3-argcomplete \
-      python3-distutils \
-      python3-pip \
-      python3-prompt-toolkit \
-      python3-pyparsing \
-      python3-setuptools \
-      python3-termcolor \
       sudo \
-      zeroc-ice-all-dev \
-      zeroc-icebox \
-  && rm -rf /var/lib/apt/lists/*
-
-# Some incompatibility from pyside2 (5.15) and default qt installation (5.14)
-RUN sudo pip3 install rich typer
-# pyside2-tools have removed pyside2-uic
-RUN echo "uic -g python \$@" >> /usr/bin/pyside2-uic && chmod a+x  /usr/bin/pyside2-uic
+    && rm -rf /var/lib/apt/lists/* \
+RUN cd ~ && export ROBOCOMP_BRANCH=$branch \
+    && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh | bash -s $branch
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
     echo "robolab:x:${uid}:${gid}:Robolab,,,:/home/robolab:/bin/bash" >> /etc/passwd && \
@@ -50,26 +21,24 @@ RUN export uid=1000 gid=1000 && \
     echo "robolab:robolab"|chpasswd && \
     echo "robolab ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/robolab-user && \
     chown ${uid}:${gid} -R /home/robolab
+USER robolab
+WORKDIR /home/robolab/
+
 
 FROM dependencies-version AS base-version
 ARG branch
-USER robolab
-WORKDIR /home/robolab/
-# Install Robocomp
-RUN echo ${branch}
-ADD https://api.github.com/repos/robocomp/robocomp/git/refs/heads/${branch} version.json
-RUN git clone -b ${branch} https://github.com/robocomp/robocomp.git
-
+# Using robocomp installation script
+RUN cd ~ && export ROBOCOMP_BRANCH=$branch \
+    && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/robocomp_install.sh | bash -s $branch
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
+ENV ROBOCOMP=/home/robolab/robocomp
+RUN export ROBOCOMP=/home/robolab/robocomp
 RUN export PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
-RUN sudo pip install /home/robolab/robocomp/tools/cli/robocompdsl/
-RUN pip install /home/robolab/robocomp/tools/cli/rcconfig/
-RUN rcconfig
-RUN cd robocomp && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
-RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
-RUN sudo ldconfig
+#RUN sudo pip3 install /home/robolab/robocomp/tools/cli/
+#RUN cd robocomp && rcconfig init && mkdir build && cd build && cmake .. && make -j$(nproc) && sudo make install
+#RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
+#RUN sudo ldconfig
 WORKDIR robocomp
-ENV ROBOCOMP=/opt/robocomp/
 RUN git annex get \
   files/innermodel/simpleworld.xml \
   files/osgModels/textures/wood.jpg \
@@ -115,7 +84,6 @@ RUN curl -S https://raw.githubusercontent.com/robocomp/robocomp/development/libs
 RUN rm -r /usr/local/include/cppitertools
 RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
 
-
 #Compilation of DSR libs in Robocomp
 USER robolab
 ENV PATH $PATH:/opt/robocomp/bin/
@@ -124,6 +92,7 @@ RUN cd ~/robocomp/ && git pull && mkdir -p build && cd build && cmake -DFCL_SUPP
 USER root
 RUN cd /home/robolab/robocomp/build && make install
 RUN ldconfig
+USER robolab
 
 
 FROM dsr-version AS dsr-components-version
@@ -139,8 +108,6 @@ USER robolab
 WORKDIR /home/robolab/robocomp/components/
 RUN git clone --progress https://github.com/robocomp/dsr-graph.git
 WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
-USER robolab
-ENV ROBOCOMP=/home/robolab/robocomp
 RUN cd idserver && cmake . && make -j10
 RUN cd pioneer_dsr && cmake . && make -j10
 RUN cd path_follower && cmake . && make -j10

@@ -12,7 +12,7 @@ import typer
 
 from robocomp import execute_command, is_interactive
 from rcworkspace.workspace import Workspace
-from rcconfig.rcconfig import RC_CONFIG
+from rcconfig.main import RC_CONFIG
 import rcdocker.rcdocker
 
 app = typer.Typer(short_help=typer.style("Command to build components or robocomp itself", fg=typer.colors.GREEN), help=typer.style("Robocomp command to build components or robocomp itself. There are also several "
@@ -22,15 +22,19 @@ app = typer.Typer(short_help=typer.style("Command to build components or robocom
 
 # TODO: Move to rcconfig py file
 ROBOCOMP_INSTALL_DIR = "/opt/robocomp"
-BUILD_DIR = Path(RC_CONFIG["ROBOCOMP_SRC"]) / "build"
+BUILD_DIR = RC_CONFIG.ROBOCOMP_SRC_DIR / "build"
 
 class RCBuild:
     def __init__(self):
         self.ws = Workspace()
 
-    def build_component(self, bcomponent, do_clean_first):
-        if component := self.ws.find_component(bcomponent, is_interactive()):
-            component.build()
+    def build_component(self, bcomponent, do_clean_first=False, reg_exp=False, all_comps=False):
+        if all_comps:
+            components = self.ws.find_components(bcomponent, reg_exp=reg_exp)
+            for component in components:
+                component.build(clean=do_clean_first)
+        elif component := self.ws.find_component(bcomponent, is_interactive(), reg_exp=reg_exp):
+            component.build(clean=do_clean_first)
 
     def remove_cmakecache_files(self, path: Path):
         if 'build' in path:
@@ -56,7 +60,9 @@ class RCBuild:
         return False
 
     def remove_undesired_files(self, path: Path) -> bool:
-        return self.remove_cmakecache_files(path)
+        if component := self.ws.find_component(path, is_interactive()):
+            return component.clean_build()
+        return False
 
     def build_docs(self, component, install=False, installpath='/opt/robocomp'):
         path = self.ws.find_component(component)
@@ -95,7 +101,9 @@ def build_docs(
 def build_component(
     component: Optional[str] = typer.Argument(None, help='Name of the component to build, if omitted current dir is used.'),
     do_clean: Optional[bool] = typer.Option(False, '--clean', help="Clean the compilation files (CMake and Make generated files."),
-    isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image")
+    isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image"),
+    reg_exp: Optional[bool] = typer.Option(False, '-r', '--reg-exp', help="Use regular expression to find components"),
+    all_comps: Optional[bool] = typer.Option(False, '-a', '--all', help="build all components matching name")
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
@@ -104,7 +112,7 @@ def build_component(
     if isolated:
             rcdocker.rcdocker.build_component_in_container(component)
     else:
-        builder.build_component(component_path, do_clean)
+        builder.build_component(component_path, do_clean, reg_exp, all_comps)
 
 
 @app.command(name="clean",
@@ -117,7 +125,8 @@ def clean(
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
-        typer.secho(f"Using current path as component ({component_path})", fg=typer.colors.YELLOW)
+    else:
+        component_path = component
     if not builder.remove_undesired_files(component_path):
         print("Nothing to be removed")
 
@@ -145,17 +154,17 @@ def robocomp(
         if (BUILD_DIR.parent / "CMakeCache.txt").exists():
             execute_command(f"rm {BUILD_DIR.parent / 'CMakeCache.txt'}")
         # cd ..;
-        os.chdir(RC_CONFIG["ROBOCOMP_SRC"])
+        os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
         # sudo rm -r build;
         execute_command(f"/usr/bin/sudo rm -r {BUILD_DIR}")
 
-    os.chdir(RC_CONFIG["ROBOCOMP_SRC"])
+    os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
     if not BUILD_DIR.exists():
         # mkdir build;
         execute_command(f"mkdir -p {BUILD_DIR}")
 
     # install robocomp cli tools
-    execute_command(f"sudo pip install {Path(RC_CONFIG['ROBOCOMP_SRC'])/'tools'/'cli'}")
+    execute_command(f"sudo pip install {RC_CONFIG.ROBOCOMP_SRC_DIR/'tools'/'cli'}")
     # cd build;
     os.chdir(BUILD_DIR)
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;

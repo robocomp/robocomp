@@ -63,7 +63,7 @@ The source_package.cmake script is used to create a debian source package.
 
 The main CMakeLists.txt file defines a target `spackage` that builds the source package in build/Debian with `make spackage`
 
-For uploading the package to ppa, First change the **PPA\_PGP\_KEY** in [package_details.cmake](../cmake/package_details.cmake#L26) to details to the full-name of the PGP key  details registered with your ppa account For more details on setting up the pgp key see the [tutorial](./setting_up_ppa.md).Then create a source package by building the target *spackage*.Once the Source package is build successfully, upload it to your ppa by:
+For uploading the package to ppa, First change the **PPA\_PGP\_KEY** in [package_details.cmake](../../cmake/package_details.cmake#L26) to details to the full-name of the PGP key  details registered with your ppa account For more details on setting up the pgp key see the [tutorial](./setting_up_ppa.md).Then create a source package by building the target *spackage*.Once the Source package is build successfully, upload it to your ppa by:
 
     cd Debian/
     dput ppa:<lp-username>/<ppa-name> <packet->source.changes
@@ -73,11 +73,11 @@ building of source package can be tested with:
     cd Debian/robocomp-<version>
     debuild -i -us -uc -S
 
-If you are uploading a new version of robocomp, change the version number accordingly in the [toplevel cmake](../CMakeLists.txt#L31) before building, and then upload the source package as mentioned.
+If you are uploading a new version of robocomp, change the version number accordingly in the [toplevel cmake](../../CMakeLists.txt#L31) before building, and then upload the source package as mentioned.
 
 ### Note:
 
-If you want to upload another source package to PPA which doesn't have any changes in the source but maybe in the Debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since the last upload")` in [package_details.cmake](../cmake/package_details.cmake#L27) so that the script will only increase the PPA version number and won't include the source package for uploading to PPA (which otherwise will give an error).
+If you want to upload another source package to PPA which doesn't have any changes in the source but maybe in the Debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since the last upload")` in [package_details.cmake](../../cmake/package_details.cmake#L27) so that the script will only increase the PPA version number and won't include the source package for uploading to PPA (which otherwise will give an error).
 
 ## Installing robocomp from PPA
 
