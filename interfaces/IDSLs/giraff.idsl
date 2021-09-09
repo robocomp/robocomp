@@ -1,0 +1,20 @@
+module Giraff
+{
+    exception HardwareFailedException { string what; };
+
+    struct Botones
+    {
+        int Rojo;
+        int Verde;
+        int Dial;
+    };
+
+    interface Giraff
+    {
+        Botones getBotonesState() throws HardwareFailedException;
+        void setTilt(float tilt) throws HardwareFailedException;
+        float getTilt() throws HardwareFailedException;
+        float incTilt() throws HardwareFailedException;
+        float decTilt() throws HardwareFailedException;
+    };
+};
