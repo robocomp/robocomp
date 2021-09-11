@@ -1,4 +1,4 @@
-name: "Component generation test"
+name: "Component compilation test"
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       options: --user robolab
 
     steps:
-      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && python3 test_component_generation.py"
+      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && python3 test_component_generation.py --no-execution"
   fail-on-image-fail:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
