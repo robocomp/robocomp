@@ -37,7 +37,6 @@ GualzruSaccadeAnticipation.cpp
 GualzruSaccadeAnticipation.h
 IMU.cpp
 IMU.h
-InnerModelManager.*
 libs/innermodel/include/innermodel/innermodelconfig.h
 install_manifest.txt
 JointMotor.cpp
@@ -97,3 +96,9 @@ tools/robocompdsl/test/htmlcov/
 tools/cli/rcbuild/build/
 
 build/
+
+*.ice
+
+tools/rcinnerModelSimulator/src/InnerModelManager.h
+
+tools/rcinnerModelSimulator/src/InnerModelManager.cpp
