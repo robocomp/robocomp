@@ -12,14 +12,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  make-compilation-test:
+  robocomp-dsl-test:
     runs-on: ubuntu-latest
     container:
       image: "robocomp/robocomp:development__dsr__latest"
       options: --user robolab
 
     steps:
-      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/ && python3 -m unittest2 discover -p 'test_*.py'"
+      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/ && python3 -m unittest discover -p 'test_*.py'"
   fail-on-image-fail:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
