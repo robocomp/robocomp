@@ -51,7 +51,6 @@ Laser.h
 libgualzru_worldmodel_a.a
 LocalNavigator.cpp
 LocalNavigator.h
-log
 *.log
 Makefile
 moc_*
@@ -77,8 +76,6 @@ ui_**.pyc
 
 */build/
 
-interfaces/*.ice
-
 tools/robocompdsl/test/resources/InnerModelManager_generated.ice
 
 components/melex-rodao/
@@ -98,6 +95,7 @@ tools/cli/rcbuild/build/
 build/
 
 *.ice
+!tools/cli/robocompdsl/test/resources/InnerModelManager.ice
 
 tools/rcinnerModelSimulator/src/InnerModelManager.h
 
