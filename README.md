@@ -7,6 +7,8 @@
 [![CodeQL Analysis](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml)
 [![Docker Images](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml)
 [![Component generation test](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml)
+[![Component compilation test](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml)
+[![robocompdsl test](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml)
 # About
 
 An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/) and many other collaborators from the Google Summer of Code program.
