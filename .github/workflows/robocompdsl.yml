@@ -1,4 +1,4 @@
-name: "Component generation test"
+name: "robocompdsl test"
 
 on:
   workflow_dispatch:
@@ -12,14 +12,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  make-generation-test:
+  robocomp-dsl-test:
     runs-on: ubuntu-latest
     container:
       image: "robocomp/robocomp:development__dsr__latest"
       options: --user robolab
 
     steps:
-      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && python3 test_component_generation.py -g"
+      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/ && python3 -m unittest discover -p 'test_*.py'"
   fail-on-image-fail:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}

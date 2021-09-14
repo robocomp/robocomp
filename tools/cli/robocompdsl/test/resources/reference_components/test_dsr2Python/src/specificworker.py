@@ -117,7 +117,7 @@ class SpecificWorker(GenericWorker):
 
         console.print(f"UPDATE EDGE: {fr} to {type}", type, style='green')
 
-    def update_edge_att(self, fr: int, to: int, attribute_names: [str]):
+    def update_edge_att(self, fr: int, to: int, type: str, attribute_names: [str]):
         console.print(f"UPDATE EDGE ATT: {fr} to {type} {attribute_names}", style='green')
 
     def delete_edge(self, fr: int, to: int, type: str):
