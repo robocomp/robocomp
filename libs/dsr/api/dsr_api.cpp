@@ -1621,9 +1621,11 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                             if (samples.vec().empty()) return;
 
                             auto id = samples.vec().at(0).id();
-                            auto itn = nodes.find(id);
-                            auto type = (itn != nodes.end()) ? itn->second.read_reg().type() : "";
-
+                            std::string type;
+                            {
+                                std::shared_lock<std::shared_mutex> lock(_mutex);
+                                if (auto itn = nodes.find(id); itn != nodes.end())  type = itn->second.read_reg().type() ;
+                            }
                             std::vector<std::future<std::optional<std::string>>> futures;
                             for (auto &&s: samples.vec()) {
                                 if (s.agent_id() != agent_id and
