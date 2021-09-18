@@ -40,6 +40,17 @@ pip3 install -r requirements.txt
 pip3 install .
 ```
 
+-   Comment out the last two lines just added in your `~/.bashrc` file (changing the path) :
+```bash
+export COPPELIASIM_ROOT=PATH/TO/COPPELIASIM/INSTALL/DIR
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
+#export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
+```
+-   Source your `~/.bashrc` file again:
+```bash
+source ~/.bashrc
+```
+
 ## Testing your Installation
 
 -   After completing the installation, you can make sure it's working correctly, by trying some of the examples in `examples` folder in __PyRep__ repo.
