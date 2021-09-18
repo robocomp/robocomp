@@ -28,6 +28,11 @@ def compute(self):
     return True
 """
 
+INTERFACE_TYPES_TEST_STR = """\
+print(f"Testing ${type} from ifaces.${module_name}"
+test = ifaces.${type}()
+"""
+
 INTERFACE_TYPES_COMMENT_STR = """\
 ######################
 # From the ${module_name} you can use this types:
@@ -62,6 +67,7 @@ class src_specificworker_py(TemplateDict):
         self['subscription_methods'] = self.subscription_methods()
         self['implements_methods'] = self.implements_methods()
         self['interface_specific_comment'] = self.interface_specific_comment()
+        self['startup_check_ice'] = self.startup_check_ice()
 
     @staticmethod
     def replace_type_cpp_to_python(t):
@@ -95,7 +101,12 @@ class src_specificworker_py(TemplateDict):
                                 param_str_a += ', ' + p['name']
 
                         if method['return'] != 'void':
-                            return_creation = 'ret = ' + utils.get_type_string(method['return'], module['name']) + '()'
+                            returned_type = ""
+                            if method['return'] in [struct['name'].split('/')[1] for struct in module['structs']+module['sequences']] or \
+                                method['return'] in [struct['strName'] for struct in module['simpleSequences']]:
+                                returned_type= "ifaces."
+                            returned_type += utils.get_type_string(method['return'], module['name'])
+                            return_creation = f'ret = {returned_type}()'
                         else:
                             return_creation = ''
 
@@ -105,7 +116,7 @@ class src_specificworker_py(TemplateDict):
                                 return_str = "return ret"
                             else:
                                 return_str = out_values[0][1] + " = " + self.replace_type_cpp_to_python(out_values[0][0]) + "()\n"
-                                return_str += "    return " + out_values[0][1]
+                                return_str += "return " + out_values[0][1]
                         elif len(out_values) > 1:
                             for v in out_values:
                                 if v[1] != 'ret':
@@ -182,4 +193,21 @@ class src_specificworker_py(TemplateDict):
                     if structs_str:
                         result += Template(INTERFACE_TYPES_COMMENT_STR).substitute(module_name=module['name'],
                                                                                    types=structs_str)
+        return result
+    def startup_check_ice(self):
+        result = ""
+        interfaces_by_type = {
+            "requires": self.component.requires,
+            "publishes":  self.component.publishes,
+            "implements": self.component.implements,
+            "subscribesTo": self.component.subscribesTo
+        }
+        for interface_type, interfaces in interfaces_by_type.items():
+            for interface, num in get_name_number(interfaces):
+                if communication_is_ice(interface):
+                    module = self.component.idsl_pool.module_providing_interface(interface.name)
+                    for struct in module['structs']:
+                        struct_str = f"{struct['name'].replace('/', '.')}"
+                        result += Template(INTERFACE_TYPES_TEST_STR).substitute(module_name=module['name'],
+                                                                                type=struct_str)
         return result

@@ -23,6 +23,7 @@ from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
+import interfaces as ifaces
 
 sys.path.append('/opt/robocomp/lib')
 console = Console(highlight=False)
@@ -76,6 +77,12 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
+        print(f"Testing RoboCompHandDetection.TImage from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.TImage()
+        print(f"Testing RoboCompHandDetection.TRoi from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.TRoi()
+        print(f"Testing RoboCompHandDetection.Hand from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.Hand()
         QTimer.singleShot(200, QApplication.instance().quit)
 
 
@@ -96,7 +103,7 @@ class SpecificWorker(GenericWorker):
     # IMPLEMENTATION of getHands method from HandDetection interface
     #
     def HandDetection_getHands(self):
-        ret = RoboCompHandDetection.Hands()
+        ret = ifaces.RoboCompHandDetection.Hands()
         #
         # write your CODE here
         #
