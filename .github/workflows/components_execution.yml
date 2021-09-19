@@ -19,8 +19,7 @@ jobs:
       options: --user robolab
 
     steps:
-      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && rcnode& ; python3 test_component_generation.py --avoid test_dsr2Python
-"
+      - run: "cd /home/robolab/robocomp/tools/cli/robocompdsl/test/autogeneration_tests/test_cdsl/ && (rcnode &) ; python3 test_component_generation.py --avoid test_dsr2Python"
   fail-on-image-fail:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
