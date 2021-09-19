@@ -53,6 +53,8 @@ source ~/.bashrc
 
 ## Testing your Installation
 
+-   Make sure that you start the pub/sub Ice broker by running in any terminal: rcnode &
+
 -   After completing the installation, you can make sure it's working correctly, by trying some of the examples in `examples` folder in __PyRep__ repo.
 
 -   Also, you can refer to [Usage](https://github.com/stepjam/PyRep#usage) section in main `README.md`, for easy and fast code snippets to get started with.
