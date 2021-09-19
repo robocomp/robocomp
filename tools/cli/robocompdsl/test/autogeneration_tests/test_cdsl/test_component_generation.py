@@ -141,20 +141,18 @@ class ComponentGenerationChecker:
             #         print("Found executable %s" % command)
         if not command:
             return -1
-
-        if dry_run:
-            print("Executing %s (--dry-run)" % command)
-            return 0
         command += " --startup-check"
+        command = f"export QT_QPA_PLATFORM=offscreen;{command}"
+        if dry_run:
+            print(f"{command} #(--dry-run)")
+            return 0
+
         with open("run_component.log", "wb") as log:
             command_output = subprocess.Popen(command,
                                               stdout=log,
                                               stderr=log,
                                               shell=True)
             stdout, stderr = command_output.communicate()
-            if dry_run:
-                print(stdout)
-            # print(stderr)
             return command_output.returncode
 
     def remove_genetared_files(self, current_dir=".", dry_run=True):
@@ -169,7 +167,7 @@ class ComponentGenerationChecker:
         for file in component_files:
             if not any(file.endswith(extension) for extension in (".smdsl", ".cdsl",".jcdsl", ".log")):
                 if dry_run:
-                    print("rm -r %s" % file)
+                    print(f"rm -r {file} #(--dry-run)")
                 else:
                     if os.path.isfile(file):
                         os.remove(file)
@@ -237,7 +235,7 @@ class ComponentGenerationChecker:
                                     self.compiled += 1
                                     console.log("%s compilation OK" % current_dir, style="green")
                                     if not no_execution:
-                                        if self.run_component(dry_run=False) == 0:
+                                        if self.run_component(dry_run=dry_run) == 0:
                                             self.results[current_dir]['execution'] = True
                                             console.log("%s execution OK" % current_dir, style="green")
                                             self.executed += 1
