@@ -29,7 +29,7 @@ def compute(self):
 """
 
 INTERFACE_TYPES_TEST_STR = """\
-print(f"Testing ${type} from ifaces.${module_name}"
+print(f"Testing ${type} from ifaces.${module_name}")
 test = ifaces.${type}()
 """
 
