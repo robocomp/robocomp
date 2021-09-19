@@ -242,6 +242,8 @@ class ComponentGenerationChecker:
                                         else:
                                             self.results[current_dir]['execution'] = False
                                             console.log("%s execution Failed" % current_dir, style="red")
+                                            with open("run_component.log", "r") as f:
+                                                console.log(f.read(), style="red")
                                             global_result = False
                                             self.exec_failed += 1
                                 else:
