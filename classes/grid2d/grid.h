@@ -26,6 +26,8 @@
 #include <limits>
 #include <QGraphicsScene>
 #include <chrono>
+#include <unistd.h>
+#include <QtCore>
 
 class Grid
 {
@@ -35,7 +37,7 @@ class Grid
 
     public:
         using Dimensions = QRectF;
-        float TILE_SIZE;
+        int TILE_SIZE;
         struct Key
         {
             long int x;
@@ -45,6 +47,7 @@ class Grid
                 Key(long int &&x, long int &&z) : x(std::move(x)), z(std::move(z))
                     {  };
                 Key(long int &x, long int &z) : x(x), z(z){  };
+                Key(float &x, float &z) : x((long int)x), z((long int)z){  };
                 Key(const long int &x, const long int &z) : x(x), z(z){ };
                 Key(const QPointF &p)
                 {
@@ -79,15 +82,18 @@ class Grid
             bool free;
             bool visited;
             float cost;
-            std::string node_name;
+            QGraphicsRectItem * tile;
             // method to save the value
-            void save(std::ostream &os) const {	os << free << " " << visited << " " << node_name; };
-            void read(std::istream &is) {	is >> free >> visited >> node_name;};
+            void save(std::ostream &os) const {	os << free << " " << visited;};
+            void read(std::istream &is) {	is >> free >> visited;};
         };
         using FMap = std::unordered_map<Key, T, KeyHasher>;
         Dimensions dim;
 
-        void initialize( bool read_from_file = true,
+        void initialize( QRectF dim_,
+                         int tile_size,
+                         QGraphicsScene *scene,
+                         bool read_from_file = true,
                          const std::string &file_name = std::string(),
                          std::uint16_t num_threads = 10);
         std::tuple<bool, T&> getCell(long int x, long int z);
@@ -99,8 +105,7 @@ class Grid
         typename FMap::const_iterator begin() const         { return fmap.begin(); };
         typename FMap::const_iterator end() const           { return fmap.begin(); };
         size_t size() const                                 { return fmap.size(); };
-        template <typename Q>
-        void insert(const Key &key, const Q &value);
+        void insert(const Key &key, const T &value);
         void clear();
         void saveToFile(const std::string &fich);
         void readFromFile(const std::string &fich);
@@ -111,9 +116,13 @@ class Grid
         Key pointToGrid(const QPointF &p) const;
         void setFree(const Key &k);
         bool isFree(const Key &k) ;
-        bool cellNearToOccupiedCellByObject(const Key &k, const std::string &target_name);
+        void setVisited(const Key &k, bool visited);
+        bool is_visited(const Key &k);
+        void set_all_to_not_visited();
         void setOccupied(const Key &k);
         void setCost(const Key &k,float cost);
+        int count_total() const;
+        int count_total_visited() const;
         void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
         void modifyCostInGrid(const QPolygonF &poly, float cost);
         std::optional<QPointF> closest_obstacle(const QPointF &p);
@@ -127,6 +136,7 @@ class Grid
 
     private:
         FMap fmap;
+        QGraphicsScene *scene;
         std::vector<QGraphicsRectItem *> scene_grid_points;
         std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
         inline double heuristicL2(const Key &a, const Key &b) const;

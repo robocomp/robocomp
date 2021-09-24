@@ -28,77 +28,46 @@ auto operator>>(std::istream &is, Grid::T &t) -> decltype(t.read(is), is)
 };
 
 
-void Grid::initialize(std::shared_ptr<DSR::DSRGraph> graph_,
-                         std::shared_ptr<Collisions> collisions_,
-                         bool read_from_file,
-                         const std::string &file_name,
-                         std::uint16_t num_threads)
+void Grid::initialize(  QRectF dim_,
+                        int tile_size,
+                        QGraphicsScene *scene_,
+                        bool read_from_file,
+                        const std::string &file_name,
+                        std::uint16_t num_threads)
 {
-    qDebug() << __FUNCTION__ << "FileName:" << QString::fromStdString(file_name);
-    G = graph_;
+    qInfo() << __FUNCTION__ << "FileName:" << QString::fromStdString(file_name);
+    dim = dim_; TILE_SIZE = tile_size;
+    scene = scene_;
     qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE;
+    qInfo() << __FUNCTION__ <<  "World dimension: " << dim.left() << dim.right() << dim.bottom() << dim.top() << TILE_SIZE;
+    /// CHECK DIMENSIONS BEFORE PROCEED
     fmap.clear();
-    // check that robot exists
-    std::optional<int> robot_id = G->get_id_from_name(robot_name);
-    if(not robot_id.has_value())
-    {
-        qInfo() << __FUNCTION__ << " No robot with name " << QString::fromStdString(robot_name);
-        std::terminate();
-    }
 
-    if(read_from_file and not file_name.empty())
-        readFromFile(file_name);
-
-    else  // compute occupancy
-    {
-        std::thread threads[num_threads];
-        std::vector<std::vector<float>> coordinates;
-        std::vector<float> rot{0.0, 0.0, 0.0};
-        for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
-            for (float j = dim.bottom(); j < dim.top(); j += TILE_SIZE)
-                coordinates.emplace_back(std::vector<float>{i,j, 10.f});
-        std::cout << __FUNCTION__ << " Creating occupation grid with " << num_threads << " threads for "  << coordinates.size() << " positions" << std::endl;
-        std::cout << __FUNCTION__ << " Estimated time: " << coordinates.size()*12/1000/60.f << " minutes"  << std::endl;
-        auto start_time = Myclock::now();
-        std::vector<std::vector<std::pair<Key,T>>> value_vector(num_threads);
-        for(int &&k : iter::range(num_threads))
+//    if(read_from_file and not file_name.empty())
+//        readFromFile(file_name);
+    std::uint32_t id=0;
+    for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
+        for (float j = dim.bottom(); j < dim.top(); j += TILE_SIZE)
         {
-            std::vector<std::vector<float>> my_coordinates(coordinates.begin()+k*coordinates.size()/num_threads, coordinates.begin()+(k+1)*coordinates.size()/num_threads-1);
-            threads[k] = std::thread([this, collisions_, my_coordinates, &value_vector, k, rot]() {
-                auto G_copy = G->G_copy();
-                qInfo() << "Initiation thread " << k;
-                std::transform(my_coordinates.begin(), my_coordinates.end(), std::back_inserter(value_vector[k]),
-                               [collisions_, &G_copy, rot](auto &pos) mutable {
-                                    auto[free, node_name] = collisions_->checkRobotValidStateAtTargetFast(G_copy.get(), pos, rot);
-                                    return std::make_pair(Key(pos[0], pos[1]), T{0, free, true, 1.f, node_name});
-                               });
-            });
+            QColor my_color = QColor("LightGrey");
+            my_color.setAlpha(40);
+            QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
+            tile->setZValue(1); tile->setPos(i, j);
+            insert(Key(i, j), T{id++, true, false, 1.f, tile});
         }
-        for(auto &&k : iter::range(num_threads))
-            threads[k].join();
 
-        // add to grid results from threads
-        uint32_t count = 0;  // add id now so they are unique
-        for(auto &res : value_vector)
-            for (auto &[key, val] : res)
-            {
-                val.id = count++;
-                fmap.emplace(key, val);
-            }
+//
+//        auto duration = Myclock::now() - start_time;
+//        std::cout << __FUNCTION__ << " " << count << " elements inserted.  It took " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "secs" << std::endl;
+//
+//        if(not file_name.empty())
+//            saveToFile(file_name);
 
-        auto duration = Myclock::now() - start_time;
-        std::cout << __FUNCTION__ << " " << count << " elements inserted.  It took " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "secs" << std::endl;
-
-        if(not file_name.empty())
-            saveToFile(file_name);
-    }
 }
-
-void Grid::insert(const Key &key, const Q &value)
+void Grid::insert(const Key &key, const T &value)
 {
     fmap.insert(std::make_pair(key, value));
 }
-
 std::tuple<bool, Grid::T&> Grid::getCell(long int x, long int z)
 {
     if( not dim.contains(QPointF(x,z)))
@@ -106,7 +75,6 @@ std::tuple<bool, Grid::T&> Grid::getCell(long int x, long int z)
     else
         return std::forward_as_tuple(true, fmap.at(pointToGrid(x, z)));
 }
-
 std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
 {
 //    if (not dim.contains(QPointF(k.x, k.z)))
@@ -116,14 +84,12 @@ std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
       try{ return std::forward_as_tuple(true, fmap.at(pointToGrid(k.x, k.z))); }
       catch(...){ /*qInfo() << __FUNCTION__ << " No key found in grid: (" << k.x << k.z << ")" ;*/ return std::forward_as_tuple(false, T()) ;}
 }
-
 typename Grid::Key Grid::pointToGrid(long int x, long int z) const
 {
     int kx = (x - dim.left()) / TILE_SIZE;
     int kz = (z - dim.bottom()) / TILE_SIZE;
     return Key(dim.left() + kx * TILE_SIZE, dim.bottom() + kz * TILE_SIZE);
 };
-
 Grid::Key Grid::pointToGrid(const QPointF &p) const
 {
     int kx = (p.x() - dim.left()) / TILE_SIZE;
@@ -166,7 +132,7 @@ void Grid::readFromString(const std::string &cadena)
         float cost;
         std::string node_name;
         ss >> x >> z >> free >> visited >> cost>> node_name;
-        fmap.emplace(pointToGrid(x, z), T{count++, free, false, cost, node_name});
+        fmap.emplace(pointToGrid(x, z), T{count++, free, false, cost});
     }
     std::cout << __FUNCTION__ << " " << fmap.size() << " elements read from "  << std::endl;
 }
@@ -188,11 +154,11 @@ void Grid::readFromFile(const std::string &fich)
         bool free, visited;
         std::string node_name;
         ss >> x >> z >> free >> visited >> node_name;
-        fmap.emplace(pointToGrid(x, z), T{count++, free, false, 1.f, node_name});
+        fmap.emplace(pointToGrid(x, z), T{count++, free, false, 1.f});
     }
     std::cout << __FUNCTION__ << " " << fmap.size() << " elements read from " << fich << std::endl;
 }
-
+///////////////////////////////////////////////////////////////////////////////
 bool Grid::isFree(const Key &k)
 {
     const auto &[success, v] = getCell(k);
@@ -201,35 +167,60 @@ bool Grid::isFree(const Key &k)
     else
         return false;
 }
-
 void Grid::setFree(const Key &k)
 {
     auto &&[success, v] = getCell(k);
     if(success)
         v.free = true;
 }
-
-bool Grid::cellNearToOccupiedCellByObject(const Key &k, const std::string &target_name)
-{
-    auto neigh = this->neighboors_8(k, true);
-    for(const auto &[key, val] : neigh)
-        if(val.free==false and val.node_name==target_name)
-            return true;
-    return false;
-}
-
 void Grid::setOccupied(const Key &k)
 {
     auto &&[success, v] = getCell(k);
     if(success)
         v.free = false;
 }
-
+void Grid::setVisited(const Key &k, bool visited)
+{
+    auto &&[success, v] = getCell(k);
+    if(success)
+    {
+        v.visited = visited;
+        if(visited)
+           v.tile->setBrush(QColor("Orange"));
+        else
+            v.tile->setBrush(QColor("White"));
+    }
+}
+bool Grid::is_visited(const Key &k)
+{
+    auto &&[success, v] = getCell(k);
+    if(success)
+        return v.visited;
+    else
+        return false;
+}
 void Grid::setCost(const Key &k,float cost)
 {
     auto &&[success, v] = getCell(k);
     if(success)
         v.cost = cost;
+}
+int Grid::count_total() const
+{
+    return fmap.size();
+}
+int Grid::count_total_visited() const
+{
+    int total = 0;
+    for(const auto &[k, v] : fmap)
+        if(v.visited)
+            total ++;
+    return total;
+}
+void Grid::set_all_to_not_visited()
+{
+    for(auto &[k,v] : fmap)
+       setVisited(k, false);
 }
 
 // if true area becomes free
@@ -249,7 +240,6 @@ void Grid::markAreaInGridAs(const QPolygonF &poly, bool free)
             }
         }
 }
-
 void Grid::modifyCostInGrid(const QPolygonF &poly, float cost)
 {
     const qreal step = TILE_SIZE / 4.f;
@@ -259,7 +249,6 @@ void Grid::modifyCostInGrid(const QPolygonF &poly, float cost)
             if (poly.containsPoint(QPointF(x, y), Qt::OddEvenFill))
                 setCost(pointToGrid(x, y),cost);
 }
-
 std::tuple<bool, QVector2D> Grid::vectorToClosestObstacle(QPointF center)
 {
     QTime reloj = QTime::currentTime();
@@ -305,7 +294,6 @@ std::tuple<bool, QVector2D> Grid::vectorToClosestObstacle(QPointF center)
     }
     return std::make_tuple(obstacleFound,closestVector);
 }
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &target_)
 {
@@ -364,7 +352,6 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     // OPEN List
     std::set<std::pair<std::uint32_t, Key>, decltype(comp)> active_vertices(comp);
     active_vertices.insert({0, source});
-    int i = 0;
     while (not active_vertices.empty())
     {
         //qInfo() << __FILE__ << __LINE__ << "Entrando en while";
@@ -399,7 +386,6 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     qInfo() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") to (" <<  target_.x() << "," << target_.y() << ") not  found. Returning empty path";
     return std::list<QPointF>();
 };
-
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs, bool all)
 {
     std::vector<std::pair<Key, T>> neigh;
@@ -422,7 +408,6 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, 
     }
     return neigh;
 }
-
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_8(const Grid::Key &k, bool all)
 {
     const int &I = TILE_SIZE;
@@ -431,7 +416,6 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_8(const Grid::Key &k
     auto r = this->neighboors(k, xincs, zincs, all);
     return r;
 }
-
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_16(const Grid::Key &k, bool all)
 {
     const int &I = TILE_SIZE;
@@ -439,7 +423,6 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_16(const Grid::Key &
     static const std::vector<int> zincs = {2*I, 2*I, 2*I,  I,   0 , -I , -2*I, -2*I,-2*I,-2*I,-2*I, -I, 0,I, 2*I, 2*I};
     return this->neighboors(k, xincs, zincs, all);
 }
-
 /**
  @brief Recovers the optimal path from the list of previous nodes
 */
@@ -457,12 +440,11 @@ std::list<QPointF> Grid::orderPath(const std::vector<std::pair<std::uint32_t, Ke
     //qDebug() << __FILE__ << __FUNCTION__ << "Path length:" << res.size();  //exit point
     return res;
 };
-
 inline double Grid::heuristicL2(const Key &a, const Key &b) const
 {
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
 }
-
+///////////////////////////////////////////////////////////////////////////////////////
 void Grid::draw(QGraphicsScene* scene)
 {
     //clear previous points
@@ -491,7 +473,7 @@ void Grid::draw(QGraphicsScene* scene)
             else if (value.cost == 50.0) //Affordance maximum
                 color = "#FF0000";
             else
-                color = "LightGreen";
+                color = "White";
         }
         else
             color = "#B40404";
@@ -504,13 +486,11 @@ void Grid::draw(QGraphicsScene* scene)
         scene_grid_points.push_back(aux);
     }
 }
-
 void Grid::clear()
 {
     fmap.clear();
 }
 
-#include <unistd.h>
 std::optional<QPointF> Grid::closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred)
 {
     size_t moveUnit = TILE_SIZE;
