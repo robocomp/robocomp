@@ -17,7 +17,7 @@ rcconfig init
 mkdir build
 cd build
 cmake ..
-make -j$(nproc)
+make -j$(nproc --ignore=2)
 sudo env "PATH=$PATH" PYTHONIOENCODING=utf-8 make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig

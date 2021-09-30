@@ -23,6 +23,7 @@ from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
+import interfaces as ifaces
 
 sys.path.append('/opt/robocomp/lib')
 console = Console(highlight=False)
@@ -76,6 +77,24 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
+        print(f"Testing RoboCompCameraSimple.TImage from ifaces.RoboCompCameraSimple"
+        test = ifaces.RoboCompCameraSimple.TImage()
+        print(f"Testing RoboCompRGBD.ColorRGB from ifaces.RoboCompRGBD"
+        test = ifaces.RoboCompRGBD.ColorRGB()
+        print(f"Testing RoboCompRGBD.PointXYZ from ifaces.RoboCompRGBD"
+        test = ifaces.RoboCompRGBD.PointXYZ()
+        print(f"Testing RoboCompRGBD.CameraParameters from ifaces.RoboCompRGBD"
+        test = ifaces.RoboCompRGBD.CameraParameters()
+        print(f"Testing RoboCompRGBD.TRGBDParams from ifaces.RoboCompRGBD"
+        test = ifaces.RoboCompRGBD.TRGBDParams()
+        print(f"Testing RoboCompHandDetection.TImage from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.TImage()
+        print(f"Testing RoboCompHandDetection.TRoi from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.TRoi()
+        print(f"Testing RoboCompHandDetection.Hand from ifaces.RoboCompHandDetection"
+        test = ifaces.RoboCompHandDetection.Hand()
+        print(f"Testing RoboCompAprilTags.tag from ifaces.RoboCompAprilTags"
+        test = ifaces.RoboCompAprilTags.tag()
         QTimer.singleShot(200, QApplication.instance().quit)
 
     # =============== Slots methods for State Machine ===================
@@ -157,7 +176,7 @@ class SpecificWorker(GenericWorker):
     # IMPLEMENTATION of getHands method from HandDetection interface
     #
     def HandDetection_getHands(self):
-        ret = RoboCompHandDetection.Hands()
+        ret = ifaces.RoboCompHandDetection.Hands()
         #
         # write your CODE here
         #

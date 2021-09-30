@@ -7,7 +7,9 @@ module RoboCompCameraRGBDSimple
 
   struct TImage
   {
-	int cameraID;
+	
+    bool compressed; // opencv jpeg compression
+    int cameraID;
     int width;
     int height;
     int depth;
@@ -19,7 +21,8 @@ module RoboCompCameraRGBDSimple
 
  struct TDepth
   {
-	int cameraID;
+    bool compressed; // opencv jpeg compression
+    int cameraID;
     int width;
     int height;
     int focalx;

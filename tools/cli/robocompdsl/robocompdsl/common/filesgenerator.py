@@ -37,7 +37,7 @@ class FilesGenerator:
     @dsl_file.setter
     def dsl_file(self, value):
         assert isinstance(value, str), "dsl_file must be a string not %s" % str(type(value))
-        assert os.path.exists(value), "%s cdsl file not found." % value
+        assert os.path.exists(value), "%s dsl file not found." % value
         self.__dsl_file = value
 
     @property

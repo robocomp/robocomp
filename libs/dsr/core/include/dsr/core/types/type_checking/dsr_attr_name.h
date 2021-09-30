@@ -128,6 +128,7 @@ REGISTER_TYPE(person_personal_y_pos, std::reference_wrapper<const std::vector<fl
 REGISTER_TYPE(person_sharedWidth, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_intimate_x_pos, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(person_id, std::uint64_t, false)
 
 /*
  * Personal Space

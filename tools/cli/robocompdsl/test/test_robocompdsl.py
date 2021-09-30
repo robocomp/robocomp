@@ -105,6 +105,10 @@ class RobocompdslTest(unittest.TestCase):
         with open(path1, 'r', encoding='utf-8', errors='ignore') as f1, open(path2, 'r', encoding='utf-8', errors='ignore') as f2:
             text1 = f1.readlines()
             text2 = f2.readlines()
+            if path1.endswith("config") and path2.endswith("config"):
+                import re
+                text1 = [line for line in text1 if not re.search(r'-p \d{3}', line)]
+                text2 = [line for line in text2 if not re.search(r'-p \d{3}', line)]
         self.assertEqual(text1, text2)
 
     def compare_components(self, reference, generated):

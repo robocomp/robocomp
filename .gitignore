@@ -37,7 +37,6 @@ GualzruSaccadeAnticipation.cpp
 GualzruSaccadeAnticipation.h
 IMU.cpp
 IMU.h
-InnerModelManager.*
 libs/innermodel/include/innermodel/innermodelconfig.h
 install_manifest.txt
 JointMotor.cpp
@@ -52,7 +51,6 @@ Laser.h
 libgualzru_worldmodel_a.a
 LocalNavigator.cpp
 LocalNavigator.h
-log
 *.log
 Makefile
 moc_*
@@ -78,8 +76,6 @@ ui_**.pyc
 
 */build/
 
-interfaces/*.ice
-
 tools/robocompdsl/test/resources/InnerModelManager_generated.ice
 
 components/melex-rodao/
@@ -97,3 +93,10 @@ tools/robocompdsl/test/htmlcov/
 tools/cli/rcbuild/build/
 
 build/
+
+*.ice
+!tools/cli/robocompdsl/test/resources/InnerModelManager.ice
+
+tools/rcinnerModelSimulator/src/InnerModelManager.h
+
+tools/rcinnerModelSimulator/src/InnerModelManager.cpp

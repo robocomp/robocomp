@@ -1621,9 +1621,11 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                             if (samples.vec().empty()) return;
 
                             auto id = samples.vec().at(0).id();
-                            auto itn = nodes.find(id);
-                            auto type = (itn != nodes.end()) ? itn->second.read_reg().type() : "";
-
+                            std::string type;
+                            {
+                                std::shared_lock<std::shared_mutex> lock(_mutex);
+                                if (auto itn = nodes.find(id); itn != nodes.end())  type = itn->second.read_reg().type() ;
+                            }
                             std::vector<std::future<std::optional<std::string>>> futures;
                             for (auto &&s: samples.vec()) {
                                 if (s.agent_id() != agent_id and
@@ -1675,13 +1677,17 @@ void DSRGraph::fullgraph_server_thread()
                 if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     {
                         std::unique_lock<std::mutex> lck(participant_set_mutex);
-                        if (auto it = participant_set.find(sample.from());
-                            it != participant_set.end() and it->second)
+                        if (auto [it, ok] = participant_set.emplace(sample.from(), true);
+                            it->second and !ok)
                         {
-                            lck.unlock();
-                            IDL::OrMap mp; mp.id(-1); mp.to_id(sample.id());
-                            dsrpub_request_answer.write(&mp);
-                            continue;
+                            if (it->second) {
+                                lck.unlock();
+                                IDL::OrMap mp;
+                                mp.id(-1);
+                                mp.to_id(sample.id());
+                                dsrpub_request_answer.write(&mp);
+                                continue;
+                            } else {}
                         } else {
                             it->second = true;
                             lck.unlock();
