@@ -38,7 +38,6 @@ interfaces in a seamless way. Building new components is done using two domain-s
 
 
 
-
 # Installation from source
 
 Tested in Ubuntu 20.04 and 20.10.  
