@@ -1677,13 +1677,17 @@ void DSRGraph::fullgraph_server_thread()
                 if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     {
                         std::unique_lock<std::mutex> lck(participant_set_mutex);
-                        if (auto it = participant_set.find(sample.from());
-                            it != participant_set.end() and it->second)
+                        if (auto [it, ok] = participant_set.emplace(sample.from(), true);
+                            it->second and !ok)
                         {
-                            lck.unlock();
-                            IDL::OrMap mp; mp.id(-1); mp.to_id(sample.id());
-                            dsrpub_request_answer.write(&mp);
-                            continue;
+                            if (it->second) {
+                                lck.unlock();
+                                IDL::OrMap mp;
+                                mp.id(-1);
+                                mp.to_id(sample.id());
+                                dsrpub_request_answer.write(&mp);
+                                continue;
+                            } else {}
                         } else {
                             it->second = true;
                             lck.unlock();
