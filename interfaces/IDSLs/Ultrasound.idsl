@@ -19,6 +19,7 @@ module RoboCompUltrasound
         {
                 double x;
                 double y;
+                float angle;
         };
         sequence<SensorParams> SensorParamsList;
         sequence<int> SensorsState;
