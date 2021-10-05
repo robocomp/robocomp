@@ -37,7 +37,7 @@ class AbstractGraphicViewer : public QGraphicsView
             this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
             this->setRenderHint(QPainter::Antialiasing);
             this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-            this->setMinimumSize(200, 200);
+            this->setMinimumSize(400, 400);
             this->scale(1, -1);
             this->adjustSize();
             this->setMouseTracking(true);

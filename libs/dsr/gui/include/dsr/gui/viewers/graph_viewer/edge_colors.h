@@ -22,7 +22,7 @@ static const std::map<std::string, std::string> edge_colors = {
         { "sitting", "blue"},
         { "standing", "blue"},
         { "close_to", "blue"},
-        { "has", "yellow"},
+        { "has", "green"},
         { "blocked", "blue"},
         { "is_blocking", "blue"},
         { "is_near", "blue"},
