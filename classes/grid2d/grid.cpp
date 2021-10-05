@@ -39,16 +39,15 @@ void Grid::initialize(  QRectF dim_,
     dim = dim_; TILE_SIZE = tile_size;
     scene = scene_;
     qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE;
-    qInfo() << __FUNCTION__ <<  "World dimension: " << dim.left() << dim.top() << dim.right() << dim.bottom() << TILE_SIZE;
+    qInfo() << __FUNCTION__ <<  "World dimension: " << dim.left() << dim.right() << dim.bottom() << dim.top() << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
     fmap.clear();
 
 //    if(read_from_file and not file_name.empty())
 //        readFromFile(file_name);
-
     std::uint32_t id=0;
     for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
-        for (float j = dim.top(); j < dim.bottom(); j += TILE_SIZE)
+        for (float j = dim.bottom(); j < dim.top(); j += TILE_SIZE)
         {
             QColor my_color = QColor("LightGrey");
             my_color.setAlpha(40);
