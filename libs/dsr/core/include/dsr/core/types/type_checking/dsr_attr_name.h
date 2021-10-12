@@ -236,7 +236,7 @@ REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>, f
 REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>, false)
 REGISTER_TYPE(path_target_x, float, false)
 REGISTER_TYPE(path_target_y, float, false)
-REGISTER_TYPE(is_cyclic, bool, false)
+REGISTER_TYPE(path_is_cyclic, bool, false)
 
 /*
  * Battery

@@ -37,9 +37,8 @@ class AbstractGraphicViewer : public QGraphicsView
             this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
             this->setRenderHint(QPainter::Antialiasing);
             this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-            this->setMinimumSize(400, 400);
+            //this->setMinimumSize(400, 400);
             this->scale(1, -1);
-            this->adjustSize();
             this->setMouseTracking(true);
             this->fitInView(scene.sceneRect(), Qt::KeepAspectRatio);
             this->viewport()->setMouseTracking(true);
@@ -52,6 +51,7 @@ class AbstractGraphicViewer : public QGraphicsView
             QLineF y_axis(r.center(), r.center()+QPointF(0,300));
             scene.addLine(x_axis, QPen(QColor("Red"), 30));
             scene.addLine(y_axis, QPen(QColor("Green"), 30));
+            this->adjustSize();
         }
         QGraphicsPolygonItem* add_robot(float robot_length)
         {
