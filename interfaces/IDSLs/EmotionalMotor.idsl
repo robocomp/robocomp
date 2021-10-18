@@ -8,5 +8,9 @@ module RoboCompEmotionalMotor{
 		void expressFear();           //Miedo
 		void expressAnger();          //Ira
 		void expressDisgust();        //Asco
+		void talking(bool setTalk);
+		void listening(bool setListening);
+		void pupposition(float x, float y);
+		void isanybodythere(bool isAny);
 	};
 };
