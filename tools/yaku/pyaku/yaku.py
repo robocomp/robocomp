@@ -3,7 +3,7 @@
 
 import argparse
 
-from pyaku import pyaku
+from pyaku import _main
 
 def main():
     parser = argparse.ArgumentParser()
@@ -29,8 +29,16 @@ def main():
         dest="save",
         help="Save all the current tabs_by_name information to an script to restore session.",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        dest="verbose",
+        help="Set verbose mode on",
+    )
     args = parser.parse_args()
-    yaku = pyaku.Yaku()
+    yaku = _main.Yaku()
+    yaku.set_verbose(args.verbose)
     if args.save:
         yaku.create_yakuake_start_shell_script()
     elif args.every:

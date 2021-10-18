@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyaku',
-    version='0.0.1',
+    version='2021.09.01',
     include_package_data=True,
     packages=find_packages(),
     url='https://github.com/robocomp/robocomp/tree/development/tools/cli/yaku',
