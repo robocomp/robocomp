@@ -1,0 +1,5 @@
+module RoboCompRecorder{
+	interface Recorder{
+		bool recording(bool rec);
+  };
+};

@@ -1,0 +1,5 @@
+module RoboCompSoundRotation{
+	interface SoundRotation{
+		void getKeyWord(string word);
+  };
+};

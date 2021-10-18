@@ -1,0 +1,13 @@
+module RoboCompGpsUblox
+{
+  struct DatosGPS
+    {
+        float latitude;
+        float longitude;
+        float altitude;
+    };
+  interface GpsUblox
+  {
+    DatosGPS getData();  
+  };
+};
