@@ -77,11 +77,11 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
-        print(f"Testing RoboCompHandDetection.TImage from ifaces.RoboCompHandDetection"
+        print(f"Testing RoboCompHandDetection.TImage from ifaces.RoboCompHandDetection")
         test = ifaces.RoboCompHandDetection.TImage()
-        print(f"Testing RoboCompHandDetection.TRoi from ifaces.RoboCompHandDetection"
+        print(f"Testing RoboCompHandDetection.TRoi from ifaces.RoboCompHandDetection")
         test = ifaces.RoboCompHandDetection.TRoi()
-        print(f"Testing RoboCompHandDetection.Hand from ifaces.RoboCompHandDetection"
+        print(f"Testing RoboCompHandDetection.Hand from ifaces.RoboCompHandDetection")
         test = ifaces.RoboCompHandDetection.Hand()
         QTimer.singleShot(200, QApplication.instance().quit)
 
