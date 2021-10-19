@@ -29,6 +29,7 @@ qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess0 "%s"
 TERMINAL_SPLIT_SHELL_CODE = """
 """
 
+MAX_STRING_LEN = 10
 
 def get_command_return(command):
     proc = subprocess.Popen(
@@ -440,13 +441,13 @@ class YakuakeTab:
 
     def get_new_title(self,  name=None, append=False):
         pwd = self.current_directory
-        dir_name = os.path.basename(os.path.normpath(pwd))
+        dir_name = os.path.basename(os.path.normpath(pwd)) if pwd else 'Unknown'
         if name is None:
-            final_name = dir_name
-            if self.last_command:
-                final_name += "_" + self.last_command
-            elif self.running_command:
-                final_name += "_" + self.running_command
+            final_name = dir_name[:MAX_STRING_LEN] + (dir_name[MAX_STRING_LEN:] and '..')
+            if self.running_command:
+                final_name += "_" + self.running_command[:MAX_STRING_LEN] + (self.running_command[MAX_STRING_LEN:] and '..')
+            elif self.last_command:
+                final_name += "_" + self.last_command[:MAX_STRING_LEN] + (self.last_command[MAX_STRING_LEN:] and '..')
         else:
             if append:
                 final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
