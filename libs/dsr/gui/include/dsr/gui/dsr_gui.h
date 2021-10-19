@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <QMainWindow>
+#include <QLabel>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QListView>
@@ -36,6 +37,27 @@
 
 namespace DSR
 {
+// class to draw green/red led
+class LedWidget : public QLabel
+{
+    Q_OBJECT
+public:
+    LedWidget(std::string name, QWidget *parent = nullptr): QLabel(QString::fromStdString(name), parent)
+    {
+        setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        adjustSize();
+    }
+
+
+public slots:
+    void turnOff() { if(status){status= false; setStyleSheet("QLabel { background-color : red; color : white; }"); }}
+    void turnOn() {if(not status) {status = true; setStyleSheet("QLabel { background-color : green; color : white; }");}}
+
+private:
+    bool status= false;
+};    
+    
+    
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// Drawing controller to display the graph in real-time using RTPS
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +113,14 @@ private:
     uint64_t object_id;
     float external_fps=-1;
     float external_hz=-1;
-
+    std::map<uint64_t, std::string> agents_names;
+    std::map<std::string, LedWidget*> agents_leds;
+    QWidget *m_stBar2; 
+    QWidget *m_stBar1;
+    QHBoxLayout *m_stBar1L;
+    QLabel *m_stMessage;
+    QWidget *w;
+    
 public slots:
     void saveGraphSLOT();
 //			void toggleSimulationSLOT();
@@ -99,12 +128,16 @@ public slots:
     void switch_view(bool state, WidgetContainer* container);
     void compute();
     void qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id);
+    void add_or_assign_node_SLOT(uint64_t id, const std::string &type);
+    void del_node_SLOT(uint64_t id);
+
 signals:
     void saveGraphSIGNAL();
     void closeWindowSIGNAL();
     void resetViewer(QWidget* widget);
 
 private:
+    void create_status_bar();
     void create_dock_and_menu(const QString& name,  QWidget *view);
     void initialize_views(int options, view main);
     void initialize_file_menu();

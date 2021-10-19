@@ -171,11 +171,16 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
 	main_widget = nullptr;
     object_position =  nullptr;
     initialize_views(options, main);
+    create_status_bar();
     timer = new QTimer();
     alive_timer.start();
     timer->start(500);
     init();  //intialize processor number
-    connect(timer, SIGNAL(timeout()), this, SLOT(compute()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(compute()));    
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRViewer::add_or_assign_node_SLOT, Qt::QueuedConnection);
+    connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRViewer::del_node_SLOT, Qt::QueuedConnection);
+
+    
 }
 
 void DSRViewer::initialize_file_menu()
@@ -456,6 +461,31 @@ void DSRViewer::switch_view(bool state, WidgetContainer* container)
 	}
 }
 
+void DSRViewer::create_status_bar()
+{
+    w = new QWidget();
+    w->show();
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    vLayout->setContentsMargins(0,1,0,1);
+    w->setLayout(vLayout);
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->setContentsMargins(2,0,0,0);
+    m_stBar1L = new QHBoxLayout();
+    m_stBar1L->setContentsMargins(2,0,0,0);
+    m_stBar1L->addStretch(1);
+    m_stBar1 = new QWidget();
+    m_stBar1->setFixedHeight(this->window->statusBar()->size().height());
+    m_stBar1->setLayout(m_stBar1L);
+    m_stBar2 = new QWidget();
+    m_stBar2->setLayout(hLayout);
+    m_stBar2->setFixedHeight(this->window->statusBar()->size().height());
+    m_stMessage = new QLabel();
+    hLayout->addWidget(m_stMessage);
+    this->window->statusBar()->setFixedHeight(this->window->statusBar()->size().height()*2.2);
+    vLayout->addWidget(m_stBar1);
+    vLayout->addWidget(m_stBar2);
+    this->window->statusBar()->addWidget(w);
+}
 
 
 //void DSRViewer::toggleSimulationSLOT()
@@ -485,7 +515,7 @@ void DSRViewer::compute()
     {
         status += " HZ: "+std::to_string(external_hz);
     }
-    this->window->statusBar()->showMessage(QString::fromStdString(status)); 
+    m_stMessage->setText(QString::fromStdString(status));
 }
 
 void DSRViewer::qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id)
@@ -495,6 +525,43 @@ void DSRViewer::qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id
     object_position->setX(pos_x);
     object_position->setY(pos_y);
     object_id = node_id;
+}
+
+
+
+void DSRViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
+{
+    if (type == "agent")
+    {
+        std::string name = G->get_name_from_id(id).value_or("No_name");
+        auto it = agents_leds.find(name);
+        if (it == agents_leds.end())  //not found ==> creation
+        {
+            int pos = name.find('(') + 2;
+            std::string show_name = name.substr(pos,6); 
+            LedWidget *newWidget = new LedWidget(show_name);
+            //m_stBar1->addPermanentWidget(newWidget);
+            m_stBar1L->insertWidget(m_stBar1L->count()-1, newWidget);
+            agents_names[id] = name;
+            agents_leds[name] = newWidget;
+            std::cout<<"Name:"<<name<<" "<<show_name<<std::endl;
+        }
+        else
+        {
+            agents_leds[name]->turnOn();
+            agents_names[id] = name;
+        }
+    }
+}
+
+void DSRViewer::del_node_SLOT(uint64_t id)
+{
+    auto it = agents_names.find(id);
+    if(it != agents_names.end())
+    {
+        agents_leds[it->second]->turnOff();
+        agents_names.erase(it);
+    }
 }
 
 /////////////////////////
