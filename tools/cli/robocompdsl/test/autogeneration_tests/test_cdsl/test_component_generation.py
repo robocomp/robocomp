@@ -85,38 +85,18 @@ class ComponentGenerationChecker:
                 return command_output.returncode
             return -1
 
-    def cmake_component(self):
+    def build_component(self):
         """
         Execute cmake on the curren directory . Output and error is saved to make_output.log.
         :return: command return code
         """
-        with open("cmake_output.log", "wb") as log:
-            command_output = subprocess.Popen("cmake .",
+        with open("build_output.log", "wb") as log:
+            command_output = subprocess.Popen("rcbuild comp .",
                                               stdout=log,
                                               stderr=log,
                                               shell=True)
             stdout, stderr = command_output.communicate()
             # print(stdout)
-            # print(stderr)
-            return command_output.returncode
-
-    def make_component(self, dry_run=True):
-        """
-        Execute the make for the component. Output and error is saved to make_output.log.
-        :param dry_run: --dry-run is added as argument to the cmake command.
-        :return: command return code
-        """
-        command = "make -j $(nproc)"
-        if dry_run:
-            command += " --dry-run"
-        with open("make_output.log", "wb") as log:
-            command_output = subprocess.Popen(command,
-                                              stdout=log,
-                                              stderr=log,
-                                              shell=True)
-            stdout, stderr = command_output.communicate()
-            if dry_run:
-                print(stdout)
             # print(stderr)
             return command_output.returncode
 
@@ -225,12 +205,10 @@ class ComponentGenerationChecker:
                                 self.results[current_dir]['compilation'] = False
                                 console.log("%s not compiled (-g option)" % current_dir)
                             else:
-                                console.log("Executing cmake for %s ... [yellow]WAIT!" % (current_dir))
-                                self.cmake_component()
-                                console.log("Executing make for %s ... [yellow]WAIT![/yellow]" % (current_dir))
-                                make_result = self.make_component(self.dry_run)
+                                console.log("Executing build for %s ... [yellow]WAIT!" % (current_dir))
+                                build_result = self.build_component()
 
-                                if make_result == 0 or (make_result == 2 and self.dry_run):
+                                if build_result == 0 or (build_result == 2 and self.dry_run):
                                     self.results[current_dir]['compilation'] = True
                                     self.compiled += 1
                                     console.log("%s compilation OK" % current_dir, style="green")
