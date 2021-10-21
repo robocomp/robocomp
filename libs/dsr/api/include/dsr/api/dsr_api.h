@@ -195,6 +195,7 @@ namespace DSR
             }
         }
 
+
         template <typename name>
         inline std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>> get_attrib_by_name(uint64_t id)
         requires(is_attr_name<name>)
@@ -215,6 +216,58 @@ namespace DSR
             }
             return {};
         }
+
+
+        template <typename Type, typename ... name >
+        inline decltype(auto) get_attribs_by_name(Type n)
+        requires(( ... && is_attr_name<name>) && any_node_or_edge<Type>)
+        {
+            using ret_type = std::tuple<std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>> ...>;
+            auto get_by_name = [&]<typename at>(at* dummy) -> std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(at::type)>>>
+            {
+                auto tmp = get_attrib_by_name<at>(n);
+                if (tmp.has_value())
+                {
+                    if constexpr(is_reference_wrapper<decltype(at::type)>::value) {
+                        return tmp.value().get();
+                    } else {
+                        return tmp;
+                    }
+                } else  return {};
+            };
+
+            return ret_type(std::move(get_by_name(static_cast<name*>(nullptr))) ...);
+
+        }
+
+        template <typename ... name >
+        inline decltype(auto) get_attribs_by_name(uint64_t id)
+        requires(( ... && is_attr_name<name>))
+        {
+            using ret_type = std::tuple<std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>> ...>;
+            std::shared_lock<std::shared_mutex> lock(_mutex);
+            std::optional<CRDTNode> node = get_(id);
+            if (node.has_value())
+            {
+                auto get_by_name = [&]<typename n>(n* dummy) -> std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(n::type)>>>
+                {
+                    auto tmp = get_attrib_by_name<n>(node.value());
+                    if (tmp.has_value())
+                    {
+                        if constexpr(is_reference_wrapper<decltype(n::type)>::value) {
+                            return tmp.value().get();
+                        } else {
+                            return tmp;
+                        }
+                    } else  return {};
+                };
+
+                return ret_type(std::move(get_by_name(static_cast<name*>(nullptr))) ...);
+            }
+            constexpr auto return_nullopt = []<typename n>(n* dummy) { return std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(n::type)>>>{}; };
+            return ret_type( return_nullopt(static_cast<name*>(nullptr)) ...);
+        }
+
         /**
          * LOCAL ATTRIBUTES MODIFICATION METHODS (for nodes and edges)
          **/
