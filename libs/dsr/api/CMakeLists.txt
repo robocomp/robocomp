@@ -12,10 +12,26 @@ find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(cppitertools)
 
+if(DEFINED GEOMETRY_API)
+    find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui 3DCore 3DRender 3DExtras 3DInput 3DAnimation)
+    set(QT_GEOM Qt5::3DCore
+            Qt5::3DRender
+            Qt5::3DAnimation
+            Qt5::3DExtras
+            Qt5::3DInput)
+    set(GEOM_API_HEADERS "include/dsr/api/dsr_geometry_queries_api.h"
+            "include/dsr/api/GeometryInfo.h")
+    set(GEOM_API_SOURCES "dsr_geometry_queries_api.cpp")
+
+
+endif(DEFINED GEOMETRY_API)
+
+
 set(headers_to_moc
         include/dsr/api/dsr_api.h
         include/dsr/api/dsr_inner_eigen_api.h
         include/dsr/api/dsr_agent_info_api.h
+        ${GEOM_API_HEADERS}
         )
 
 add_library(dsr_api SHARED )
@@ -30,8 +46,10 @@ target_sources(dsr_api
         dsr_inner_eigen_api.cpp
         dsr_rt_api.cpp
         dsr_utils.cpp
+        ${GEOM_API_SOURCES}
         ${headers_to_moc}
         )
+
 
 
 target_link_libraries(dsr_api
@@ -42,6 +60,7 @@ target_link_libraries(dsr_api
         Robocomp::qmat
         PUBLIC
         Eigen3::Eigen
+        ${QT_GEOM}
         )
 
 target_include_directories(dsr_api
@@ -62,7 +81,10 @@ set_target_properties(dsr_api PROPERTIES
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON )
 
-target_compile_options(dsr_api PUBLIC -g -fmax-errors=5 -std=c++20 )
+# set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+# set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+
+target_compile_options(dsr_api PUBLIC -O1 -g -fmax-errors=5 -std=c++20 )
 
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
