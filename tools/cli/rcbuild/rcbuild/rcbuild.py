@@ -12,6 +12,7 @@ import typer
 
 from robocomp import execute_command, is_interactive
 from rcworkspace.workspace import Workspace
+from rcworkspace.component_dir import ComponentDir
 from rcconfig.main import RC_CONFIG
 import rcdocker.rcdocker
 
@@ -35,6 +36,11 @@ class RCBuild:
                 component.build(clean=do_clean_first)
         elif component := self.ws.find_component(bcomponent, is_interactive(), reg_exp=reg_exp):
             component.build(clean=do_clean_first)
+        else:
+            component = ComponentDir.create_component(Path(bcomponent))
+            if component is not None:
+                component.build()
+
 
     def remove_cmakecache_files(self, path: Path):
         if 'build' in path:
@@ -59,8 +65,13 @@ class RCBuild:
             return True
         return False
 
-    def remove_undesired_files(self, path: Path) -> bool:
-        if component := self.ws.find_component(path, is_interactive()):
+    def remove_undesired_files(self, comp_path: str, recursively: bool = False, interactive=False) -> bool:
+        if recursively:
+            files_removed = []
+            comp_path = Path(comp_path).resolve()
+            for file_path in comp_path.rglob('*/CMakeCache.txt'):
+                print(file_path)
+        elif component := self.ws.find_component(comp_path, is_interactive()):
             return component.clean_build()
         return False
 
@@ -122,12 +133,14 @@ def build_component(
 def clean(
         component: Optional[str] = typer.Argument(None,
                                                   help='Name of the component to clean, if omitted current dir is used.'),
+        recursively: Optional[bool] = typer.Option(False, "-r",
+                                                  help='recursively remove CMakeCache.txt files'),
 ):
     if not component or component.strip() == '.':
         component_path = os.getcwd()
     else:
         component_path = component
-    if not builder.remove_undesired_files(component_path):
+    if not builder.remove_undesired_files(component_path, recursively, is_interactive()):
         print("Nothing to be removed")
 
 
