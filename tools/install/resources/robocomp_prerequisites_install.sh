@@ -20,6 +20,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       libzeroc-icestorm3.7 \
       make \
       python3 \
+      python3-apt \
       python3-argcomplete \
       python3-distutils \
       python3-pip \
