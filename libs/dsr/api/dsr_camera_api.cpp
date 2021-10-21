@@ -271,12 +271,12 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         float /*depth,*/ X, Y, Z;
                         int cols, rows;
                         std::size_t SIZE = tmp.size() / sizeof(float);
-                        std::vector<std::tuple<float, float, float>> result(SIZE);
+                        std::vector<std::tuple<float, float, float>> result(SIZE/STEP);
                         std::unique_ptr<InnerEigenAPI> inner_eigen;
                         if (!target_frame_node.empty())  // do the change of coordinate system
                         {
                             inner_eigen = G->get_inner_eigen_api();
-                            for (std::size_t i = 0; i < SIZE; i += STEP)
+                            for (std::size_t i = 0; i < SIZE/STEP; i += 1)
                             {
                                 //depth = depth_array[i];
                                 cols = (i % WIDTH) - (WIDTH / 2);
@@ -290,7 +290,7 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                                 result[i] = std::make_tuple(r[0], r[1], r[2]);
                             }
                         } else
-                            for (std::size_t i = 0; i < tmp.size() / STEP; i++)
+                            for (std::size_t i = 0; i < SIZE/STEP; i += 1)
                             {
                                 cols = (i % WIDTH) - (WIDTH / 2);
                                 rows = (HEIGHT / 2) - (i / WIDTH);
