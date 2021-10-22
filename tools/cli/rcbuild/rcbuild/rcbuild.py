@@ -149,9 +149,9 @@ def robocomp(
         clear_installation: bool = typer.Option(False, "--clear-installation", help="Use this to remove robocomp install dir (/opt/robocomp) prior to build."),
         clear_build: bool = typer.Option(False, "-c", "--clear-build", help="Use this to remove robocomp build dir (<ROBOCOMP_DIR>/build/)"),
         install: bool = typer.Option(False, "-i", "--install", help="Install robocomp after building."),
-        dsr: bool = typer.Option(True, "--DSR", help="Compile with DSR support."),
-        fcl: bool = typer.Option(True, "--FCL", help="Compile with FCL support."),
-
+        dsr: bool = typer.Option(False, "--DSR", help="Compile with DSR support."),
+        fcl: bool = typer.Option(False, "--FCL", help="Compile with FCL support."),
+        rcis: bool = typer.Option(False, "--RCIS", help="Compile RCIS tool."),
 ):
     # sudo rm -r /opt/robocomp
     if clear_installation:
@@ -181,7 +181,9 @@ def robocomp(
     # cd build;
     os.chdir(BUILD_DIR)
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;
-    execute_command(f"cmake -DDSR={str(dsr).upper()} -DFCL_SUPPORT={str(fcl).upper()} ..")
+    if dsr:
+        fcl = True
+    execute_command(f"cmake -DDSR={str(dsr).upper()} -DFCL_SUPPORT={str(fcl).upper()} -DRCIS={str(rcis).upper()} ..")
     # make -j10
     number_of_processors = int(multiprocessing.cpu_count()/2)
     print(f"Compiling with {number_of_processors} processors")
