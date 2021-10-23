@@ -254,18 +254,18 @@ class ComponentGenerationChecker:
                 if result['generation']:
                     gen_result = true_string
                 else:
-                    gen_result = f"{false_string}\n\t{result['generation_output']}"
+                    gen_result = f"{false_string}\n\t{result.get('generation_output','')}"
 
                 # Printing results for compilation
                 if result['compilation']:
                     comp_result = true_string
                 else:
-                    comp_result = f"{false_string}\n\t{result['compilation_output']}"
+                    comp_result = f"{false_string}\n\t{result.get('compilation_output','')}"
 
                 if result['execution']:
                     exec_result = true_string
                 else:
-                    exec_result = f"{false_string}\n\t{result.get('execution_output','')}"
+                    exec_result = f"{false_string}\n\t{result.get('execution_output', '')}"
 
 
                 max_characters_len = ()
