@@ -14,7 +14,6 @@ from robocomp import execute_command, is_interactive
 from rcworkspace.workspace import Workspace
 from rcworkspace.component_dir import ComponentDir
 from rcconfig.main import RC_CONFIG
-import rcdocker.rcdocker
 
 app = typer.Typer(short_help=typer.style("Command to build components or robocomp itself", fg=typer.colors.GREEN), help=typer.style("Robocomp command to build components or robocomp itself. There are also several "
                                    "options to clean, rebuild or install.\n"
@@ -121,7 +120,9 @@ def build_component(
     else:
         component_path = component
     if isolated:
-            rcdocker.rcdocker.build_component_in_container(component)
+        # import locally to avoid to launch docker client if not needed
+        import rcdocker.rcdocker
+        rcdocker.rcdocker.build_component_in_container(component)
     else:
         builder.build_component(component_path, do_clean, reg_exp, all_comps)
 
