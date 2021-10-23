@@ -420,9 +420,13 @@ class Workspace:
 
         if not os.path.exists(os.path.join(home, ".config/RoboComp")):
             config_path = os.path.join(home, ".config/RoboComp")
-            os.makedirs(config_path)
-            os.chmod(config_path, 0o777)
-
+            try:
+                os.makedirs(config_path)
+                os.chmod(config_path, 0o777)
+            except PermissionError as e:
+                print(f"Could not create {config_path} directory.")
+                print(f"{e}")
+                return []
         try:
             config_file = open(config_file_path, "r")
             attr = json.load(config_file)
