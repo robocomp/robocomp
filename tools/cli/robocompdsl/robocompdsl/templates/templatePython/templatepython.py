@@ -10,7 +10,7 @@ class TemplatesManagerPython(ComponentTemplatesManager):
         self.files = {
                 'regular': [
                     'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.py',
-                    'src/genericworker.py', 'src/specificworker.py', 'src/interfaces.py', 'src/mainUI.ui', 'src/CMakeLists.txt'
+                    'src/genericworker.py', 'src/specificworker.py', 'src/interfaces.py', 'src/config.py', 'src/mainUI.ui', 'src/CMakeLists.txt'
                 ],
                 'avoid_overwrite': [
                     'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'

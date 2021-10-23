@@ -56,15 +56,16 @@
 #
 
 import argparse
-# Ctrl+c handling
 import signal
+import sys
 
 from rich.console import Console
 console = Console()
 
 ${import_qtwidgets}
 import interfaces
-from specificworker import *
+import config
+from specificworker import SpecificWorker
 
 #SIGNALS handler
 def sigint_handler(*args):
@@ -74,15 +75,16 @@ def sigint_handler(*args):
 if __name__ == '__main__':
     ${app_creation}
     parser = argparse.ArgumentParser()
-    parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config')
+    parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config.yml')
     parser.add_argument('--startup-check', action='store_true')
 
     args = parser.parse_args()
+    config.CONFIG_MANAGER.from_file_path(args.iceconfigfile)
     interface_manager = interfaces.InterfaceManager(args.iceconfigfile)
 
     if interface_manager.status == 0:
         worker = SpecificWorker(interface_manager.get_proxies_map(), args.startup_check)
-        worker.setParams(interface_manager.parameters)
+        worker.setParams(config.CONFIG_MANAGER.parameters)
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)

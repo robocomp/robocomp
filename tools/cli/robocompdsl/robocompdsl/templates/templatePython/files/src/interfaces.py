@@ -2,6 +2,9 @@ import time
 import Ice
 import IceStorm
 from rich.console import Console, Text
+
+import config
+
 console = Console()
 
 
@@ -10,7 +13,6 @@ ${load_slice_and_create_imports}
 ${create_lists_classes}
 
 ${implements_and_subscribes_imports}
-
 
 
 class Publishes:
@@ -64,11 +66,11 @@ class Requires:
                 self.mprx[property_name] = proxy
                 return True, proxy
             except Ice.Exception:
-                print('Cannot connect to the remote object (CameraSimple)', proxy_string)
+                print(f'Cannot connect to the remote object {proxy_string}')
                 # traceback.print_exc()
                 return False, None
-        except Ice.Exception as e:
-            console.print_exception(e)
+        except Ice.Exception:
+            console.print_exception()
             console.log(f'Cannot get {property_name} property.')
             return False, None
 
@@ -119,7 +121,7 @@ class InterfaceManager:
     def __init__(self, ice_config_file):
         # TODO: Make ice connector singleton
         self.ice_config_file = ice_config_file
-        self.ice_connector = Ice.initialize(self.ice_config_file)
+        self.ice_connector = Ice.initialize(args=config.CONFIG_MANAGER.ice_properties_args)
         needs_rcnode = ${needs_rcnode}
         self.topic_manager = self.init_topic_manager() if needs_rcnode else None
 
