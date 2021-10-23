@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
-import typer
 import glob
 import os
 import shutil
 import subprocess
 import sys
-import traceback
+from pathlib import Path
 from shutil import rmtree
+
 from rich.console import Console
 from rich.text import Text
 
@@ -63,7 +63,7 @@ class ComponentGenerationChecker:
         if dry_run:
             print(robocompdsl_exe+' %file > /dev/null 2>&1' % cdsl_file)
             print(robocompdsl_exe+' %cdsl_file . > %log_file 2>&1' % (cdsl_file, log_file))
-            return 0
+            return 0, ""
         else:
             # completedProc = subprocess.Popen('robocompdsl %s > /dev/null 2>&1'%cdsl_file)
             # completedProc = subprocess.Popen('robocompdsl %s . > %s 2>&1' % (cdsl_file, log_file))
@@ -72,18 +72,15 @@ class ComponentGenerationChecker:
                 robocompdsl_exe + " %s" % cdsl_file,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, shell=True)
-            stdout, stderr = command_output.communicate()
+            command_output.communicate()
             with open("generation_output.log", "wb") as log:
                 command_output = subprocess.Popen(
                     robocompdsl_exe+" %s ." % cdsl_file,
                     stdout=log,
                     stderr=log,
                     shell=True)
-                stdout, stderr = command_output.communicate()
-                # print(stdout)
-                # print(stderr)
-                return command_output.returncode
-            return -1
+                command_output.communicate()
+                return command_output.returncode, Path('generation_output.log').read_text()
 
     def build_component(self):
         """
@@ -95,10 +92,8 @@ class ComponentGenerationChecker:
                                               stdout=log,
                                               stderr=log,
                                               shell=True)
-            stdout, stderr = command_output.communicate()
-            # print(stdout)
-            # print(stderr)
-            return command_output.returncode
+            command_output.communicate()
+            return command_output.returncode, Path('build_output.log').read_text()
 
     def run_component(self, dry_run=True):
         """
@@ -120,20 +115,20 @@ class ComponentGenerationChecker:
             #         command = "./src/"+filename
             #         print("Found executable %s" % command)
         if not command:
-            return -1
+            return -1, "", ""
         command += " --startup-check"
         command = f"export QT_QPA_PLATFORM=offscreen;{command}"
         if dry_run:
             print(f"{command} #(--dry-run)")
-            return 0
+            return 0, "", ""
 
         with open("run_component.log", "wb") as log:
             command_output = subprocess.Popen(command,
                                               stdout=log,
                                               stderr=log,
                                               shell=True)
-            stdout, stderr = command_output.communicate()
-            return command_output.returncode
+            command_output.communicate()
+            return command_output.returncode, Path('run_component.log').read_text()
 
     def remove_genetared_files(self, current_dir=".", dry_run=True):
         """
@@ -197,7 +192,7 @@ class ComponentGenerationChecker:
                         self.valid += 1
                         self.results[current_dir] = {"generation":False, "compilation": False, "execution": False}
                         console.log("Generating code ... [yellow]WAIT![/yellow]")
-                        if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
+                        if (generation_result := self.generate_code(cdsl_file, "generation_output.log", False))[0] == 0:
                             console.log("%s generation [green]OK[/green]" % current_dir)
                             self.results[current_dir]['generation'] = True
                             self.generated += 1
@@ -208,24 +203,24 @@ class ComponentGenerationChecker:
                                 console.log("Executing build for %s ... [yellow]WAIT!" % (current_dir))
                                 build_result = self.build_component()
 
-                                if build_result == 0 or (build_result == 2 and self.dry_run):
+                                if build_result[0] == 0 or (build_result[0] == 2 and self.dry_run):
                                     self.results[current_dir]['compilation'] = True
                                     self.compiled += 1
                                     console.log("%s compilation OK" % current_dir, style="green")
                                     if not no_execution:
-                                        if self.run_component(dry_run=dry_run) == 0:
+                                        if (run_result := self.run_component(dry_run=dry_run))[0] == 0:
                                             self.results[current_dir]['execution'] = True
                                             console.log("%s execution OK" % current_dir, style="green")
                                             self.executed += 1
                                         else:
                                             self.results[current_dir]['execution'] = False
+                                            self.results[current_dir]['execution_output'] = run_result[1]
                                             console.log("%s execution Failed" % current_dir, style="red")
-                                            with open("run_component.log", "r") as f:
-                                                console.log(f.read(), style="red")
                                             global_result = False
                                             self.exec_failed += 1
                                 else:
                                     self.results[current_dir]['compilation'] = False
+                                    self.results[current_dir]['compilation_output'] = build_result[1]
                                     self.comp_failed += 1
                                     console.log("%s compilation [red]FAILED[/red]" % current_dir)
                                     global_result = False
@@ -233,6 +228,7 @@ class ComponentGenerationChecker:
                             console.log("%s generation [red]FAILED[/red]" % os.path.join(current_dir, cdsl_file))
                             self.gen_failed += 1
                             self.results[current_dir]['generation'] = False
+                            self.results[current_dir]['generation_output'] = generation_result[1]
                             global_result = False
                         if not dirty:
                             self.remove_genetared_files(dry_run=self.dry_run)
@@ -258,18 +254,18 @@ class ComponentGenerationChecker:
                 if result['generation']:
                     gen_result = true_string
                 else:
-                    gen_result = false_string
+                    gen_result = f"{false_string}\n\t{result['generation_output']}"
 
                 # Printing results for compilation
                 if result['compilation']:
                     comp_result = true_string
                 else:
-                    comp_result = false_string
+                    comp_result = f"{false_string}\n\t{result['compilation_output']}"
 
                 if result['execution']:
                     exec_result = true_string
                 else:
-                    exec_result = false_string
+                    exec_result = f"{false_string}\n\t{result.get('execution_output','')}"
 
 
                 max_characters_len = ()
