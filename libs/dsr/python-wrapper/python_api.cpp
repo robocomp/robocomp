@@ -640,7 +640,8 @@ PYBIND11_MODULE(pydsr, m) {
             .def("get_name_from_id", &DSRGraph::get_name_from_id, "id"_a, "Return the name of a node given its id")
             .def("get_id_from_name", &DSRGraph::get_id_from_name, "name"_a, "Return the id from a node given its name")
             .def("get_edges_by_type", &DSRGraph::get_edges_by_type, "type"_a, "Return all the edges with a given type.")
-            .def("get_edges_to_id", &DSRGraph::get_edges_to_id, "id"_a, "Return all the edges that point to the node");
+            .def("get_edges_to_id", &DSRGraph::get_edges_to_id, "id"_a, "Return all the edges that point to the node")
+            .def("write_to_json_file", &DSRGraph::write_to_json_file, "file"_a, "skip_atts"_a=std::vector<std::string>{}, "Return all the edges that point to the node");
     //DSR RT_API class
     py::class_<RT_API>(m, "rt_api")
             .def(py::init([](DSRGraph &g) -> std::unique_ptr<RT_API> {
