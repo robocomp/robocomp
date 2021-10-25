@@ -148,6 +148,8 @@ namespace DSR {
             G->add_or_modify_attrib_local<timestamp_alivetime_att>(new_node, static_cast<uint64_t>(0));
             G->add_or_modify_attrib_local<agent_id_att>(new_node, static_cast<uint32_t>(G->get_agent_id()));
             G->add_or_modify_attrib_local<agent_name_att>(new_node, str);
+            G->add_or_modify_attrib_local<pos_x_att>(new_node, (float) 10);
+            G->add_or_modify_attrib_local<pos_y_att>(new_node, (float) 10);
             G->add_or_modify_attrib_local<parent_att>(new_node, parent_id);
             G->add_or_modify_attrib_local<agent_description_att>(new_node, std::string{"TODO"});
             //CPU usage
