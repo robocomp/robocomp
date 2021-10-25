@@ -11,7 +11,7 @@ import os
 import apt
 from termcolor import cprint, colored
 from robocomp import is_interactive
-from rcconfig.rcconfig import RC_CONFIG
+from rcconfig.main import RC_CONFIG
 from rcworkspace.workspace import Workspace
 
 app = typer.Typer(help=typer.style("Docker wrapper for Robocomp images and commands.", fg=typer.colors.GREEN))
