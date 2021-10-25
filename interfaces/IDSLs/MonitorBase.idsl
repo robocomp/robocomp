@@ -1,0 +1,11 @@
+module RoboCompMonitorBase
+{
+  exception HardwareFailedException { string what; };
+
+  enum MonitorStates { Alive, Fail, Disconnected };
+
+  interface MonitorBase
+  {
+     MonitorStates getMonitorState() throws HardwareFailedException;
+  };
+};
