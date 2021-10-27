@@ -314,7 +314,8 @@ REGISTER_TYPE(gps_longitude, float, false)
 REGISTER_TYPE(gps_altitude, float, false)
 REGISTER_TYPE(gps_time_stamp, float, false)
 REGISTER_TYPE(gps_sensor_tick, float, false)
-
+REGISTER_TYPE(gps_map_x, float, false)
+REGISTER_TYPE(gps_map_y, float, false)
 /*
  * IMU
  * */
@@ -340,6 +341,16 @@ REGISTER_TYPE(cpu_usage, float, false)
 REGISTER_TYPE(memory_usage, uint32_t , false)
 REGISTER_TYPE(num_procs, uint32_t, false)
 REGISTER_TYPE(agent_description, std::reference_wrapper<const std::string>, false)
+
+
+/*
+* WAYP
+* */
+REGISTER_TYPE(wayp_id, int, false)
+REGISTER_TYPE(wayp_x, int, false)
+REGISTER_TYPE(wayp_y, int, false)
+REGISTER_TYPE(wayp_time_stamp, float, false)
+REGISTER_TYPE(wayp_sensor_tick, float, false)
 
 
 /* TESTS

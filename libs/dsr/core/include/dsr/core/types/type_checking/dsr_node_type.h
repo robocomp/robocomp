@@ -112,4 +112,7 @@ REGISTER_NODE_TYPE(grid)
 //Agent
 REGISTER_NODE_TYPE(agent)
 
+
+//pioneer
+REGISTER_NODE_TYPE(wayp)
 #endif //DSR_NODE_TYPE_H
