@@ -1,7 +1,7 @@
 import typer as typer
 from rcbuild import rcbuild
 from rccd import rccd
-from rcconfig import rcconfig
+from rcconfig import main as rcconfig
 from rcdocker import rcdocker
 from rcportchecker import rcportchecker
 from rcrun import rcrun
