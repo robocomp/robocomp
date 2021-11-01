@@ -5,9 +5,14 @@ module RoboCompGpsUblox
         float latitude;
         float longitude;
         float altitude;
+	float UTMx;
+	float UTMy;
+	float mapx;
+	float mapy;
     };
   interface GpsUblox
   {
-    DatosGPS getData();  
+    DatosGPS getData();
+    void setInitialPose(float x, float y);
   };
 };
