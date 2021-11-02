@@ -14,34 +14,34 @@ execute_default = True
 app = typer.Typer(help=typer.style("Tool to find and check available components.", fg=typer.colors.GREEN))
 
 @app.command()
-def initialize():
+def initialize(directory: Optional[Path] = typer.Argument(Path.cwd(), help="Dir to start searching workspace")):
     """
     Initialize workspaces searching in the given directory
     """
     try:
-        ws.interactive_workspace_init(initialize)
+        ws.interactive_workspace_init(directory.expanduser().resolve())
     except KeyboardInterrupt:
         print("\nCanceled")
 
 
 @app.command()
-def delete(directory: Optional[Path] = typer.Argument(None, help="Dir to start removing workspace")):
+def delete(directory: Optional[Path] = typer.Argument(Path.cwd(), help="Dir to start removing workspace")):
     """
     Remove workspaces searching in the given directory
     """
     try:
-        ws.delete_workspace(directory)
+        ws.delete_workspace(directory.expanduser().resolve())
     except KeyboardInterrupt:
         print("\nCanceled")
 
 
 @app.command()
-def add(directory: Optional[Path] = typer.Argument(None, help="Dir to start adding workspace"), accept_all: bool = False):
+def add(directory: Optional[Path] = typer.Argument(Path.cwd(), help="Dir to start adding workspace"), accept_all: bool = False):
     """
     Add workspaces searching in the given directory
     """
     try:
-        ws.add_workspace(directory, interactive=False, accept_all=accept_all)
+        ws.add_workspace(directory.expanduser().resolve(), interactive=False, accept_all=accept_all)
     except KeyboardInterrupt:
         print("\nCanceled")
 

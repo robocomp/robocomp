@@ -129,19 +129,20 @@ class Workspace:
         names = self.list_components_names()
         return (name for name in names if name.startswith(prefix))
 
-    def get_recursive_components_in_dir(self, initial_path, print_path=False):
+    def get_recursive_components_in_dir(self, initial_path: Path, print_path=False):
+        print("get_recursive_components_in_dir", list(map(str, self.workspace_paths)))
         components_parents_dirs = {}
-        for subdir, dirs, files in os.walk(initial_path):
-            if comp := ComponentDir.create_component(Path(subdir)):
+        for subdir in initial_path.resolve().rglob("*"):
+            if subdir.is_dir() and (comp := ComponentDir.create_component(subdir)):
                 components_parents_dirs[subdir] = comp
                 if print_path:
-                    print(f'Found {subdir}')
+                    print(f'Found {str(subdir)}')
         return components_parents_dirs
 
     def get_recursive_interfaces_in_dir(self, initial_path, print_path=False):
         interface_files = []
-        if (initial_path:= Path(initial_path)).is_dir():
-            interface_files += list(map(str,initial_path.rglob("*.idsl")))
+        if (initial_path := Path(initial_path)).is_dir():
+            interface_files += list(map(str, initial_path.rglob("*.idsl")))
         return interface_files
 
     def ask_for_path_selection(self, components_dir_list):
@@ -233,8 +234,9 @@ class Workspace:
             self.update_interfaces_in_workspaces(existing_workspace)
 
     def update_components_in_workspaces(self, workspace=None):
-        old_components_paths = self.components.keys()
+        old_components_paths = list(map(Path, self.components.keys()))
         if workspace is None:
+            print("update_components_in_workspaces", list(map(str, self.workspace_paths)))
             for existing_workspace in self.workspace_paths:
                 res = self.get_recursive_components_in_dir(existing_workspace)
                 self.components.update(res)
@@ -244,8 +246,8 @@ class Workspace:
             print(f"Updating workspace {workspace}")
         new_components = list(self.components.keys() - old_components_paths)
         print(f"Found {colored(len(new_components), 'green')} new components")
-        if len(new_components) > 0:
-            print(colored('\n'.join(new_components), 'green'))
+        # if len(new_components) > 0:
+        #     print(colored('\n'.join(str(new_components)), 'green'))
         self.save_workspace()
 
     def update_interfaces_in_workspaces(self, workspace=None):
@@ -344,15 +346,14 @@ class Workspace:
             return result
 
         components_parents_dirs = self.get_recursive_components_in_dir(initial_path)
-
-        #
-        best_guess = common_prefix(list(components_parents_dirs.keys()))
+        best_guess = common_prefix([str(dir_l) for dir_l in components_parents_dirs.keys()])
         new_workspaces = []
         print(f"Found {len(best_guess)} possibles components in {colored(initial_path, 'green')}")
         print(f"======")
         ignored = []
         for path in sorted(best_guess, key=lambda x: calculate_path_value(x, best_guess[x]), reverse=True):
-            print(len(path.split('/')) * best_guess[path])
+            if best_guess[path] <= 1:
+                continue
             end = False
             next = False
             for parent in new_workspaces:
@@ -371,11 +372,11 @@ class Workspace:
                 continue
             while not end:
                 print(f"Found {best_guess[path]} components in {colored(path, 'green')}")
-                response = input(f"Do you wanna add to workspace? {colored('Yes/No/Ignore/End', 'cyan')} ")
-                if "yes" in response.lower() or "y" in response.lower():
+                response = input(f"Do you wanna add to workspace? {colored('Yes/No/Ignore/End', 'cyan')} ").strip()
+                if "yes" == response.lower() or "y" == response.lower():
                     new_workspaces.append(path)
                     break
-                if "ignore" in response.lower() or "i" in response.lower():
+                if "ignore" == response.lower() or "i" == response.lower():
                     to_ignore = prompt('> ',
                                        completer=FuzzyCompleter(PathCompleter()),
                                        complete_while_typing=True,
@@ -385,20 +386,18 @@ class Workspace:
                         to_ignore = path
                     ignored.append(to_ignore)
                     break
-                elif "no" in response.lower() or "n" in response.lower():
+                elif "no" == response.lower() or "n" == response.lower():
                     break
-                elif "end" in response.lower() or "e" in response.lower():
+                elif "end" == response.lower() or "e" == response.lower():
                     print("Finishing initialization of workspaces")
                     end = True
                 else:
                     print('Invalid response (y/n/i/e)')
             if end:
                 break
-        self.workspace_paths = new_workspaces
-        self.components = list(filter(lambda x: any(x.startswith(workspace) for workspace in self.workspace_paths),
-                                      components_parents_dirs))
+        self.workspace_paths = list(map(Path, new_workspaces))
+        self.update_components_in_workspaces()
 
-        self.save_workspace()
 
     def _save_attr(self, attr, filename):
         home = os.path.expanduser("~")
@@ -447,6 +446,7 @@ class Workspace:
         self.components = {c_path: ComponentDir.create_component(Path(c_path)) for c_path in self._load_attr('components')}
 
     def save_workspace_paths(self):
+        print(list(map(str, self.workspace_paths)))
         self._save_attr(list(map(str, self.workspace_paths)), 'workspace_paths')
 
     def save_components(self):
@@ -475,6 +475,8 @@ def validate_in_range(value, valid_range):
 
 class EnhancedJSONEncoder(json.JSONEncoder):
     def default(self, o):
+        if isinstance(o, Path):
+            return str(o)
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
         return super().default(o)

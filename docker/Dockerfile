@@ -7,12 +7,15 @@ FROM ${base_image}:${base_tag} AS dependencies-version
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 ARG branch
+# DEFAULT LD_LIBRARY_PATH vaiables from the nvidia/opengl image confuses pyside2 about the qt5 Library paths
+ENV LD_LIBRARY_PATH="/lib:/usr/lib"
+RUN export LD_LIBRARY_PATH="/lib:/usr/lib"
 RUN apt-get update && apt-get install -y --no-install-recommends  \
       ca-certificates \
       curl \
       sudo \
-    && rm -rf /var/lib/apt/lists/* \
-RUN cd ~ && export ROBOCOMP_BRANCH=$branch \
+    && rm -rf /var/lib/apt/lists/*
+RUN cd ~ && export branch=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh | bash -s $branch
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
@@ -28,7 +31,7 @@ WORKDIR /home/robolab/
 FROM dependencies-version AS base-version
 ARG branch
 # Using robocomp installation script
-RUN cd ~ && export ROBOCOMP_BRANCH=$branch \
+RUN cd ~ && export branch=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/robocomp_install.sh | bash -s $branch
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
 ENV ROBOCOMP=/home/robolab/robocomp
@@ -102,7 +105,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-zeroc-ice  \
   psmisc \
   && rm -rf /var/lib/apt/lists/*
-
 #Compilation of DSR components
 USER robolab
 WORKDIR /home/robolab/robocomp/components/

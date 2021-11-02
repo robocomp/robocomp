@@ -23,6 +23,8 @@ class ComponentCheck(ABC):
 class ComponentCDSLCheck(ComponentCheck):
     @classmethod
     def check(cls, component_dir: Path, component=None):
+        if not component_dir.exists():
+            return False
         cdsl_files = defaultdict(list)
         for item in component_dir.iterdir():
             if item.is_file() and str(item).endswith(".cdsl"):

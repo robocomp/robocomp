@@ -1,8 +1,8 @@
 cat /etc/issue
-ROBOCOMP_BRANCH="${ROBOCOMP_BRANCH:-development}"
-source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$ROBOCOMP_BRANCH/tools/install/resources/robocomp_prerequisites_install.sh)
+branch="${branch:-development}"
+source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh)
 
-git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
+git clone -b $branch https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
 echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc
