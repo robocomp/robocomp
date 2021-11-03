@@ -1,7 +1,6 @@
 import shlex
 import subprocess
 import sys
-
 import typer
 
 # TODO: make robocomp a class with its own attributes like SRC dir, INSTALL dir and operations as ¿download?, install, clean, etc

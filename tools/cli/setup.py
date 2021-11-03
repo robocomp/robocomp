@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='robocomp_cli',
-    version='0.0.1.2',
-    packages=['robocomp','rcbuild', 'rccd', 'rcconfig', 'rcdocker', 'rcportchecker', 'rcrun', 'rcworkspace', 'robocompdsl'],
+    name='robocompcli',
+    version='2021.11.02',
+    packages=['robocompcli','robocomp','rcbuild', 'rccd', 'rcconfig', 'rcdocker', 'rcportchecker', 'rcrun', 'rcworkspace', 'robocompdsl'],
     package_dir={
+	    'robocompcli': '.',
         'robocomp': 'robocomp/robocomp/',
         'rcbuild': 'rcbuild/rcbuild/',
         'rccd': 'rccd/rccd/',

@@ -36,18 +36,3 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
   && sudo rm -rf /var/lib/apt/lists/*
 
 sudo pip3 install rich typer pyside2
-
-# Some incompatibility from pyside2 (5.15) and default qt installation (5.14)
-#echo "Installation fix for $(cat /etc/issue | grep '20.04')"
-#if cat /etc/issue | grep '20.04' ; then
-#  sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal
-#  sudo apt-get update
-#  sudo apt-get install qt515base -y
-#  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt515/lib/
-#  sudo pip3 install Pyside2
-#else
-#  sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
-#        python3-pyside2.qtcore \
-#        python3-pyside2.qtwidgets \
-#    && sudo rm -rf /var/lib/apt/lists/*
-#fi
