@@ -3,7 +3,7 @@ branch="${branch:-development}"
 source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh)
 
 git clone -b $branch https://github.com/robocomp/robocomp.git
-sudo ln -s ~ /home/robocomp
+sudo ln -sfn ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
 echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc
 echo "export PYTHONIOENCODING=utf-8" >> ~/.bashrc
