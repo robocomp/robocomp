@@ -34,25 +34,8 @@ setup(
             "dsl_parsers/**/**/*",
         ]
     },
-    # packages_dir=['rcbuild.rcbuild', 'rccd', 'rcconfig', 'rcdocker', 'rcportchecker', 'rcrun', 'rcworkspace', 'robocompdsl'],
-    # packages=find_packages()
-    # packages=find_packages(include=['rcbuild.rcbuild', 'rccd.rccd', 'rcconfig.rcconfig', 'rcdocker.rcdocker', 'rcportchecker.rcportchecker', 'rcrun.rcrun', 'rcworkspace.rcworkspace', 'robocompdsl.robocompdsl'], exclude=["build", "robocompdsl.*"]),
-    # # packages_dir={
-    # #     'robocomp': 'robocomp/'
-    # # },
-    # # install_requires=[
-    # #     'robocomp',
-    # #     'rcbuild'
-    # # ],
-    # url='https://github.com/robocomp/robocomp/tree/development/tools/cli',
-    # license='GPL V3',
-    # author='Esteban Martinena',
-    # author_email='emartinena@unex.es',
-    # description='Main CLI robocomp application',
-    # long_description=open('README.md').read(),
-    # long_description_content_type='text/markdown',
     install_requires=[
-        'typer', 'docker', 'pyyaml', 'prompt_toolkit'
+        'typer', 'docker', 'pyyaml', 'prompt_toolkit', 'robocomp','rcbuild', 'rccd', 'rcconfig', 'rcdocker', 'rcportchecker', 'rcrun', 'rcworkspace', 'robocompdsl'
     ],
     entry_points={
         'console_scripts': [
