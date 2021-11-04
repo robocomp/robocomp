@@ -35,7 +35,7 @@ setup(
         ]
     },
     install_requires=[
-        'typer', 'docker', 'pyyaml', 'prompt_toolkit', 'robocomp','rcbuild', 'rccd', 'rcconfig', 'rcdocker', 'rcportchecker', 'rcrun', 'rcworkspace', 'robocompdsl'
+        'typer', 'docker', 'pyyaml', 'prompt_toolkit',
     ],
     entry_points={
         'console_scripts': [
