@@ -23,6 +23,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       python3-apt \
       python3-argcomplete \
       python3-distutils \
+      python3-distutils-extra \
       python3-pip \
       python3-prompt-toolkit \
       python3-pyparsing \
