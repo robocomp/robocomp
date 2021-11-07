@@ -7,18 +7,24 @@ import yaml
 
 class RCConfig:
     def __init__(self):
-        self.ROBOCOMP_SRC_DIR: Path = Path()
+        self.ROBOCOMP_SRC_DIR: Path = Path("~/robocomp").expanduser()
         self.ROBOCOMP_CONFIG_DIR = Path.home() / ".config" / "robocomp"
         self.ROBOCOMP_CONFIG_FILE = self.ROBOCOMP_CONFIG_DIR / "robocomp.yml"
         self.ROBOCOMP_INSTALL_DIR = Path("/opt/robocomp/")
+        self.ROBOCOMP_BUILD_DIR = self.ROBOCOMP_SRC_DIR / "build"
         self.CUSTOM = {}
+        self.load_config()
         if not self.ROBOCOMP_CONFIG_DIR.exists():
             try:
                 self.ROBOCOMP_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
                 print(f"ERR: {str(pe)}")
+        if not self.ROBOCOMP_BUILD_DIR.exists():
+            try:
+                self.ROBOCOMP_BUILD_DIR.mkdir(parents=True, exist_ok=True)
+            except PermissionError as pe:
+                print(f"ERR: {str(pe)}")
         self.load_config()
-
 
     def save_config(self) -> None:
         if not self.ROBOCOMP_CONFIG_DIR.exists():

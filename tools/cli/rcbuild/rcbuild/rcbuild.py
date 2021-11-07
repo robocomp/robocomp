@@ -13,16 +13,14 @@ import typer
 from robocomp import execute_command, is_interactive
 from rcworkspace.workspace import Workspace
 from rcworkspace.component_dir import ComponentDir
-from rcconfig.main import RC_CONFIG
+from rcconfig import RC_CONFIG
 
 app = typer.Typer(short_help=typer.style("Command to build components or robocomp itself", fg=typer.colors.GREEN), help=typer.style("Robocomp command to build components or robocomp itself. There are also several "
                                    "options to clean, rebuild or install.\n"
                                    "The name of the component to be used doesn't need to be a full path. The passed name "
                                    "will be looked for inside the defined workspaces.", fg=typer.colors.GREEN))
 
-# TODO: Move to rcconfig py file
-ROBOCOMP_INSTALL_DIR = "/opt/robocomp"
-BUILD_DIR = RC_CONFIG.ROBOCOMP_SRC_DIR / "build"
+
 
 class RCBuild:
     def __init__(self):
@@ -150,33 +148,30 @@ def robocomp(
         fcl: bool = typer.Option(False, "--FCL", help="Compile with FCL support."),
         rcis: bool = typer.Option(False, "--RCIS", help="Compile RCIS tool."),
 ):
-    # sudo rm -r /opt/robocomp
     if clear_installation:
-        if os.path.isdir(ROBOCOMP_INSTALL_DIR):
-            command = f"/usr/bin/sudo rm -r {ROBOCOMP_INSTALL_DIR}"
-            execute_command(command)
-
-    if clear_build and BUILD_DIR.exists():
+        if (RC_CONFIG.ROBOCOMP_BUILD_DIR / "Makefile").exists():
+            os.chdir(RC_CONFIG.ROBOCOMP_BUILD_DIR)
+            execute_command("/usr/bin/sudo make uninstall")
+    if clear_build and RC_CONFIG.ROBOCOMP_BUILD_DIR.exists():
         # make clean;
-        os.chdir(BUILD_DIR)
-        if (BUILD_DIR / "Makefile").exists():
+        os.chdir(RC_CONFIG.ROBOCOMP_BUILD_DIR)
+        if (RC_CONFIG.ROBOCOMP_BUILD_DIR / "Makefile").exists():
             execute_command("make clean")
-        if (BUILD_DIR.parent / "CMakeCache.txt").exists():
-            execute_command(f"rm {BUILD_DIR.parent / 'CMakeCache.txt'}")
+        if (RC_CONFIG.ROBOCOMP_BUILD_DIR.parent / "CMakeCache.txt").exists():
+            execute_command(f"rm {RC_CONFIG.ROBOCOMP_BUILD_DIR.parent / 'CMakeCache.txt'}")
         # cd ..;
         os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
         # sudo rm -r build;
-        execute_command(f"/usr/bin/sudo rm -r {BUILD_DIR}")
+        execute_command(f"/usr/bin/sudo rm -r {RC_CONFIG.ROBOCOMP_BUILD_DIR}")
 
-    os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
-    if not BUILD_DIR.exists():
+    if not RC_CONFIG.ROBOCOMP_BUILD_DIR.exists():
         # mkdir build;
-        execute_command(f"mkdir -p {BUILD_DIR}")
+        execute_command(f"mkdir -p {RC_CONFIG.ROBOCOMP_BUILD_DIR}")
 
     # install robocomp cli tools
     execute_command(f"sudo pip install {RC_CONFIG.ROBOCOMP_SRC_DIR/'tools'/'cli'}")
     # cd build;
-    os.chdir(BUILD_DIR)
+    os.chdir(RC_CONFIG.ROBOCOMP_BUILD_DIR)
     # cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ;
     if dsr:
         fcl = True
@@ -185,10 +180,30 @@ def robocomp(
     number_of_processors = int(multiprocessing.cpu_count()/2)
     print(f"Compiling with {number_of_processors} processors")
     execute_command(f"make -j{number_of_processors}")
+
+    # sudo rm -r /opt/robocomp
+    if clear_installation:
+        commands = ["sudo pip uninstall -y robocompcli", "pip uninstall -y robocompcli"]
+        for command in commands:
+            execute_command(command)
+
+        os.chdir(RC_CONFIG.ROBOCOMP_SRC_DIR)
+        if os.path.isdir(RC_CONFIG.ROBOCOMP_INSTALL_DIR):
+            command = f"/usr/bin/sudo rm -r {RC_CONFIG.ROBOCOMP_INSTALL_DIR}"
+            execute_command(command)
+        # TODO: get the files from other places, not hardcoded
+        files_to_remove = [Path("/opt/robocomp/")]
+        for installed_file in files_to_remove:
+            if installed_file.exists():
+                execute_command(f"/usr/bin/sudo rm {installed_file}")
+
     if install:
         # sudo make install
         execute_command("/usr/bin/sudo make install")
     return True
 
 if __name__ == '__main__':
-    app()
+    try:
+        app()
+    except FileNotFoundError as e:
+        print("You probably are in a non existing directory.")
