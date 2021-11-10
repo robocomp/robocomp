@@ -171,7 +171,7 @@ class Workspace:
                 print(f"No component found in {response}. Workspaces not updated.")
                 return
             else:
-                print("%s\n%d components found in %s" % (colored('\n'.join(new_components), 'green'),
+                print("%s\n%d components found in %s" % (colored('\n'.join([str(new_comp) for new_comp in new_components]), 'green'),
                                                          len(new_components),
                                                          response))
             if len(new_interfaces) == 0:
