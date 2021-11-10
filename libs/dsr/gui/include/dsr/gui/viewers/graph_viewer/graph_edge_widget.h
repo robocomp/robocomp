@@ -45,7 +45,7 @@ public:
             //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &GraphEdgeWidget::drawSLOT);
             //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphEdgeWidget::update_node_slot);
             //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphEdgeWidget::update_node_slot);
-            QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_attr_signal, this, &GraphEdgeWidget::update_edge_attr_slot);
+            QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_attr_signal, this, &GraphEdgeWidget::update_edge_attr_slot, Qt::QueuedConnection);
             //QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphEdgeWidget::add_or_assign_edge_slot);
             show();
         }
