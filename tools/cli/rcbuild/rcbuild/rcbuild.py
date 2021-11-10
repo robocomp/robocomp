@@ -109,22 +109,18 @@ def build_docs(
 
 @app.command(name="comp",  help=typer.style("Build the specified component.", fg=typer.colors.GREEN))
 def build_component(
-    component: Optional[str] = typer.Argument(None, help='Name of the component to build, if omitted current dir is used.'),
+    component: Optional[Path] = typer.Argument(Path.cwd(), help='Name of the component to build, if omitted current dir is used.'),
     do_clean: Optional[bool] = typer.Option(False, '--clean', help="Clean the compilation files (CMake and Make generated files."),
     isolated: Optional[bool] = typer.Option(False, '--isolated', help="Build component in docker image"),
     reg_exp: Optional[bool] = typer.Option(False, '-r', '--reg-exp', help="Use regular expression to find components"),
     all_comps: Optional[bool] = typer.Option(False, '-a', '--all', help="build all components matching name")
 ):
-    if not component or component.strip() == '.':
-        component_path = os.getcwd()
-    else:
-        component_path = component
     if isolated:
         # import locally to avoid to launch docker client if not needed
         import rcdocker.rcdocker
         rcdocker.rcdocker.build_component_in_container(component)
     else:
-        builder.build_component(component_path, do_clean, reg_exp, all_comps)
+        builder.build_component(component, do_clean, reg_exp, all_comps)
 
 
 @app.command(name="clean",

@@ -23,21 +23,17 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       python3-apt \
       python3-argcomplete \
       python3-distutils \
+      python3-distutils-extra \
       python3-pip \
       python3-prompt-toolkit \
       python3-pyparsing \
-      python3-pyside2.qtcore \
-      python3-pyside2.qtwidgets \
       python3-setuptools \
       python3-termcolor \
       python3-zeroc-ice \
+      software-properties-common \
       sudo \
       zeroc-ice-all-dev \
       zeroc-icebox \
   && sudo rm -rf /var/lib/apt/lists/*
 
-# Some incompatibility from pyside2 (5.15) and default qt installation (5.14)
-sudo pip3 install rich typer
-
-# pyside2-tools have removed pyside2-uic
-echo "uic -g python \$@"  | sudo tee -a /usr/bin/pyside2-uic && sudo chmod a+x /usr/bin/pyside2-uic
+sudo pip3 install rich typer pyside2

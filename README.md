@@ -56,6 +56,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       ca-certificates
 ```
 
+Make sure you have deleted any previous versions of RoboComp from /usr/local/bin/robocomp*
 And to install the rest of robocomp you can use the script:
 ```bash
 cd ~

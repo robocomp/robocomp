@@ -12,7 +12,10 @@ class RCConfig:
         self.ROBOCOMP_CONFIG_FILE = self.ROBOCOMP_CONFIG_DIR / "robocomp.yml"
         self.ROBOCOMP_INSTALL_DIR = Path("/opt/robocomp/")
         self.CUSTOM = {}
+        if not self.ROBOCOMP_CONFIG_DIR.exists():
+            self.ROBOCOMP_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         self.load_config()
+
 
     def save_config(self) -> None:
         if not self.ROBOCOMP_CONFIG_DIR.exists():

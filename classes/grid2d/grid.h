@@ -21,13 +21,15 @@
 #include <boost/functional/hash.hpp>
 #include <iostream>
 #include <fstream>
-#include <cppitertools/zip.hpp>
-#include <cppitertools/range.hpp>
 #include <limits>
+#include <tuple>
 #include <QGraphicsScene>
+#include <QGraphicsRectItem>
 #include <chrono>
 #include <unistd.h>
 #include <QtCore>
+#include <Eigen/Dense>
+#include <QVector2D>
 
 class Grid
 {
@@ -35,112 +37,198 @@ class Grid
     using Msec = std::chrono::duration<double, std::milli>;
     using Seconds = std::chrono::seconds;
 
+public:
+    using Dimensions = QRectF;
+    int TILE_SIZE;
+
+    struct Key
+    {
+        long int x;
+        long int z;
     public:
-        using Dimensions = QRectF;
-        int TILE_SIZE;
-        struct Key
-        {
-            long int x;
-            long int z;
-            public:
-                Key() : x(0), z(0){};
-                Key(long int &&x, long int &&z) : x(std::move(x)), z(std::move(z))
-                    {  };
-                Key(long int &x, long int &z) : x(x), z(z){  };
-                Key(float &x, float &z) : x((long int)x), z((long int)z){  };
-                Key(const long int &x, const long int &z) : x(x), z(z){ };
-                Key(const QPointF &p)
-                {
-                    x = p.x();
-                    z = p.y();
-                };
-                QPointF toQPointF() const { return QPointF(x,z);};
-                bool operator==(const Key &other) const
-                {
-                    return x == other.x && z == other.z;
-                };
-                void save(std::ostream &os) const   { os << x << " " << z << " "; }; //method to save the keys
-                void read(std::istream &is)         { is >> x >> z; };					   //method to read the keys
-        };
-        struct KeyHasher
-        {
-            std::size_t operator()(const Key &k) const
-            {
-                using boost::hash_combine;
-                using boost::hash_value;
-                // Start with a hash value of 0    .
-                std::size_t seed = 0;
-                // Modify 'seed' by XORing and bit-shifting in one member of 'Key' after the other:
-                hash_combine(seed, hash_value(k.x));
-                hash_combine(seed, hash_value(k.z));
-                return seed;
-            };
-        };
-        struct T
-        {
-            std::uint32_t id;
-            bool free;
-            bool visited;
-            float cost;
-            QGraphicsRectItem * tile;
-            // method to save the value
-            void save(std::ostream &os) const {	os << free << " " << visited;};
-            void read(std::istream &is) {	is >> free >> visited;};
-        };
-        using FMap = std::unordered_map<Key, T, KeyHasher>;
-        Dimensions dim;
+        Key() : x(0), z(0)
+        {};
 
-        void initialize( QRectF dim_,
-                         int tile_size,
-                         QGraphicsScene *scene,
-                         bool read_from_file = true,
-                         const std::string &file_name = std::string(),
-                         std::uint16_t num_threads = 10);
-        std::tuple<bool, T&> getCell(long int x, long int z);
-        std::tuple<bool, T&> getCell(const Key &k);
-        T at(const Key &k) const                            { return fmap.at(k);};
-        T &at(const Key &k)                                 { return fmap.at(k);};
-        typename FMap::iterator begin()                     { return fmap.begin(); };
-        typename FMap::iterator end()                       { return fmap.end(); };
-        typename FMap::const_iterator begin() const         { return fmap.begin(); };
-        typename FMap::const_iterator end() const           { return fmap.begin(); };
-        size_t size() const                                 { return fmap.size(); };
-        void insert(const Key &key, const T &value);
-        void clear();
-        void saveToFile(const std::string &fich);
-        void readFromFile(const std::string &fich);
-        std::string saveToString() const;
-        void readFromString(const std::string &cadena);
-        std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
-        Key pointToGrid(long int x, long int z) const;
-        Key pointToGrid(const QPointF &p) const;
-        void setFree(const Key &k);
-        bool isFree(const Key &k) ;
-        void setVisited(const Key &k, bool visited);
-        bool is_visited(const Key &k);
-        void set_all_to_not_visited();
-        void setOccupied(const Key &k);
-        void setCost(const Key &k,float cost);
-        int count_total() const;
-        int count_total_visited() const;
-        void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
-        void modifyCostInGrid(const QPolygonF &poly, float cost);
-        std::optional<QPointF> closest_obstacle(const QPointF &p);
-        std::optional<QPointF> closest_free(const QPointF &p);
-        std::optional<QPointF> closest_free_4x4(const QPointF &p);
-        std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center);
-        std::vector<std::pair<Key, T>> neighboors(const Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs, bool all = false);
-        std::vector<std::pair<Key, T>> neighboors_8(const Key &k,  bool all = false);
-        std::vector<std::pair<Key, T>> neighboors_16(const Key &k,  bool all = false);
-        void draw(QGraphicsScene* scene);
+        Key(long int &&x, long int &&z) : x(std::move(x)), z(std::move(z))
+        {};
 
-    private:
-        FMap fmap;
-        QGraphicsScene *scene;
-        std::vector<QGraphicsRectItem *> scene_grid_points;
-        std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
-        inline double heuristicL2(const Key &a, const Key &b) const;
-        std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
+        Key(long int &x, long int &z) : x(x), z(z)
+        {};
+
+        Key(float &x, float &z) : x((long int) x), z((long int) z)
+        {};
+
+        Key(const long int &x, const long int &z) : x(x), z(z)
+        {};
+
+        Key(const QPointF &p)
+        {
+            x = p.x();
+            z = p.y();
+        };
+
+        QPointF toQPointF() const
+        { return QPointF(x, z); };
+
+        bool operator==(const Key &other) const
+        {
+            return x == other.x && z == other.z;
+        };
+
+        void save(std::ostream &os) const
+        { os << x << " " << z << " "; }; //method to save the keys
+        void read(std::istream &is)
+        { is >> x >> z; };                       //method to read the keys
+    };
+
+    struct KeyHasher
+    {
+        std::size_t operator()(const Key &k) const
+        {
+            using boost::hash_combine;
+            using boost::hash_value;
+            // Start with a hash value of 0    .
+            std::size_t seed = 0;
+            // Modify 'seed' by XORing and bit-shifting in one member of 'Key' after the other:
+            hash_combine(seed, hash_value(k.x));
+            hash_combine(seed, hash_value(k.z));
+            return seed;
+        };
+    };
+
+    struct T
+    {
+        std::uint32_t id;
+        bool free = true;
+        bool visited = false;
+        float cost = 1;
+        uint hits = 0;
+        uint misses = 0;
+        QGraphicsRectItem *tile;
+
+        // method to save the value
+        void save(std::ostream &os) const
+        { os << free << " " << visited; };
+
+        void read(std::istream &is)
+        { is >> free >> visited; };
+    };
+
+    using FMap = std::unordered_map<Key, T, KeyHasher>;
+    Dimensions dim;
+
+    void initialize(QRectF dim_,
+                    int tile_size,
+                    QGraphicsScene *scene,
+                    bool read_from_file = true,
+                    const std::string &file_name = std::string(),
+                    std::uint16_t num_threads = 10);
+
+    std::tuple<bool, T &> getCell(long int x, long int z);
+
+    std::tuple<bool, T &> getCell(const Key &k);
+
+    T at(const Key &k) const
+    { return fmap.at(k); };
+
+    T &at(const Key &k)
+    { return fmap.at(k); };
+
+    typename FMap::iterator begin()
+    { return fmap.begin(); };
+
+    typename FMap::iterator end()
+    { return fmap.end(); };
+
+    typename FMap::const_iterator begin() const
+    { return fmap.begin(); };
+
+    typename FMap::const_iterator end() const
+    { return fmap.begin(); };
+
+    size_t size() const
+    { return fmap.size(); };
+
+    void insert(const Key &key, const T &value);
+
+    void clear();
+
+    void saveToFile(const std::string &fich);
+
+    void readFromFile(const std::string &fich);
+
+    std::string saveToString() const;
+
+    void readFromString(const std::string &cadena);
+
+    std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
+
+    Key pointToGrid(long int x, long int z) const;
+
+    Key pointToGrid(const QPointF &p) const;
+
+    void setFree(const Key &k);
+
+    bool isFree(const Key &k);
+
+    void setVisited(const Key &k, bool visited);
+
+    bool is_visited(const Key &k);
+
+    void set_all_to_not_visited();
+
+    void setOccupied(const Key &k);
+
+    void setOccupied(long int x, long int y);
+
+    void setOccupied(const QPointF &p);
+
+    void setCost(const Key &k, float cost);
+
+    void add_miss(const Eigen::Vector2f &p);
+
+    void add_hit(const Eigen::Vector2f &p);
+
+    int count_total() const;
+
+    int count_total_visited() const;
+
+    void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
+    void modifyCostInGrid(const QPolygonF &poly, float cost);
+
+    std::optional<QPointF> closest_obstacle(const QPointF &p);
+
+    std::optional<QPointF> closest_free(const QPointF &p);
+
+    std::optional<QPointF> closest_free_4x4(const QPointF &p);
+
+    std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center);
+
+    std::vector<std::pair<Key, T>> neighboors(const Key &k, const std::vector<int> &xincs, const std::vector<int> &zincs, bool all = false);
+
+    std::vector<std::pair<Key, T>> neighboors_8(const Key &k, bool all = false);
+
+    std::vector<std::pair<Key, T>> neighboors_16(const Key &k, bool all = false);
+
+    void draw();
+
+private:
+    FMap fmap;
+    QGraphicsScene *scene;
+    std::vector<QGraphicsRectItem *> scene_grid_points;
+
+    std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
+
+    inline double heuristicL2(const Key &a, const Key &b) const;
+
+    std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
+
+    struct Params
+    {
+        const QString free_color = "white";
+        const QString occupied_color = "red";
+        const float occupancy_threshold = 0.5;
+    };
+    Params params;
 };
-
 #endif // GRID_H

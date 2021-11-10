@@ -1,10 +1,8 @@
 #include "grid.h"
-#include <QVector2D>
-#include <QGraphicsRectItem>
+#include <cppitertools/zip.hpp>
+#include <cppitertools/range.hpp>
+#include <cppitertools/slice.hpp>
 #include <execution>
-#include <algorithm>
-#include <tuple>
-# include <cppitertools/slice.hpp>
 
 auto operator<<(std::ostream &os, const Grid::Key &k) -> decltype(k.save(os), os)
 {
@@ -35,10 +33,10 @@ void Grid::initialize(  QRectF dim_,
                         const std::string &file_name,
                         std::uint16_t num_threads)
 {
-    qInfo() << __FUNCTION__ << "FileName:" << QString::fromStdString(file_name);
-    dim = dim_; TILE_SIZE = tile_size;
+    dim = dim_;
+    TILE_SIZE = tile_size;
     scene = scene_;
-    qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE;
+    qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
     qInfo() << __FUNCTION__ <<  "World dimension: " << dim.left() << dim.right() << dim.bottom() << dim.top() << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
     fmap.clear();
@@ -47,13 +45,21 @@ void Grid::initialize(  QRectF dim_,
 //        readFromFile(file_name);
     std::uint32_t id=0;
     for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
-        for (float j = dim.bottom(); j < dim.top(); j += TILE_SIZE)
+        for (float j = dim.top(); j < dim.bottom(); j += TILE_SIZE)
         {
+            T aux;
+            aux.id = id++;
+            aux.free = true;
+            aux.visited = true;
+            aux.cost = 1.0;
             QColor my_color = QColor("LightGrey");
             my_color.setAlpha(40);
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
-            tile->setZValue(1); tile->setPos(i, j);
-            insert(Key(i, j), T{id++, true, false, 1.f, tile});
+            tile->setZValue(1);
+            tile->setPos(i, j);
+            aux.tile = tile;
+            insert(Key(i, j), aux);
+            qInfo() << __FUNCTION__ << i << j << aux.id << aux.free << aux.tile->pos();
         }
 
 //
@@ -68,21 +74,27 @@ void Grid::insert(const Key &key, const T &value)
 {
     fmap.insert(std::make_pair(key, value));
 }
+
+// FIX THIS
 std::tuple<bool, Grid::T&> Grid::getCell(long int x, long int z)
 {
-    if( not dim.contains(QPointF(x,z)))
-        return std::forward_as_tuple(false, T());
-    else
-        return std::forward_as_tuple(true, fmap.at(pointToGrid(x, z)));
+    return getCell(pointToGrid(x,z));
 }
+
 std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
 {
-//    if (not dim.contains(QPointF(k.x, k.z)))
-//        return std::forward_as_tuple(false, T());
-//    else
-//        return std::forward_as_tuple(true, fmap.at(pointToGrid(k.x, k.z)));  // Key should already be correct
-      try{ return std::forward_as_tuple(true, fmap.at(pointToGrid(k.x, k.z))); }
-      catch(...){ /*qInfo() << __FUNCTION__ << " No key found in grid: (" << k.x << k.z << ")" ;*/ return std::forward_as_tuple(false, T()) ;}
+    if (not dim.contains(QPointF(k.x, k.z)))
+        return std::forward_as_tuple(false, T());
+    else
+      try
+      {
+          return std::forward_as_tuple(true, fmap.at(pointToGrid(k.x, k.z)));
+      }
+      catch(const std::exception &e)
+      {
+          //qWarning() << __FUNCTION__ << " No key found in grid: (" << k.x << k.z << ")";
+          return std::forward_as_tuple(false, T());
+      }
 }
 typename Grid::Key Grid::pointToGrid(long int x, long int z) const
 {
@@ -177,7 +189,57 @@ void Grid::setOccupied(const Key &k)
 {
     auto &&[success, v] = getCell(k);
     if(success)
+    {
         v.free = false;
+        if(v.tile != nullptr)
+            v.tile->setBrush(QBrush(QColor("red")));
+    }
+}
+void Grid::setOccupied(long int x, long int y)
+{
+    auto &&[success, v] = getCell(x,y);
+    if(success)
+    {
+        v.free = false;
+        if(v.tile != nullptr)
+            v.tile->setBrush(QBrush(QColor("red")));
+    }
+}
+void Grid::setOccupied(const QPointF &p)
+{
+    auto &&[success, v] = getCell((long int)p.x(),(long int)p.y());
+    if(success)
+    {
+        v.free = false;
+        v.tile->setBrush(QBrush(QColor("red")));
+    }
+}
+void Grid::add_miss(const Eigen::Vector2f &p)
+{
+    auto &&[success, v] = getCell((long int)p.x(),(long int)p.y());
+    if(success)
+    {
+        v.misses++;
+        if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold-0.2)
+        {
+            v.free = true;
+            v.tile->setBrush(QBrush(QColor(params.free_color)));
+        }
+    }
+}
+void Grid::add_hit(const Eigen::Vector2f &p)
+{
+    auto &&[success, v] = getCell((long int)p.x(),(long int)p.y());
+    if(success)
+    {
+        v.hits++;
+        //qInfo() << __FUNCTION__ << v.hits << (float)v.hits/(v.hits+v.misses);
+        if((float)v.hits/(v.hits+v.misses) >= params.occupancy_threshold)
+        {
+            v.free = false;
+            v.tile->setBrush(QBrush(QColor(params.occupied_color)));
+        }
+    }
 }
 void Grid::setVisited(const Key &k, bool visited)
 {
@@ -445,7 +507,7 @@ inline double Grid::heuristicL2(const Key &a, const Key &b) const
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
 }
 ///////////////////////////////////////////////////////////////////////////////////////
-void Grid::draw(QGraphicsScene* scene)
+void Grid::draw()
 {
     //clear previous points
     for (QGraphicsRectItem* item : scene_grid_points)
@@ -475,8 +537,8 @@ void Grid::draw(QGraphicsScene* scene)
             else
                 color = "White";
         }
-        else
-            color = "#B40404";
+        else // occupied
+            color = "Red";
 
         QColor my_color = QColor(QString::fromStdString(color));
         my_color.setAlpha(40);
