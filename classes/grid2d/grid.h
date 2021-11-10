@@ -189,6 +189,8 @@ public:
 
     void add_hit(const Eigen::Vector2f &p);
 
+    float percentage_changed();
+
     int count_total() const;
 
     int count_total_visited() const;
@@ -216,6 +218,7 @@ private:
     FMap fmap;
     QGraphicsScene *scene;
     std::vector<QGraphicsRectItem *> scene_grid_points;
+    double updated=0.0, flipped=0.0;
 
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
 
