@@ -51,7 +51,7 @@ class GraphNodeWidget : public  QTableWidget
           //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &GraphNodeWidget::drawSLOT);
           //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphNodeWidget::update_node_slot);
           //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphNodeWidget::update_node_slot);
-          QObject::connect(graph.get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNodeWidget::update_node_attr_slot);
+          QObject::connect(graph.get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNodeWidget::update_node_attr_slot, Qt::QueuedConnection);
           show();
       }
     };
