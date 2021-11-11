@@ -51,7 +51,7 @@ class GraphNodeLaserWidget : public QGraphicsView
       scale(1, -1);
       //drawLaserSLOT(node_id_, );
       //QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &GraphNodeLaserWidget::drawLaserSLOT);
-      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphNodeLaserWidget::drawLaserSLOT);
+      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphNodeLaserWidget::drawLaserSLOT, Qt::QueuedConnection);
       show();
     };
 

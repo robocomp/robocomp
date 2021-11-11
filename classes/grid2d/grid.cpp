@@ -222,9 +222,16 @@ void Grid::add_miss(const Eigen::Vector2f &p)
         v.misses++;
         if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold-0.2)
         {
+            if(not v.free) this->flipped++;
             v.free = true;
             v.tile->setBrush(QBrush(QColor(params.free_color)));
         }
+        if (v.misses + v.hits == 10)
+        {
+            v.misses = 0;
+            v.hits = 0;
+        }
+        this->updated++;
     }
 }
 void Grid::add_hit(const Eigen::Vector2f &p)
@@ -236,10 +243,21 @@ void Grid::add_hit(const Eigen::Vector2f &p)
         //qInfo() << __FUNCTION__ << v.hits << (float)v.hits/(v.hits+v.misses);
         if((float)v.hits/(v.hits+v.misses) >= params.occupancy_threshold)
         {
+            if(v.free) this->flipped++;
             v.free = false;
             v.tile->setBrush(QBrush(QColor(params.occupied_color)));
         }
+        if (v.misses + v.hits == 10)
+        {
+            v.misses = 0;
+            v.hits = 0;
+        }
+        this->updated++;
     }
+}
+float Grid::percentage_changed()
+{
+    return (flipped / updated);
 }
 void Grid::setVisited(const Key &k, bool visited)
 {
@@ -559,7 +577,8 @@ std::optional<QPointF> Grid::closestMatching_spiralMove(const QPointF &p, std::f
     int vi = moveUnit, vj = 0, tamSegmento = 1, i = p.x(), j = p.y(), recorrido = 0;
 
     QPointF retPoint;
-    while(true) {
+    while(true)
+    {
         i += vi; j += vj; ++recorrido;
         retPoint.setX(i); retPoint.setY(j);
         Key key = pointToGrid(retPoint);

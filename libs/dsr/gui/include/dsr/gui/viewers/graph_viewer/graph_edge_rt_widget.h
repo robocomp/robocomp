@@ -21,7 +21,7 @@ public:
         qRegisterMetaType<std::string>("std::string");
         qRegisterMetaType<std::map<std::string, DSR::Attribute>>("Attribs");
 
-        connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphEdgeRTWidget::add_or_assign_edge_slot);
+        connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphEdgeRTWidget::add_or_assign_edge_slot, Qt::QueuedConnection);
         //Inner Api
         inner_eigen = graph->get_inner_eigen_api();
 
