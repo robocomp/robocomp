@@ -30,6 +30,7 @@
 #include <QtCore>
 #include <Eigen/Dense>
 #include <QVector2D>
+#include <QColor>
 
 class Grid
 {
