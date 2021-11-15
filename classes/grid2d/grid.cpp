@@ -226,7 +226,7 @@ void Grid::add_miss(const Eigen::Vector2f &p)
             v.free = true;
             v.tile->setBrush(QBrush(QColor(params.free_color)));
         }
-        if (v.misses + v.hits == 10)
+        if (v.misses + v.hits == 20)
         {
             v.misses = 0;
             v.hits = 0;
@@ -247,7 +247,7 @@ void Grid::add_hit(const Eigen::Vector2f &p)
             v.free = false;
             v.tile->setBrush(QBrush(QColor(params.occupied_color)));
         }
-        if (v.misses + v.hits == 10)
+        if (v.misses + v.hits == 20)
         {
             v.misses = 0;
             v.hits = 0;

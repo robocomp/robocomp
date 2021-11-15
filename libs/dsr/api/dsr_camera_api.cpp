@@ -72,6 +72,8 @@ Eigen::Vector2d CameraAPI::project(const Eigen::Vector3d & p, int cx, int  cy) c
     return proj;
 }
 
+/// An InverseProjection is NEEDED here
+
 //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get_existing_rgb_image() const
 //{
 //    auto &attrs = node.attrs();
