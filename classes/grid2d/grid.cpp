@@ -220,7 +220,7 @@ void Grid::add_miss(const Eigen::Vector2f &p)
     if(success)
     {
         v.misses++;
-        if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold-0.2)
+        if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold)
         {
             if(not v.free) this->flipped++;
             v.free = true;
