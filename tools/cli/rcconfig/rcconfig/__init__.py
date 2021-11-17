@@ -13,7 +13,10 @@ class RCConfig:
         self.ROBOCOMP_INSTALL_DIR = Path("/opt/robocomp/")
         self.CUSTOM = {}
         if not self.ROBOCOMP_CONFIG_DIR.exists():
-            self.ROBOCOMP_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+            try:
+                self.ROBOCOMP_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+            except PermissionError as pe:
+                print(f"ERR: {str(pe)}")
         self.load_config()
 
 
