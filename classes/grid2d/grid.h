@@ -103,8 +103,8 @@ public:
         bool free = true;
         bool visited = false;
         float cost = 1;
-        uint hits = 0;
-        uint misses = 0;
+        float hits = 0;
+        float misses = 0;
         QGraphicsRectItem *tile;
 
         // method to save the value
@@ -126,93 +126,54 @@ public:
                     std::uint16_t num_threads = 10);
 
     std::tuple<bool, T &> getCell(long int x, long int z);
-
     std::tuple<bool, T &> getCell(const Key &k);
-
     T at(const Key &k) const
     { return fmap.at(k); };
-
     T &at(const Key &k)
     { return fmap.at(k); };
-
     typename FMap::iterator begin()
     { return fmap.begin(); };
-
     typename FMap::iterator end()
     { return fmap.end(); };
-
     typename FMap::const_iterator begin() const
     { return fmap.begin(); };
-
     typename FMap::const_iterator end() const
     { return fmap.begin(); };
-
     size_t size() const
     { return fmap.size(); };
-
     void insert(const Key &key, const T &value);
-
     void clear();
-
     void saveToFile(const std::string &fich);
-
     void readFromFile(const std::string &fich);
-
     std::string saveToString() const;
-
     void readFromString(const std::string &cadena);
-
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
-
     Key pointToGrid(long int x, long int z) const;
-
     Key pointToGrid(const QPointF &p) const;
-
     void setFree(const Key &k);
-
     bool isFree(const Key &k);
-
     void setVisited(const Key &k, bool visited);
-
     bool is_visited(const Key &k);
-
     void set_all_to_not_visited();
-
     void setOccupied(const Key &k);
-
     void setOccupied(long int x, long int y);
-
     void setOccupied(const QPointF &p);
-
     void setCost(const Key &k, float cost);
-
     void add_miss(const Eigen::Vector2f &p);
-
     void add_hit(const Eigen::Vector2f &p);
-
     float percentage_changed();
-
     int count_total() const;
-
     int count_total_visited() const;
-
     void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
     void modifyCostInGrid(const QPolygonF &poly, float cost);
 
     std::optional<QPointF> closest_obstacle(const QPointF &p);
-
     std::optional<QPointF> closest_free(const QPointF &p);
-
     std::optional<QPointF> closest_free_4x4(const QPointF &p);
-
     std::tuple<bool, QVector2D> vectorToClosestObstacle(QPointF center);
-
     std::vector<std::pair<Key, T>> neighboors(const Key &k, const std::vector<int> &xincs, const std::vector<int> &zincs, bool all = false);
-
     std::vector<std::pair<Key, T>> neighboors_8(const Key &k, bool all = false);
-
     std::vector<std::pair<Key, T>> neighboors_16(const Key &k, bool all = false);
-
     void draw();
 
 private:
@@ -222,10 +183,9 @@ private:
     double updated=0.0, flipped=0.0;
 
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
-
     inline double heuristicL2(const Key &a, const Key &b) const;
-
     std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
+    void set_all_costs(float value);
 
     struct Params
     {

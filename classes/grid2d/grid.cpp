@@ -285,6 +285,11 @@ void Grid::setCost(const Key &k,float cost)
     if(success)
         v.cost = cost;
 }
+void Grid::set_all_costs(float value)
+{
+    for(auto &[key, cell] : fmap)
+        cell.cost = value;
+}
 int Grid::count_total() const
 {
     return fmap.size();
@@ -412,6 +417,7 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
         qWarning() << "Could not find source position in Grid";
         return std::list<QPointF>();
     }
+    set_all_costs(1.0);
 
     // vector de distancias inicializado a UINT_MAX
     std::vector<uint32_t> min_distance(fmap.size(),std::numeric_limits<uint32_t>::max());
@@ -470,21 +476,49 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, 
 {
     std::vector<std::pair<Key, T>> neigh;
     // list of increments to access the neighboors of a given position
-    for (auto &&[itx, itz] : iter::zip(xincs, zincs))
+    for (auto &&[itx, itz]: iter::zip(xincs, zincs))
     {
         Key lk{k.x + itx, k.z + itz};
         const auto &[success, p] = getCell(lk);
-        if(not success) continue;
+        if (not success) continue;
 
         // check that incs are not both zero but have the same abs value, i.e. a diagonal
-        if (itx != 0 and itz != 0 and (fabs(itx) == fabs(itz)) and p.cost==1)
-            p.cost = 1.41; 								// if neighboor in diagonal, cost is sqrt(2)
+//        if (itx != 0 and itz != 0 and (fabs(itx) == fabs(itz)) and p.cost == 1)
+//            p.cost = 5;                                // if neighboor in diagonal, cost is sqrt(2)
 
-        if(all)
+        if (all)
             neigh.emplace_back(std::make_pair(lk, p));
-        else
+        else // if all cells covered by the robot are free
+        {
+            bool all_free = true;
             if (p.free)
-                neigh.emplace_back(std::make_pair(lk, p));
+            {
+                if(ceil(400.0/TILE_SIZE)<= 3) // robot occupies three cells, Check 8-neigh
+                {
+                    auto neigh = neighboors_8(lk, true);
+                    if( auto res = std::ranges::find_if_not(neigh, [](auto a){ return a.second.free;}); res != neigh.end())
+                        all_free = false;
+//                    for (auto &&[fitx, fitz]: iter::zip(xincs, zincs))
+//                    {
+//                        Key flk{lk.x + fitx, lk.z + fitz};
+//                        const auto &[fsuccess, fp] = getCell(flk);
+//                        if (not fsuccess or not fp.free)
+//                        {
+//                            all_free = false;
+//                            break;
+//                        }
+//                    }
+                }
+                else
+                {
+                    auto neigh = neighboors_16(lk, true);
+                    if( auto res = std::ranges::find_if_not(neigh, [](auto a){ return a.second.free;}); res != neigh.end())
+                        all_free = false;
+                }
+                if (all_free)
+                    neigh.emplace_back(std::make_pair(lk, p));
+            }
+        }
     }
     return neigh;
 }
@@ -493,8 +527,7 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_8(const Grid::Key &k
     const int &I = TILE_SIZE;
     static const std::vector<int> xincs = {I, I, I, 0, -I, -I, -I, 0};
     static const std::vector<int> zincs = {I, 0, -I, -I, -I, 0, I, I};
-    auto r = this->neighboors(k, xincs, zincs, all);
-    return r;
+    return this->neighboors(k, xincs, zincs, all);
 }
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors_16(const Grid::Key &k, bool all)
 {
