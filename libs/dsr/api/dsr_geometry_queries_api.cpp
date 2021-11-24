@@ -30,3 +30,14 @@ std::vector<State> geometry_queries_api::status(const std::vector<std::tuple<flo
     for (auto [x, y, z] : input) boost::geometry::append(ls, GeomInfo::point(x, y, z));
     return p_status(ls, geom);
 }
+
+
+std::vector<std::tuple<float, float, float>> geometry_queries_api::get_geom_bbox_vertices(const std::string& geom)
+{
+    return m_geom_info->getGeomBbox(geom);
+}
+
+std::pair<std::vector<std::tuple<float, float, float>>, std::vector<unsigned short>> geometry_queries_api::get_geom_vertices_and_indices(const std::string& geom)
+{
+    return m_geom_info->getQtGeom(geom).value_or(std::pair<std::vector<std::tuple<float, float, float>>, std::vector<unsigned short> >({}, {}));
+}

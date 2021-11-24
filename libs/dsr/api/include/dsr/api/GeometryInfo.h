@@ -74,6 +74,7 @@ public:
         rtree_name_idx.emplace(name, idx_geom);
         rtree_idx.emplace(idx_geom++, name);
         geometries.emplace(eptr, std::pair(std::move(positions), std::move(indices)));
+        e_name_map.emplace(name, eptr);
         lock.unlock();
         emit geometry_added(eptr);
     }
@@ -84,6 +85,17 @@ public:
         if (auto it = geometries.find(eptr); it != geometries.end())
             return it->second;
         else return {};
+    }
+
+
+    std::optional<std::pair<std::vector<std::tuple<float, float, float>>, std::vector<unsigned short>>> getQtGeom(const std::string& name)
+    {
+        std::shared_lock<std::shared_mutex> lock(mtx);
+        if (auto it1 = e_name_map.find(name); it1 != e_name_map.end() )
+            if (auto it = geometries.find(it1->second); it != geometries.end())
+                return it->second;
+
+        return {};
     }
 
     std::vector<std::tuple<float, float, float>> getGeomBbox(Qt3DCore::QEntity* eptr)
@@ -105,7 +117,24 @@ public:
 
     }
 
+    std::vector<std::tuple<float, float, float>> getGeomBbox(const std::string& name)
+    {
+        std::shared_lock<std::shared_mutex> lock(mtx);
+        auto box = rtree_[rtree_name_idx[name]];
+        lock.unlock();
+        auto max = box.max_corner();
+        auto min = box.min_corner();
+        auto v1 = std::tuple<float, float, float>(min.get<0>(), min.get<1>(), max.get<2>());
+        auto v2 = std::tuple<float, float, float>(max.get<0>(), min.get<1>(), min.get<2>());
+        auto v3 = std::tuple<float, float, float>(min.get<0>(), max.get<1>(), min.get<2>());
+        auto v4 = std::tuple<float, float, float>(max.get<0>(), max.get<1>(), min.get<2>());
+        auto v5 = std::tuple<float, float, float>(min.get<0>(), max.get<1>(), max.get<2>());
+        auto v6 = std::tuple<float, float, float>(max.get<0>(), min.get<1>(), max.get<2>());
+        return std::vector{ std::tuple<float, float, float>(min.get<0>(), min.get<1>(), min.get<2>()),
+                            std::tuple<float, float, float>(max.get<0>(), max.get<1>(), max.get<2>()),
+                            v1, v2, v3, v4, v5, v6};
 
+    }
     box get_geom(const std::string& name)
     {
         std::shared_lock<std::shared_mutex> lock(mtx);
@@ -236,6 +265,8 @@ private:
     std::unordered_map<size_t, box> rtree_;
     std::unordered_map<size_t, std::string> rtree_idx;
     std::unordered_map<std::string, size_t> rtree_name_idx;
+    std::unordered_map<std::string, Qt3DCore::QEntity*> e_name_map;
+
     size_t idx_geom = 0;
 
 };

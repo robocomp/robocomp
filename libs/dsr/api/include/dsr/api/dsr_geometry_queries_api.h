@@ -56,6 +56,9 @@ public:
     std::vector<State> status(std::tuple<float, float, float> input, const std::string& geom);
     std::vector<State> status(const std::vector<std::tuple<float, float, float>>& input, const std::string& geom);
 
+    std::vector<std::tuple<float, float, float>> get_geom_bbox_vertices(const std::string& geom);
+    std::pair<std::vector<std::tuple<float, float, float>>, std::vector<unsigned short>> get_geom_vertices_and_indices(const std::string& geom);
+
 private:
 
     std::shared_ptr<GeomInfo> m_geom_info; // This object is shared with the Qt3D Viewer.
