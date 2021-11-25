@@ -1,0 +1,20 @@
+module RoboCompAGGLPlanner
+{
+        struct Parameters
+        {
+	        string pythonarg;
+	        string agglplanarg;
+	        string agglfile;
+	        string initfile;
+                string aggtgoal;
+                string resultplan;
+        };
+        
+	interface AGGLPlanner
+	{
+		bool AGGlplannerexecution(Parameters arguments);
+
+	};
+
+};
+
