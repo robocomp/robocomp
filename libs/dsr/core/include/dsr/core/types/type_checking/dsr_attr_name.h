@@ -25,7 +25,7 @@
 
 // Attributes
 //Define el tipo utilizado para validar los tipos de atributos durante la compilación
-template<const std::string_view& n, typename Tn>
+template<const std::string_view& n, AttributeType Tn>
 struct Attr {
     static constexpr bool attr_type = std::bool_constant<allowed_types<unwrap_reference_wrapper_t<Tn>>>();
     static constexpr std::string_view attr_name = std::string_view(n);
@@ -130,7 +130,7 @@ REGISTER_TYPE(person_intimate_x_pos, std::reference_wrapper<const std::vector<fl
 REGISTER_TYPE(person_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_id, std::uint64_t, false)
 REGISTER_TYPE(distance_to_robot, float, false)
-REGISTER_TYPE(lambda_cont, std::int64_t, false)
+//REGISTER_TYPE(lambda_cont, std::int64_t, false)
 REGISTER_TYPE(is_ready, bool, false)
 REGISTER_TYPE(person_name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(person_role, std::reference_wrapper<const std::string>, false)

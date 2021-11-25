@@ -54,6 +54,10 @@ template<typename Va>
 concept crdt_node_or_edge = one_of<Va, DSR::CRDTNode, DSR::CRDTNode>::value;;
 
 
+//Attributes requires valis types to be defined
+template<typename T>
+concept AttributeType = allowed_types<unwrap_reference_wrapper_t<T>>;
+
 //Comprueba si en el tipo T existen los attributos attr_type y attr_name
 template<typename T>
 concept is_attr_name = requires(T a) {
