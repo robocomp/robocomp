@@ -130,7 +130,7 @@ REGISTER_TYPE(person_intimate_x_pos, std::reference_wrapper<const std::vector<fl
 REGISTER_TYPE(person_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_id, std::uint64_t, false)
 REGISTER_TYPE(distance_to_robot, float, false)
-//REGISTER_TYPE(lambda_cont, std::int64_t, false)
+REGISTER_TYPE(lambda_cont, std::int32_t, false)
 REGISTER_TYPE(is_ready, bool, false)
 REGISTER_TYPE(person_name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(person_role, std::reference_wrapper<const std::string>, false)
