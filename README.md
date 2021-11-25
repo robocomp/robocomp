@@ -67,6 +67,7 @@ curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/i
 If you are going to develop with Robocomp it's recommendable to install the following packages too:
 ```bash
 sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
+sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
 If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
