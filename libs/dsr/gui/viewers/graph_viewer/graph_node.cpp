@@ -100,7 +100,7 @@ void GraphNode::addEdge(GraphEdge *edge)
 
 void GraphNode::deleteEdge(GraphEdge *edge)
 {
-    edgeList.removeOne(edge);
+    edgeList.removeAll(edge);
 }
 
 QList<GraphEdge *> GraphNode::edges() const
