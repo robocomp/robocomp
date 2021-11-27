@@ -1,0 +1,34 @@
+name: "Robocomp tools test"
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Docker Images"]
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  make-generation-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "robocomp/robocomp:development__dsr__latest"
+      options: --user robolab
+
+    steps:
+      - run: "robocomp --help"
+      - run: "rcworkspace --help"
+      - run: "rcconfig --help"
+      - run: "rcbuild --help"
+      - run: "rccd --help"
+      - run: "rcrun --help"
+      - run: "robocompdsl --help"
+      - run: "yaku --help"
+  fail-on-image-fail:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: "exit 1"
