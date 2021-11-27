@@ -1,4 +1,4 @@
-name: "Robocomp tools test"
+name: "Robocomp tools install test"
 
 on:
   workflow_dispatch:
@@ -19,6 +19,10 @@ jobs:
       options: --user robolab
 
     steps:
+      - name: Robocomp tools install
+        shell: bash
+        working-directory: ${{github.workspace}}/tools/cli/
+        run: pip3 install .
       - run: "robocomp --help"
       - run: "rcworkspace --help"
       - run: "rcconfig --help"
@@ -26,6 +30,10 @@ jobs:
       - run: "rccd --help"
       - run: "rcrun --help"
       - run: "robocompdsl --help"
+      - name: Robocomp tools install
+        shell: bash
+        working-directory: ${{github.workspace}}/tools/yaku/
+        run: pip3 install .
       - run: "yaku --help"
   fail-on-image-fail:
     runs-on: ubuntu-latest
