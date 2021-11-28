@@ -32,7 +32,7 @@ jobs:
       - run: "robocompdsl --help"
       - name: Yaku install
         shell: bash
-        working-directory: /home/robolab/robocomp/tools/cli/
+        working-directory: /home/robolab/robocomp/tools/yaku/
         run: sudo pip3 install .
       - run: "yaku --help"
   fail-on-image-fail:
