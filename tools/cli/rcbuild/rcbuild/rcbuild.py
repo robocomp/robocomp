@@ -192,10 +192,10 @@ def robocomp(
             command = f"/usr/bin/sudo rm -r {RC_CONFIG.ROBOCOMP_INSTALL_DIR}"
             execute_command(command)
         # TODO: get the files from other places, not hardcoded
-        files_to_remove = [Path("/opt/robocomp/")]
+        files_to_remove = [Path("/opt/robocomp/"), Path("/usr/bin/yaku")]
         for installed_file in files_to_remove:
             if installed_file.exists():
-                execute_command(f"/usr/bin/sudo rm {installed_file}")
+                execute_command(f"/usr/bin/sudo rm -v -r {installed_file}")
 
     if install:
         # sudo make install
