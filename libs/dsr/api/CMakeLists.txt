@@ -46,6 +46,7 @@ target_sources(dsr_api
         dsr_inner_eigen_api.cpp
         dsr_rt_api.cpp
         dsr_utils.cpp
+        GHistorySaver.cpp
         ${GEOM_API_SOURCES}
         ${headers_to_moc}
         )
@@ -57,7 +58,7 @@ target_link_libraries(dsr_api
         fastcdr fastrtps
         osgDB OpenThreads
         Qt5::Core
-        Robocomp::qmat
+        Robocomp::qmat Robocomp::dsr_core
         PUBLIC
         Eigen3::Eigen
         ${QT_GEOM}

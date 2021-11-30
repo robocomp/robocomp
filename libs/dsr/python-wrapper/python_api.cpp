@@ -11,6 +11,7 @@ using namespace DSR;
 #include "include/custom_bind_map.h"
 #include "include/custom_bool_cast.h"
 #include "include/custom_vector_cast.h"
+#include "include/GHistory.h"
 
 #pragma push_macro("slots")
 #undef slots
@@ -727,6 +728,7 @@ PYBIND11_MODULE(pydsr, m) {
             .def("get_euler_xyz_angles", &InnerEigenAPI::get_euler_xyz_angles, "orig"_a, "dest"_a, "timestamp"_a=0);
 
 
+    bind_ghistory(m);
     /*
     py::class_<CameraAPI>(m, "camera_api")
             .def(py::init([](DSRGraph &g, Node &cam) -> std::unique_ptr<CameraAPI> {
