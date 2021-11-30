@@ -66,7 +66,9 @@ curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/i
 
 If you are going to develop with Robocomp it's recommendable to install the following packages too:
 ```bash
-sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
+sudo apt-get install yakuake qttools5-dev-tools qt5-assistant meld
+
+and create this link for Eigen includes:
 sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
