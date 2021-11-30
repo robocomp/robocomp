@@ -1,11 +1,13 @@
 
 module RoboCompRoomDetection
 {
+
   struct Corner
   {
-      int x;
-      int y;
+    float x;
+    float y;
   };
+
   sequence<Corner> ListOfPoints;
   sequence<ListOfPoints> Rooms;
 	
