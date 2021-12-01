@@ -16,7 +16,7 @@ sudo pip3 install tools/cli/
 rcconfig init
 mkdir build
 cd build
-cmake ..
+cmake -DRCIS=True ..
 make -j$(nproc --ignore=2)
 sudo env "PATH=$PATH" PYTHONIOENCODING=utf-8 make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
