@@ -18,7 +18,50 @@
 
 #include <dsr/api/GHistorySaver.h>
 
+namespace pybind11 { namespace detail {
+template <> struct type_caster<std::monostate> {
+public:
+    /**
+     * This macro establishes the name 'std::monostate' in
+     * function signatures and declares a local variable
+     * 'value' of type None
+     */
+    PYBIND11_TYPE_CASTER(std::monostate, _("monostate"));
+
+    /**
+     * Conversion part 1 (Python->C++): convert a PyObject into a inty
+     * instance or return false upon failure. The second argument
+     * indicates whether implicit conversions should be applied.
+     */
+    bool load(handle src, bool) {
+        /* Extract PyObject from handle */
+        PyObject *source = src.ptr();
+        /* Try converting into a Python integer value */
+        PyObject *tmp = PyNumber_Long(source);
+        if (!tmp)
+            return false;
+        /* Now try to convert into a C++ int */
+        value = {};
+        Py_DECREF(tmp);
+        /* Ensure return code was OK (to avoid out-of-range errors etc) */
+        return !(!PyErr_Occurred());
+    }
+
+    /**
+     * Conversion part 2 (C++ -> Python): convert an inty instance into
+     * a Python object. The second and third arguments are used to
+     * indicate the return value policy and parent object (for
+     * ``return_value_policy::reference_internal``) and are generally
+     * ignored by implicit casters.
+     */
+    static handle cast(std::monostate src, return_value_policy /* policy */, handle /* parent */) {
+        return Py_None;
+    }
+};
+}} // namespace pybind11::detail
+
 void bind_ghistory(py::module &m) {
+
 
     py::enum_<ChangeInfo::OPER>(m, "Oper");
 

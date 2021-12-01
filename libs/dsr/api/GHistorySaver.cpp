@@ -702,16 +702,39 @@ std::vector<std::pair<ChangeInfo, std::variant<std::monostate, DSR::Node, DSR::E
 
     //auto start_2 = std::chrono::steady_clock::now();
 
-    while(rbf.tellg() < length)
+    //TODO: Validate input.
+    //42 is the min size for ChangeInfo.
+    while((rbf.tellg() + (std::streamsize)42) < length)
     {
+        std::cout << "Reading at: "<< rbf.tellg();
         std::size_t size;
         rbf.read((char *)&size, sizeof(size_t));
+        std::cout << " buffer size: " << size << " de: " << length << " restantes: " << length - rbf.tellg() << std::endl;
+
+        if (size == 0) continue;
+        if (size > (length- rbf.tellg()))
+        {
+            std::cout << "[Error] Triying to read chunk of size: " << size << " but remaining size is: "<<  (length- rbf.tellg()) << ".\nThe file may have incomplete information at the end." << std::endl;
+            break; //There are incomplete information at the end of the file?
+        }
+
         auto *ptr = static_cast<unsigned char *>(malloc(size));
+
+        if (!ptr)
+        {
+            std::cout << "[Error] Can't allocate a buffer of size: " << size << std::endl;
+            break;
+        }
+
         rbf.read((char*)ptr, static_cast<std::streamsize>(size));
 
         ChangeInfo ci;
         Serializer ser = { .ptr = ptr, .size = size, .p = size, .read= 0};
         ci.deserialize(ser);
+
+        std::cout << "Op: " << (int)ci.op << " node: " << ci.node_or_from_id << " ?to: " << ci.maybe_to_id << " ?type: " << ci.maybe_edge_type
+                  << " agent_id: " << ci.agent_id  << " timestamp: " << ci.timestamp
+                  << " new pos: " << rbf.tellg() << " de: " << length << " restantes: " << length - rbf.tellg()  << std::endl;
 
         switch (ci.op)
         {
