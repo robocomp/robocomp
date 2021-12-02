@@ -588,6 +588,7 @@ void GSerializer::initialize()
 {
     QObject::connect(G, &DSR::DSRGraph::update_node_signal,  [this](auto node, auto type) {
 
+        //TODO: los cambios en nodos pueden ir sin los arcos del nodo excepto en la primera ejecución.
         std::optional<DSR::Node> e = G->get_node(node);
         uint32_t agent_id = 0;
         if (e.has_value()) {
@@ -706,13 +707,13 @@ std::vector<std::pair<ChangeInfo, std::variant<std::monostate, DSR::Node, DSR::E
     //42 is the min size for ChangeInfo.
     while((rbf.tellg() + (std::streamsize)42) < length)
     {
-        std::cout << "Reading at: "<< rbf.tellg();
+        //std::cout << "Reading at: "<< rbf.tellg();
         std::size_t size;
         rbf.read((char *)&size, sizeof(size_t));
-        std::cout << " buffer size: " << size << " de: " << length << " restantes: " << length - rbf.tellg() << std::endl;
+        //std::cout << " buffer size: " << size << " de: " << length << " restantes: " << length - rbf.tellg() << std::endl;
 
         if (size == 0) continue;
-        if (size > (length- rbf.tellg()))
+        if ((std::streamsize)size > (length- rbf.tellg()))
         {
             std::cout << "[Error] Triying to read chunk of size: " << size << " but remaining size is: "<<  (length- rbf.tellg()) << ".\nThe file may have incomplete information at the end." << std::endl;
             break; //There are incomplete information at the end of the file?
@@ -732,9 +733,14 @@ std::vector<std::pair<ChangeInfo, std::variant<std::monostate, DSR::Node, DSR::E
         Serializer ser = { .ptr = ptr, .size = size, .p = size, .read= 0};
         ci.deserialize(ser);
 
-        std::cout << "Op: " << (int)ci.op << " node: " << ci.node_or_from_id << " ?to: " << ci.maybe_to_id << " ?type: " << ci.maybe_edge_type
-                  << " agent_id: " << ci.agent_id  << " timestamp: " << ci.timestamp
-                  << " new pos: " << rbf.tellg() << " de: " << length << " restantes: " << length - rbf.tellg()  << std::endl;
+        if (ser.read == size)
+        {
+            res.emplace_back(ci, std::monostate{});
+            continue;
+        }
+//        std::cout << "Op: " << (int)ci.op << " node: " << ci.node_or_from_id << " ?to: " << ci.maybe_to_id << " ?type: " << ci.maybe_edge_type
+//                  << " agent_id: " << ci.agent_id  << " timestamp: " << ci.timestamp
+//                  << " new pos: " << rbf.tellg() << " de: " << length << " restantes: " << length - rbf.tellg()  << std::endl;
 
         switch (ci.op)
         {
@@ -794,6 +800,8 @@ void GSerializer::add_change(ChangeInfo && c)
             auto n = G->get_node(c.node_or_from_id);
             if (n.has_value())
                 serialize_node(*n, ser);
+            else
+                std::cout << "[GHistory] Empty NODE_CHANGE entry. The node no longer exists." << std::endl;
             break;
         }
         case ChangeInfo::EDGE_CHANGE:
@@ -801,6 +809,9 @@ void GSerializer::add_change(ChangeInfo && c)
             auto e = G->get_edge(c.node_or_from_id, c.maybe_to_id, c.maybe_edge_type);
             if (e.has_value())
                 serialize_edge(*e, ser);
+            else
+                std::cout << "[GHistory] Empty EDGE_CHANGE entry. The edge no longer exists." << std::endl;
+
             break;
         }
         case ChangeInfo::NODE_DEL:
