@@ -4,34 +4,11 @@ import sys
 from typing import Optional
 
 import typer
-from robocomp import is_interactive
+from robocomp import is_interactive, execute_command_in_current_shell
 
 from rcworkspace.workspace import Workspace
 
 app = typer.Typer(help=typer.style("Change directory to Robocomp components", fg=typer.colors.GREEN))
-
-
-# Horrible hack to be able to change directory in the current terminal session
-def change_parent_process_directory(dest):
-    def quote_against_shell_expansion(s: str):
-        import pipes
-        return pipes.quote(s)
-
-    def put_text_back_into_terminal_input_buffer(text: str):
-        if os.isatty(sys.stdout.fileno()):
-            import fcntl
-            import termios
-            try:
-                # (and if the user types while it runs they could insert characters between the characters in 'text'!)
-                for c in text:
-                    fcntl.ioctl(1, termios.TIOCSTI, c)
-            except OSError as e:
-                print(f"Problem finding interactive terminal to execute cd.\n>>{e}")
-        else:
-            print(f"Problem finding interactive terminal to execute cd.")
-
-    # the horror
-    put_text_back_into_terminal_input_buffer("cd " + quote_against_shell_expansion(dest) + "\n")
 
 
 workspace = Workspace()
@@ -51,12 +28,12 @@ def cd_exec(
         print(f"No component name or path found matching {component_name}.")
         return False
     elif len(dir_options) == 1:
-        change_parent_process_directory(str(dir_options[0].path))
+        execute_command_in_current_shell(f"cd {str(dir_options[0].path)}")
         return True
     else:
         if option_index:
             if option_index < len(dir_options):
-                change_parent_process_directory(str(dir_options[option_index].path))
+                execute_command_in_current_shell(f"cd {str(dir_options[option_index].path)}")
                 return True
         if not interactive:
             for index, option in enumerate(dir_options):

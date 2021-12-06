@@ -24,6 +24,7 @@ set(headers_to_moc
         include/dsr/gui/viewers/graph_viewer/graph_edge_rt_widget.h
         include/dsr/gui/viewers/graph_viewer/graph_node_laser_widget.h
         include/dsr/gui/viewers/graph_viewer/graph_node_rgbd_widget.h
+        include/dsr/gui/viewers/graph_viewer/graph_node_person_widget.h
         include/dsr/gui/viewers/graph_viewer/graph_node_widget.h
         include/dsr/gui/viewers/tree_viewer/tree_viewer.h
         include/dsr/gui/viewers/_abstract_graphic_view.h

@@ -66,7 +66,9 @@ curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/i
 
 If you are going to develop with Robocomp it's recommendable to install the following packages too:
 ```bash
-sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
+sudo apt-get install yakuake qttools5-dev-tools qt5-assistant meld
+
+and create this link for Eigen includes:
 sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
@@ -111,7 +113,7 @@ If you have a joystick around, connect it to the USB port and:
     make
     cd bin
     sudo addgroup your-user dialout   // If you find permissions issues in Ubuntu
-    check the config file in the component's etc folder and male sure that the port matches the DifferentialRobot endpoint in     RCIS.
+    check the config file in the component's etc folder and make sure that the port matches the DifferentialRobot endpoint in     RCIS.
     bin/joystick etc/config
     
 Your joystick should be now running. It will make the robot advance and turn at your will. If it does not work, 

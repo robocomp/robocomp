@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import logging
+import sys
 from collections import OrderedDict
 from time import sleep
 
@@ -144,7 +145,7 @@ class KonsoleSession:
             ps_command = "pstree -p -A %s" % self.child_pid
             logger.debug(f"$ {ps_command}")
             command, error = get_command_return(ps_command)
-            if command:
+            if command and sys.argv[0] not in command.decode("utf-8"):
                 self.__running_command = command.decode("utf-8").strip().split('(')[-2]
         logger.debug(f"'{self.__running_command}'")
         return self.__running_command
