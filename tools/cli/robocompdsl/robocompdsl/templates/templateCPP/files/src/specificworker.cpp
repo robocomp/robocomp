@@ -26,6 +26,10 @@ SpecificWorker::SpecificWorker(${proxy_map_type} ${proxy_map_name}, bool startup
 	${innermodelviewer_code}
 	${agmagent_attributes}
 	this->startup_check_flag = startup_check;
+	// Uncomment if there's too many debug messages
+	// but it removes the possibility to see the messages
+	// shown in the console with qDebug()
+//	QLoggingCategory::setFilterRules("*.debug=false\n");
 }
 
 /**
