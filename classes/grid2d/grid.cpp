@@ -183,7 +183,20 @@ void Grid::setFree(const Key &k)
 {
     auto &&[success, v] = getCell(k);
     if(success)
+    {
         v.free = true;
+        if(v.tile != nullptr)
+            v.tile->setBrush(QBrush(QColor("white")));
+    }
+}
+void Grid::set_free(int cx, int cy)
+{
+    setFree(pointToGrid(cx, cy));
+}
+void Grid::set_all_to_free()
+{
+    for(auto &[k,v] : fmap)
+            setFree(k);
 }
 void Grid::setOccupied(const Key &k)
 {

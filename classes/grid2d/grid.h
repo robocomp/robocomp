@@ -151,6 +151,8 @@ public:
     Key pointToGrid(long int x, long int z) const;
     Key pointToGrid(const QPointF &p) const;
     void setFree(const Key &k);
+    void set_free(int cx, int cy);
+    void set_all_to_free();
     bool isFree(const Key &k);
     void setVisited(const Key &k, bool visited);
     bool is_visited(const Key &k);
