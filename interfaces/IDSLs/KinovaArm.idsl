@@ -17,11 +17,19 @@ module RoboCompKinovaArm
 		string parent;
 	};
 
+	struct TGripper
+	{
+	    float opening;
+	    float lforce;
+	    float rforce;
+	    float distance;
+	};
+
 	interface KinovaArm
 	{
 		TPose getCenterOfTool(ArmJoints referencedTo);
 		void setCenterOfTool(TPose pose, ArmJoints referencedTo);
-		void setGripper(int pos);
+		TGripper getGripperState();
 		void openGripper();
 		void closeGripper();
 	};

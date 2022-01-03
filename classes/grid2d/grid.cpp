@@ -59,7 +59,7 @@ void Grid::initialize(  QRectF dim_,
             tile->setPos(i, j);
             aux.tile = tile;
             insert(Key(i, j), aux);
-            qInfo() << __FUNCTION__ << i << j << aux.id << aux.free << aux.tile->pos();
+            //qInfo() << __FUNCTION__ << i << j << aux.id << aux.free << aux.tile->pos();
         }
 
 //
@@ -74,13 +74,11 @@ void Grid::insert(const Key &key, const T &value)
 {
     fmap.insert(std::make_pair(key, value));
 }
-
 // FIX THIS
 std::tuple<bool, Grid::T&> Grid::getCell(long int x, long int z)
 {
     return getCell(pointToGrid(x,z));
 }
-
 std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
 {
     if (not dim.contains(QPointF(k.x, k.z)))
@@ -98,14 +96,14 @@ std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
 }
 typename Grid::Key Grid::pointToGrid(long int x, long int z) const
 {
-    int kx = (x - dim.left()) / TILE_SIZE;
-    int kz = (z - dim.bottom()) / TILE_SIZE;
+    int kx = rint((x - dim.left()) / TILE_SIZE);
+    int kz = rint((z - dim.bottom()) / TILE_SIZE);
     return Key(dim.left() + kx * TILE_SIZE, dim.bottom() + kz * TILE_SIZE);
 };
 Grid::Key Grid::pointToGrid(const QPointF &p) const
 {
-    int kx = (p.x() - dim.left()) / TILE_SIZE;
-    int kz = (p.y() - dim.bottom()) / TILE_SIZE;
+    int kx = rint((p.x() - dim.left()) / TILE_SIZE);
+    int kz = rint((p.y() - dim.bottom()) / TILE_SIZE);
     return Key(dim.left() + kx * TILE_SIZE, dim.bottom() + kz * TILE_SIZE);
 };
 ////////////////////////////////////////////////////////////////////////////////
@@ -171,6 +169,7 @@ void Grid::readFromFile(const std::string &fich)
     std::cout << __FUNCTION__ << " " << fmap.size() << " elements read from " << fich << std::endl;
 }
 ///////////////////////////////////////////////////////////////////////////////
+//deprecated
 bool Grid::isFree(const Key &k)
 {
     const auto &[success, v] = getCell(k);
@@ -179,6 +178,7 @@ bool Grid::isFree(const Key &k)
     else
         return false;
 }
+//deprecated
 void Grid::setFree(const Key &k)
 {
     auto &&[success, v] = getCell(k);
@@ -193,11 +193,29 @@ void Grid::set_free(int cx, int cy)
 {
     setFree(pointToGrid(cx, cy));
 }
-void Grid::set_all_to_free()
+void Grid::set_free(const QPointF &p)
 {
-    for(auto &[k,v] : fmap)
-            setFree(k);
+    auto x = static_cast<long int>(p.x());
+    auto y = static_cast<long int>(p.y());
+    set_free(x, y);
 }
+void Grid::set_free(float xf, float yf)
+{
+    auto x = static_cast<long int>(xf);
+    auto y = static_cast<long int>(yf);
+    set_free(x, y);
+}
+void Grid::set_free(long int x, long int y)
+{
+    auto &&[success, v] = getCell(x, y);
+    if(success)
+    {
+        v.free = true;
+        if (v.tile != nullptr)
+            v.tile->setBrush(QBrush(QColor(params.free_color)));
+    }
+}
+//deprecated
 void Grid::setOccupied(const Key &k)
 {
     auto &&[success, v] = getCell(k);
@@ -205,7 +223,7 @@ void Grid::setOccupied(const Key &k)
     {
         v.free = false;
         if(v.tile != nullptr)
-            v.tile->setBrush(QBrush(QColor("red")));
+            v.tile->setBrush(QBrush(QColor(params.occupied_color)));
     }
 }
 void Grid::setOccupied(long int x, long int y)
@@ -220,12 +238,7 @@ void Grid::setOccupied(long int x, long int y)
 }
 void Grid::setOccupied(const QPointF &p)
 {
-    auto &&[success, v] = getCell((long int)p.x(),(long int)p.y());
-    if(success)
-    {
-        v.free = false;
-        v.tile->setBrush(QBrush(QColor("red")));
-    }
+    setOccupied((long int)p.x(), (long int)p.y());
 }
 void Grid::add_miss(const Eigen::Vector2f &p)
 {
@@ -239,11 +252,7 @@ void Grid::add_miss(const Eigen::Vector2f &p)
             v.free = true;
             v.tile->setBrush(QBrush(QColor(params.free_color)));
         }
-        if (v.misses + v.hits == 20)
-        {
-            v.misses = 0;
-            v.hits = 0;
-        }
+        v.misses = std::clamp(v.misses, 0.f, 20.f);
         this->updated++;
     }
 }
@@ -260,11 +269,7 @@ void Grid::add_hit(const Eigen::Vector2f &p)
             v.free = false;
             v.tile->setBrush(QBrush(QColor(params.occupied_color)));
         }
-        if (v.misses + v.hits == 20)
-        {
-            v.misses = 0;
-            v.hits = 0;
-        }
+        v.hits = std::clamp(v.hits, 0.f, 20.f);
         this->updated++;
     }
 }
@@ -320,7 +325,11 @@ void Grid::set_all_to_not_visited()
     for(auto &[k,v] : fmap)
        setVisited(k, false);
 }
-
+void Grid::set_all_to_free()
+{
+    for(auto &[k,v] : fmap)
+        setFree(k);
+}
 // if true area becomes free
 void Grid::markAreaInGridAs(const QPolygonF &poly, bool free)
 {
@@ -477,8 +486,8 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
                 active_vertices.erase({min_distance[ed.second.id], ed.first});
                 min_distance[ed.second.id] = min_distance[fmap.at(where).id] + ed.second.cost;
                 previous[ed.second.id] = std::make_pair(fmap.at(where).id, where);
-                active_vertices.insert({min_distance[ed.second.id], ed.first}); // Djikstra
-                // active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
+                //active_vertices.insert({min_distance[ed.second.id], ed.first}); // Djikstra
+                active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
             }
         }
     }
@@ -496,8 +505,8 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, 
         if (not success) continue;
 
         // check that incs are not both zero but have the same abs value, i.e. a diagonal
-//        if (itx != 0 and itz != 0 and (fabs(itx) == fabs(itz)) and p.cost == 1)
-//            p.cost = 5;                                // if neighboor in diagonal, cost is sqrt(2)
+        if (itx != 0 and itz != 0 and (fabs(itx) == fabs(itz)) and p.cost == 1)
+            p.cost = 1.43;                                // if neighboor in diagonal, cost is sqrt(2)
 
         if (all)
             neigh.emplace_back(std::make_pair(lk, p));

@@ -49,25 +49,19 @@ public:
     public:
         Key() : x(0), z(0)
         {};
-
         Key(long int &&x, long int &&z) : x(std::move(x)), z(std::move(z))
         {};
-
         Key(long int &x, long int &z) : x(x), z(z)
         {};
-
         Key(float &x, float &z) : x((long int) x), z((long int) z)
         {};
-
         Key(const long int &x, const long int &z) : x(x), z(z)
         {};
-
         Key(const QPointF &p)
         {
             x = p.x();
             z = p.y();
         };
-
         QPointF toQPointF() const
         { return QPointF(x, z); };
 
@@ -152,11 +146,14 @@ public:
     Key pointToGrid(const QPointF &p) const;
     void setFree(const Key &k);
     void set_free(int cx, int cy);
-    void set_all_to_free();
+    void set_free(const QPointF &p);
+    void set_free(long int x, long int y);
+    void set_free(float xf, float yf);
     bool isFree(const Key &k);
     void setVisited(const Key &k, bool visited);
     bool is_visited(const Key &k);
     void set_all_to_not_visited();
+    void set_all_to_free();
     void setOccupied(const Key &k);
     void setOccupied(long int x, long int y);
     void setOccupied(const QPointF &p);
@@ -192,7 +189,7 @@ private:
     struct Params
     {
         const QString free_color = "white";
-        const QString occupied_color = "red";
+        const QString occupied_color = "orange";
         const float occupancy_threshold = 0.5;
     };
     Params params;
