@@ -21,7 +21,9 @@ module RoboCompKinovaArm
 	{
 	    float opening;
 	    float lforce;
+	    float ltipforce;
 	    float rforce;
+	    float rtipforce;
 	    float distance;
 	};
 
