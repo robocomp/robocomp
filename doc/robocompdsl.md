@@ -193,7 +193,7 @@ Now we need to tell the component where to find the DifferentialRobot and the La
 
 ```bash
 cd path/to/mycomponent
-cp etc/config .
+cd etc/config .
 gedit config
 ```
  
