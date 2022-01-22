@@ -15,10 +15,6 @@ RoboComp — open-source robotics framework
 :ref:`components`
    Details about RoboComp's component architecture.
 
-
-* :ref:`user-docs`
-* :ref:`contributing`
-
 .. _setup:
 
 .. toctree::
