@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoboComp &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">RoboComp</a></li>
+<li><a class="reference internal" href="#about">About</a><ul>
+<li><a class="reference internal" href="#question-if-you-have-a-question-please-look-for-it-in-the-faq">:question: If you have a question please look for it in the <span class="xref myst">FAQ</span>.</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation-from-source">Installation from source</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-the-installation-using-the-rcis-robotics-simulator">Testing the installation using the RCIS robotics simulator</a><ul>
+<li><a class="reference internal" href="#installing-some-robolab-s-components-from-github">Installing some RoboLab’s components from GitHub</a></li>
+<li><a class="reference internal" href="#connecting-a-joystick-if-no-joystick-available-skip-to-the-next-section">Connecting a JoyStick (if no JoyStick available skip to the next section)</a></li>
+<li><a class="reference internal" href="#using-the-keyboard-as-a-joystick">Using the keyboard as a JoyStick</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-the-installation-using-the-coppelia-simulator">Testing the installation using the Coppelia Simulator</a></li>
+<li><a class="reference internal" href="#next-steps">Next steps</a></li>
+<li><a class="reference internal" href="#known-issues">Known issues</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>RoboComp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="robocomp">
+<h1><a class="reference external" href="http://robocomp.org">RoboComp</a><a class="headerlink" href="#robocomp" title="Permalink to this headline"></a></h1>
+<p><a class="reference external" href="https://gitter.im/robocomp/robocomp?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Join the chat at https://gitter.im/robocomp/robocomp" src="https://badges.gitter.im/Join%20Chat.svg" /></a></p>
+<p><a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml"><img alt="Docs Links Checker" src="https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml"><img alt="CodeQL Analysis" src="https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml"><img alt="Docker Images" src="https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml"><img alt="Component generation test" src="https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml"><img alt="Component compilation test" src="https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml"><img alt="robocompdsl test" src="https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml/badge.svg" /></a></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="about">
+<h1>About<a class="headerlink" href="#about" title="Permalink to this headline"></a></h1>
+<p>An organization maintained by <a class="reference external" href="http://robolab.unex.es">RoboLab (Universidad de Extremadura)</a>, <a class="reference external" href="https://www2.aston.ac.uk/eas">Aston University</a>, <a class="reference external" href="http://www.grupoisis.uma.es/">ISIS (Universidad de Málaga)</a> and many other collaborators from the Google Summer of Code program.</p>
+<p>RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may <em>require</em>, <em>subscribe</em>, <em>implement</em> or <em>publish</em>
+interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.</p>
+<p><strong>If you already have RoboComp installed, jump to <span class="xref myst">tutorials</span> to start coding!</strong></p>
+<p>:warning: If you want to contribute with something new to Robocomp, please do it on the <a class="reference external" href="https://github.com/robocomp/robocomp/tree/development">development branch</a>.</p>
+<section id="question-if-you-have-a-question-please-look-for-it-in-the-faq">
+<h2>:question: If you have a question please look for it in the <span class="xref myst">FAQ</span>.<a class="headerlink" href="#question-if-you-have-a-question-please-look-for-it-in-the-faq" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="#installation-from-source">Installation from source</a></p>
+<ul>
+<li><p><a class="reference external" href="#requirements">Requirements</a></p></li>
+<li><p><a class="reference external" href="#installation">Installation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#testing-the-installation-using-the-rcis-robotics-simulator">Testing the installation using the RCIS robotics simulator</a></p>
+<ul>
+<li><p><a class="reference external" href="#installing-some-robolab-s-components-from-github">Installing some RoboLab’s components from GitHub</a></p></li>
+<li><p><a class="reference external" href="#connecting-a-joystick">Connecting a JoyStick (if no JoyStick available skip to the next section)</a></p></li>
+<li><p><a class="reference external" href="#using-the-keyboard-as-a-joystick">Using the keyboard as a JoyStick</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#testing-the-installation-using-the--coppelia-simulator">Testing the installation using the Coppelia Simulator</a></p></li>
+<li><p><a class="reference external" href="#next-steps">Next steps</a></p></li>
+<li><p><a class="reference external" href="#known-issues">Known issues</a></p></li>
+</ul>
+<p><small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="installation-from-source">
+<h1>Installation from source<a class="headerlink" href="#installation-from-source" title="Permalink to this headline"></a></h1>
+<p>Tested in Ubuntu 20.04 and 20.10.<br />
+<strong>Note:</strong> RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
+<strong>Note:</strong> RoboComp is not compatible with Ubuntu 18.04. RoboComp needs to be compiled using cmake &gt;= 3.16. It’s not available in Ubuntu 18.04.</p>
+<p><strong>Note:</strong> If you have installed Anaconda in your system. <a class="reference external" href="https://github.com/robocomp/robocomp/issues/248">Then you need to change the python from anaconda to default</a>.</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p>Make sure you have installed the following packages from the Ubuntu repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive apt-get update <span class="o">&amp;&amp;</span> sudo <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive apt-get install -y --no-install-recommends  <span class="se">\</span>
+      sudo <span class="se">\</span>
+      curl <span class="se">\</span>
+      ca-certificates
+</pre></div>
+</div>
+<p>Make sure you have deleted any previous versions of RoboComp from /usr/local/bin/robocomp*
+And to install the rest of robocomp you can use the script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~
+curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh <span class="p">|</span> bash -s
+</pre></div>
+</div>
+<p>If you are going to develop with Robocomp it’s recommendable to install the following packages too:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install yakuake qttools5-dev-tools qt5-assistant meld
+
+and create this link <span class="k">for</span> Eigen includes:
+sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
+</pre></div>
+</div>
+<p>If you want to compile Robocomp with support for FCL, follow the instructions in the <span class="xref myst">Robocomp with FCL</span> tutorial.</p>
+<p>The RoboComp’s core libraries and simulator should now be compiled and installed in <code class="docutils literal notranslate"><span class="pre">/opt/robocomp</span></code>.</p>
+<p>Done! Now let’s have some fun.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="testing-the-installation-using-the-rcis-robotics-simulator">
+<h1>Testing the installation using the RCIS robotics simulator<a class="headerlink" href="#testing-the-installation-using-the-rcis-robotics-simulator" title="Permalink to this headline"></a></h1>
+<p>We will first fetch some meshes and textures used by the simulator (it will take a while):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~/robocomp
+git annex get .
+</pre></div>
+</div>
+<p>Now let’s run the simulator.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~/robocomp/files/innermodel
+rcis simpleworld.xml
+</pre></div>
+</div>
+<p>You can also use the default <code class="docutils literal notranslate"><span class="pre">innermodel/simpleworld.xml</span></code> anywhere if you have set the ROBOCOMP environment variable.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rcis
+</pre></div>
+</div>
+<p>Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don’t forget to turn around the floor to see the robot from above.</p>
+<section id="installing-some-robolab-s-components-from-github">
+<h2>Installing some RoboLab’s components from GitHub<a class="headerlink" href="#installing-some-robolab-s-components-from-github" title="Permalink to this headline"></a></h2>
+<p>The software of the robots using RoboComp is composed of different components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~/robocomp/components
+git clone https://github.com/robocomp/robocomp-robolab.git
+</pre></div>
+</div>
+<p>The RoboLab’s set of basic robotics components are now downloaded. You can see them in <code class="docutils literal notranslate"><span class="pre">~/robocomp/components/robocomp-robolab/components</span></code></p>
+</section>
+<section id="connecting-a-joystick-if-no-joystick-available-skip-to-the-next-section">
+<h2>Connecting a JoyStick (if no JoyStick available skip to the next section)<a class="headerlink" href="#connecting-a-joystick-if-no-joystick-available-skip-to-the-next-section" title="Permalink to this headline"></a></h2>
+<p>If you have a joystick around, connect it to the USB port and:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp
+cmake .
+make
+cd bin
+sudo addgroup your-user dialout   // If you find permissions issues in Ubuntu
+check the config file in the component&#39;s etc folder and make sure that the port matches the DifferentialRobot endpoint in     RCIS.
+bin/joystick etc/config
+</pre></div>
+</div>
+<p>Your joystick should be now running. It will make the robot advance and turn at your will. If it does not work,
+check where the joystick device file has been created (e.g., <code class="docutils literal notranslate"><span class="pre">/dev/input/js0</span></code>). If it is not <code class="docutils literal notranslate"><span class="pre">/dev/input/js0</span></code>, edit <code class="docutils literal notranslate"><span class="pre">~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp/etc/config</span></code> change it accordingly and restart. Note that you might want to save the <em>config</em> file to the component’s home directory so it does not interfere with future GitHub updates.</p>
+</section>
+<section id="using-the-keyboard-as-a-joystick">
+<h2>Using the keyboard as a JoyStick<a class="headerlink" href="#using-the-keyboard-as-a-joystick" title="Permalink to this headline"></a></h2>
+<p>If you don’t have a JoyStick install this component,</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~/robocomp/components/robocomp-robolab/components/hardware/external_control/keyboardrobotcontroller
+cmake .
+make
+src/keyboardrobotcontroller.py etc/config
+</pre></div>
+</div>
+<p>and use the arrow keys to navigate the robot, the space bar to stop it and ‘q’ to exit.</p>
+<p>Note 1: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.</p>
+<p>Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="testing-the-installation-using-the-coppelia-simulator">
+<h1>Testing the installation using the Coppelia Simulator<a class="headerlink" href="#testing-the-installation-using-the-coppelia-simulator" title="Permalink to this headline"></a></h1>
+<p>We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is <a class="reference external" href="https://www.coppeliarobotics.com/">CoppeliaSim</a> because it offers a scene editor that can be used during a running simulation, you can “hang” and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the <a class="reference external" href="https://github.com/stepjam/PyRep">PyRep</a> library, we have a fast access to almost everything running in the simulator.</p>
+<p>To connect RoboComp and CoppeliaSim we use <em>bridges</em> that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this <a class="reference external" href="https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep">repo</a>. These bridges interface scenes with Viriato, a simpler world using Viriato’s omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found <a class="reference external" href="https://github.com/robocomp/dsr-graph/tree/development/etc">here</a>.</p>
+<p>To test RoboComp with Coppelia you need to:</p>
+<ul class="simple">
+<li><p>Install Coppelia Robotics and Pyrep. There are detailed instructions <a class="reference external" href="https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md">here</a></p></li>
+<li><p>Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.</p></li>
+<li><p>Connect your new component to the ports offered in omniPyrep.py or</p></li>
+<li><p>Connect a joystick or XBox pad to omniRep.py using <a class="reference external" href="https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish">this component</a></p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="next-steps">
+<h1>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline"></a></h1>
+<p>You can find more tutorials on RoboComp in <span class="xref myst">tutorials</span></p>
+<p>Drop comments and ask questions in:</p>
+<ul class="simple">
+<li><p>https://gitter.im/robocomp</p></li>
+</ul>
+<p>Please, report any bugs with the github issue system: <a class="reference external" href="https://github.com/robocomp/robocomp/issues">Robocomp Issues</a></p>
+<p>If you have any suggestions to improve the repository, like features or tutorials, please contact us on <a class="reference external" href="https://gitter.im/robocomp/robocomp?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Join the chat at https://gitter.im/robocomp/robocomp" src="https://badges.gitter.im/Join%20Chat.svg" /></a> or create a feature request <a class="reference external" href="https://github.com/robocomp/robocomp/issues">here</a>.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="known-issues">
+<h1>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Compatibility problem between pyparsing version and Robocomp tools:</p>
+<ul>
+<li><p>One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn’t work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -c <span class="s2">&quot;import pyparsing; print(pyparsing.__version__)&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Ubuntu 18.04 and CMake &gt; 3.16</p>
+<ul>
+<li><p>Robocomp is currently using the syntax for cmake 3.16. It’s the default version in Ubuntu 20.04, but it’s not available in Ubuntu 18.04.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

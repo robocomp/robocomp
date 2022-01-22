@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build tools &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Build tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/buildTools.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="build-tools">
+<h1>Build tools<a class="headerlink" href="#build-tools" title="Permalink to this headline"></a></h1>
+<p>Note: This documentation explains some commands that can be used for the development of components in Robocomp. These commands are not intended to compile Robocomp itself. To follow the necessary steps to install and compile Robocomp, you can follow the instructions in this <a class="reference external" href="https://github.com/robocomp/robocomp#installation-from-source">document</a>.</p>
+<p>Following are a list of commands and explanations for Robocomp build tools.</p>
+<section id="rcworkspace">
+<h2>rcworkspace<a class="headerlink" href="#rcworkspace" title="Permalink to this headline"></a></h2>
+<p>This tool helps in managing robocomp workspaces.</p>
+<section id="to-register-a-new-workspace">
+<h3>To register a new workspace<a class="headerlink" href="#to-register-a-new-workspace" title="Permalink to this headline"></a></h3>
+<p>Move to a directory that contains robocomp components</p>
+<p>Use the -a flag to register the workspace and begin component searching within it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rcworkspace -a 
+</pre></div>
+</div>
+<p><strong>The build tools will find only those workspaces which are registered on your computer</strong>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rcworkspace <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-i INITIALIZE<span class="o">]</span> <span class="o">[</span>-a <span class="o">[</span>ADD<span class="o">]]</span> <span class="o">[</span>--accept-all<span class="o">]</span> <span class="o">[</span>-u<span class="o">]</span>
+                   <span class="o">[</span>-d <span class="o">[</span>DELETE<span class="o">]]</span> <span class="o">[</span>--clear-all<span class="o">]</span> <span class="o">[</span>-l<span class="o">]</span>
+                   <span class="o">[</span>directory<span class="o">]</span>
+</pre></div>
+</div>
+<p>For  more uses of rcworkspace use the -h flag.</p>
+</section>
+</section>
+<section id="rcbuild">
+<h2>rcbuild<a class="headerlink" href="#rcbuild" title="Permalink to this headline"></a></h2>
+<p>When invoked from a workspace, without any arguments, if not inside the source path, it will build all the non-ignored components inside the workspace.</p>
+<p>If inside a component source directory, it will build only that component.</p>
+<p>If a component is specified it will build only that component. You can find the build targets in the devel space.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rcbuild <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-i <span class="o">[</span>INSTALL<span class="o">]</span> <span class="p">|</span> --doc <span class="p">|</span> --installdoc<span class="o">]</span> <span class="o">[</span>component<span class="o">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">doc</span></code> will generate documentation, <code class="docutils literal notranslate"><span class="pre">installdoc</span></code> will install the docs to install path, <code class="docutils literal notranslate"><span class="pre">install</span></code> will build and install the components to the specified directory.</p>
+<p>If nothing is specified it will be installed to <code class="docutils literal notranslate"><span class="pre">/opt/robocomp</span></code>. Currently, you can only generate docs for one component at a time.</p>
+</section>
+<section id="rccomp">
+<h2>rccomp<a class="headerlink" href="#rccomp" title="Permalink to this headline"></a></h2>
+<p>It lists either the registered components or workspaces.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rccomp <span class="o">[</span>-h<span class="o">]</span> <span class="o">[{</span>list,listws<span class="o">}]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">rccomp</span> <span class="pre">list</span></code> will list all the components in registered workspaces and <code class="docutils literal notranslate"><span class="pre">rccomp</span> <span class="pre">listws</span></code> will list all the registered workspaces.</p>
+</section>
+<section id="rced">
+<h2>rced<a class="headerlink" href="#rced" title="Permalink to this headline"></a></h2>
+<p>When invoked as component-name with file-name. it will open the file in the component.</p>
+<p>If multiple files with the same name exist, it will give choices and ask you to choose one. It uses the editor specified in <code class="docutils literal notranslate"><span class="pre">$EDITOR</span></code> (like nano) by default, if not present it will use <code class="docutils literal notranslate"><span class="pre">vim</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span> rced <span class="o">[</span>-h<span class="o">]</span> component file
+</pre></div>
+</div>
+</section>
+<section id="rcrun">
+<h2>rcrun<a class="headerlink" href="#rcrun" title="Permalink to this headline"></a></h2>
+<p>Using rcrun you can start, stop or force stop any component from anywhere.</p>
+<p>You can also start a component in debug mode, given you have the required <em>config file</em> in the <em>/etc</em> directory. If you have specified a config file then rcrun will use it to start the component.</p>
+<p>By default, rcrun will use the <code class="docutils literal notranslate"><span class="pre">config</span></code> config file in <code class="docutils literal notranslate"><span class="pre">etc</span></code> directory, if not found it will search for <code class="docutils literal notranslate"><span class="pre">generic_config</span></code>. If not found it will use any of the config files present.</p>
+<p>If the debug flag is set, it will search for a config file that ends with <em>.debug</em>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rcrun <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-s START <span class="p">|</span>-st STOP <span class="p">|</span> -fst FSTOP<span class="o">]</span> <span class="o">[</span>-d <span class="p">|</span> -cf CFILE <span class="p">|</span> -c CONFIG<span class="o">]</span> <span class="o">[</span>-is<span class="o">]</span> <span class="o">[</span>component<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="rbcd">
+<h2>rbcd<a class="headerlink" href="#rbcd" title="Permalink to this headline"></a></h2>
+<p>Using this you can cd into the component directory given the component name.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rbcd component
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>The build tools don’t support python components yet.</p></li>
+<li><p>Auto-completion is enabled all the components. It works by pressing tab when you have written enough letters, so the auto-completion knows what words you are about to write.</p></li>
+<li><p>In case you run into issues running any build tool, kindly report it.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

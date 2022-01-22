@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obstacle Avoiding Bot &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Obstacle Avoiding Bot</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/code-examples/getting-started/c++/obstacle-avoiding-bot-c++.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="obstacle-avoiding-bot">
+<h1>Obstacle Avoiding Bot<a class="headerlink" href="#obstacle-avoiding-bot" title="Permalink to this headline"></a></h1>
+<p>In this tutorial you will learn how to build a bot which avoids the obstacle moving in random.</p>
+<section id="component-generation">
+<h2>Component Generation<a class="headerlink" href="#component-generation" title="Permalink to this headline"></a></h2>
+<p>I will just run through the steps without much explanation as in detail explanation can be found in the previous tutorials.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir obstacle
+cd obstacle
+robocompdsl obstacle.cdsl
+</pre></div>
+</div>
+<p>Editing your cdsl file, Importing DifferentialRobot and Laser.idsl</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import &quot;Laser.idsl&quot;;
+import &quot;DifferentialRobot.idsl&quot;;
+Component obstacle{
+	Communications{
+		requires DifferentialRobot, Laser;
+
+	};
+	language Cpp;
+};
+</pre></div>
+</div>
+<p>Generating and Building the component</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>robocompdsl obstacle.cdsl build
+cd build
+cmake .
+make
+</pre></div>
+</div>
+<p>To program the component</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd src
+gedit specificworker.cpp
+</pre></div>
+</div>
+<p>Here we will be using both the interfaces we have learnt so far. The entire algorithm is as follows</p>
+<ol class="arabic simple">
+<li><p>set a treshold value for distance at which the bot should avoid the obstacle and angle to rotate</p></li>
+<li><p>get laser data and store it in ldata</p></li>
+<li><p>sort the data in ldata</p></li>
+<li><p>if the distance is less than the set treshold data then move right</p></li>
+<li><p>display the distance and move forward</p></li>
+<li><p>increase the angle by any value so that next time it moves towards the left.</p></li>
+<li><p>If the rotation angle reaches a maximum then set it back to the original value</p></li>
+<li><p>If the distance more than the treshold than proceed forward.</p></li>
+</ol>
+<p>If you implement this algorithm your specificworker.cpp should be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">void</span> <span class="n">SpecificWorker</span><span class="p">::</span><span class="n">compute</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="n">const</span> <span class="nb">float</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+    <span class="nb">float</span> <span class="n">rot</span> <span class="o">=</span> <span class="mf">1.5707</span><span class="p">;</span>
+
+
+
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">RoboCompLaser</span><span class="p">::</span><span class="n">TLaserData</span> <span class="n">ldata</span> <span class="o">=</span> <span class="n">laser_proxy</span><span class="o">-&gt;</span><span class="n">getLaserData</span><span class="p">();</span>
+        <span class="n">std</span><span class="p">::</span><span class="n">sort</span><span class="p">(</span> <span class="n">ldata</span><span class="o">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ldata</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="p">[](</span><span class="n">RoboCompLaser</span><span class="p">::</span><span class="n">TData</span> <span class="n">a</span><span class="p">,</span> <span class="n">RoboCompLaser</span><span class="p">::</span><span class="n">TData</span> <span class="n">b</span><span class="p">){</span> <span class="k">return</span>     <span class="n">a</span><span class="o">.</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">dist</span><span class="p">;</span> <span class="p">})</span> <span class="p">;</span>
+
+
+	 <span class="k">if</span><span class="p">(</span> <span class="n">ldata</span><span class="o">.</span><span class="n">front</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">)</span>
+	<span class="p">{</span>
+ 	<span class="n">differentialrobot_proxy</span><span class="o">-&gt;</span><span class="n">setSpeedBase</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">rot</span><span class="p">);</span>
+	<span class="n">usleep</span><span class="p">(</span><span class="mi">1250000</span><span class="p">);</span>
+	<span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ldata</span><span class="o">.</span><span class="n">front</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+	<span class="n">differentialrobot_proxy</span><span class="o">-&gt;</span><span class="n">setSpeedBase</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">usleep</span><span class="p">(</span><span class="mi">500000</span><span class="p">);</span>
+	<span class="n">rot</span> <span class="o">=</span> <span class="n">rot</span> <span class="o">+</span> <span class="mf">0.12</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span> <span class="n">rot</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="mf">1.5707</span> <span class="p">)</span>
+	<span class="p">{</span>
+	 <span class="n">rot</span> <span class="o">=</span> <span class="mf">1.5707</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">else</span>
+	<span class="p">{</span>
+	<span class="n">differentialrobot_proxy</span><span class="o">-&gt;</span><span class="n">setSpeedBase</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  	<span class="n">usleep</span><span class="p">(</span><span class="mi">500000</span><span class="p">);</span>
+	<span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ldata</span><span class="o">.</span><span class="n">front</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+  	<span class="p">}</span>
+
+
+    <span class="p">}</span>
+    <span class="n">catch</span><span class="p">(</span><span class="n">const</span> <span class="n">Ice</span><span class="p">::</span><span class="ne">Exception</span> <span class="o">&amp;</span><span class="n">ex</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ex</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To compile the std::sort you will have to first add this line at the end of the file CMakeListsSpecific.txt located in the same src directory:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ADD_DEFINITIONS( -std=c++11 )
+</pre></div>
+</div>
+<p>Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> etc/config .
+gedit config
+</pre></div>
+</div>
+<p>Change in the editor the port numbers located after <em>-p</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>CommonBehavior.Endpoints<span class="o">=</span>tcp -p <span class="m">11000</span>
+<span class="c1"># Proxies for required interfaces</span>
+<span class="nv">LaserProxy</span> <span class="o">=</span> laser:tcp -h localhost -p <span class="m">10003</span>
+<span class="nv">DifferentialRobotProxy</span> <span class="o">=</span> differentialrobot:tcp -h localhost -p <span class="m">10004</span>
+Ice.Warn.Connections<span class="o">=</span><span class="m">0</span>
+Ice.Trace.Network<span class="o">=</span><span class="m">0</span>
+Ice.Trace.Protocol<span class="o">=</span><span class="m">0</span>
+Ice.ACM.Client<span class="o">=</span><span class="m">10</span>
+Ice.ACM.Server<span class="o">=</span><span class="m">10</span>
+</pre></div>
+</div>
+<p>Save and</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ..
+</pre></div>
+</div>
+<p>Now save the file and build it</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cmake .
+make
+</pre></div>
+</div>
+<p>and then open another tab in the terminal so that you can run a innermodel</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd files/innermodel
+rcis simpleworld.xml
+</pre></div>
+</div>
+<p>come back to the previous tab of the terminal and now run the above component by executing</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>bin/obstacle --Ice.Config=etc/config
+</pre></div>
+</div>
+<p>You will now see the bot moving around avoiding obstacle and outputting the distance measurements on the command window. The code for this component can be found <a class="reference external" href="https://github.com/parasKumarSahu/robocomp-coding-examples/tree/master/Cpp-examples/obstacle">here</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

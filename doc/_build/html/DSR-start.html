@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial to start with DSR configurations &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tutorial to start with DSR configurations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/DSR-start.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-to-start-with-dsr-configurations">
+<h1>Tutorial to start with DSR configurations<a class="headerlink" href="#tutorial-to-start-with-dsr-configurations" title="Permalink to this headline"></a></h1>
+<p>This tutorial will guide you through the process of deploying and extending DSR configurations (DSRc). DSRc are sets of agents (a kind of RoboComp component) that share a distributed graph (aka G) data structure. See <a class="reference external" href="https://github.com/robocomp/robocomp/tree/development/libs/dsr">robocomp-dsr</a> for a detailed description, the theory behind DSR and the installation instructions.</p>
+<p>To have a minimal set of agents acting as the running brain of a (simulated) robot we need four elements:</p>
+<ol class="arabic simple">
+<li><p>A Robotics simulator such as <a class="reference external" href="https://www.coppeliarobotics.com/">CoppeliaSim</a> that provides us with a realistic physics-based world inhabited by a mobile robot.</p></li>
+<li><p>A Python program (adapter) that starts and runs the CoppeliaSim loop and provides access to all elements in the simulated world, including all the robot’s sensors and actuators.</p></li>
+<li><p>A mandatory and already existing agent “idserver” that reads a JSON description of the simulated world into G and makes it available to all other agents that get onboard (C++)</p></li>
+<li><p>A special agent (C++) that connects to the Python adapter through RoboComp interfaces and injects all sensor data into G and also sends all commands to robot.</p></li>
+</ol>
+<section id="dsr-s-hello-world">
+<h2>DSR’s “Hello World”<a class="headerlink" href="#dsr-s-hello-world" title="Permalink to this headline"></a></h2>
+<p>Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.</p>
+<p>You need to have following things installed before proceeding further :</p>
+<ul class="simple">
+<li><p>robocomp <a class="reference external" href="https://github.com/robocomp/robocomp/blob/development/README.md">[ installation guide ]</a></p></li>
+<li><p>robocomp-robolab ( hardware robot drivers) <a class="reference external" href="https://github.com/robocomp/robocomp-robolab">[ installation link ]</a></p></li>
+<li><p>robocomp-dsr <a class="reference external" href="https://github.com/robocomp/dsr-graph">[ installation guide ]</a></p></li>
+<li><p>Pyrep <a class="reference external" href="https://github.com/stepjam/PyRep">[ installation guide ]</a></p></li>
+<li><p>CoppeliaSim <a class="reference external" href="https://www.coppeliarobotics.com/">[ installation link ]</a></p></li>
+</ul>
+<p><em>(we are assuming that your robocomp repo is in ~/robocomp/ and that you have clones robocomp-robolab and dsr-graph below ~/robocomp/components, if not then set the environment variable ROBOCOMP to directory where you have cloned robocomp repo by <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">ROBOCOMP=&quot;Enter</span> <span class="pre">path</span> <span class="pre">here&quot;</span></code> )</em></p>
+<section id="attention-it-is-crucial-that-you-uninstall-with-pip3-the-package-python3-opencv-and-install-the-python3-opencv-headless-version">
+<h3>Attention: it is crucial that you uninstall with pip3 the package <em>python3-opencv</em> and install the <em>python3-opencv-headless</em> version<a class="headerlink" href="#attention-it-is-crucial-that-you-uninstall-with-pip3-the-package-python3-opencv-and-install-the-python3-opencv-headless-version" title="Permalink to this headline"></a></h3>
+<p>Step 1.</p>
+<ul>
+<li><p>In a new terminal type “rcnode” to start ZeroC’s publish-subscribe broker</p></li>
+<li><p>Terminal 1 :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rcnode
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Step 2.</p>
+<ul>
+<li><p>In a new terminal goto ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep</p></li>
+<li><p>Build it with cmake set the CoppeliaSim root path(directory where CopelliaSim is installed)</p></li>
+<li><p>Run it using the provided “run.sh” script.</p></li>
+<li><p>Terminal 2 :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
+cmake .
+ make -j<span class="k">$(</span>nproc<span class="k">)</span>
+<span class="nb">export</span> <span class="nv">COPPELIASIM_ROOT</span><span class="o">=</span><span class="s2">&quot;Enter CoppeliaSim path here&quot;</span>
+bash run.sh
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Step 3.</p>
+<ul>
+<li><p>In a new terminal goto ~/robocomp/components/dsr-graph/components/idserver. This agent will read a stored graph from a file.</p></li>
+<li><p>Build it and execute with <em>bin/idserver etc/config</em></p></li>
+<li><p>You should see a Qt window showing the graph G. There are also other tabs that “project” G as a 2D and 3D scene.
+Also, there is a tree view of G.</p></li>
+<li><p>Terminal 3 :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/robocomp/components/dsr-graph/components/idserver
+cmake .
+ make -j<span class="k">$(</span>nproc<span class="k">)</span>
+./bin/idserver etc/config
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Step 4.</p>
+<ul>
+<li><p>In a new terminal goto ~/robocomp/components/dsr-graph/components/viriatoDSR.
+This agent is the connection between viriatoPyrep (simulator or real robot) and G</p></li>
+<li><p>Build it and execute with <em>bin/viriatoDSR etc/config</em></p></li>
+<li><p>On startup, the agent will request a copy of G and upon reception it will show it in its own window. All views of G will be equal since they are copies of a synchronized replicated data structure (similar to a GDoc)</p></li>
+<li><p>Terminal 4 :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/robocomp/components/dsr-graph/components/viriatoDSR
+cmake .
+ make -j<span class="k">$(</span>nproc<span class="k">)</span>
+./bin/viriatoDSR etc/config
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Now we have the simplest DSRc runnning and connected to the simulated world that CoppeliaSim brings to life. Yo need now to get familiarized with the agents’ UI and with G. To see how things change when there is movement in the world we have two ways:</p>
+<ol class="arabic simple">
+<li><p>Using a joystick or XBox pad.</p>
+<ul class="simple">
+<li><p>in a new terminal go to : ~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickpublish</p></li>
+<li><p>build the component and start it with <em>bin/JoystickPublish etc/config</em></p></li>
+<li><p>move the stick and you will see the robot moving in CoppeliaSim and in ALL G views.</p></li>
+</ul>
+</li>
+<li><p>From the CoppeliaSim UI.</p>
+<ul class="simple">
+<li><p>click on the Coppelia window and click on the robot (check in the tree view on the left that you have selected the topmost element of the tree -Viriato)</p></li>
+<li><p>click on the button in the upper panel of CoppeliaSim with a little cube in the middle and four arrows around. <img alt="coppelia_icon01" src="https://user-images.githubusercontent.com/45526571/109211686-8b5f9000-77d4-11eb-9330-43cfd808ed17.png" /></p></li>
+<li><p>Move the mouse dragging the robot around and see how all G views are refreshed.</p></li>
+</ul>
+</li>
+</ol>
+<p>In the graph view of the agents, right-click in the laser (203) or camera (210) nodes and select data to open a graphic representation of the sensors. Also, right  clicking on the edges you can see the frame coordinates of the node with respect to its parent or to the world. <a class="reference external" href="https://user-images.githubusercontent.com/45526571/109213345-7d127380-77d6-11eb-933b-07ca2aec3572.jpg">preview</a></p>
+</section>
+</section>
+<section id="creating-a-brand-new-agent-in-30-seconds-with-robocomp-s-code-generator">
+<h2>Creating a brand new agent in 30 seconds with RoboComp’s code generator<a class="headerlink" href="#creating-a-brand-new-agent-in-30-seconds-with-robocomp-s-code-generator" title="Permalink to this headline"></a></h2>
+<p>Now we can move on and create a brand new agent to control de robot.
+Remember that viriatoPyrep, idserver and viriatoDSR must be running to proceed with this.</p>
+<ul>
+<li><p>open a new terminal</p></li>
+<li><p>move to ~/robocomp/components/dsr-graph/components/ and create a new folder “my-agents”.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/robocomp/components/dsr-graph/components/
+mkdir my-agents
+</pre></div>
+</div>
+</li>
+<li><p>move into “my-agents” and create “my_first_agent”. cd into it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> my-agents
+mkdir my_first_agent
+<span class="nb">cd</span> my_first_agent
+</pre></div>
+</div>
+</li>
+<li><p>execute: robocompdsl my_first_agent.cdsl. A new file will be created with that name</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>robocompdsl my_first_agent.cdsl
+</pre></div>
+</div>
+</li>
+<li><p>open it in your favourite editor and replace the existing code with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Component my_first_agent
+<span class="o">{</span> Communications
+  <span class="o">{</span>
+  <span class="o">}</span><span class="p">;</span>
+  language Cpp11<span class="p">;</span>
+  gui Qt<span class="o">(</span>QMainWindow<span class="o">)</span><span class="p">;</span>
+  options dsr<span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>execute: robocompdsl my_first_agent.cdsl .</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>robocompdsl my_first_agent.cdsl .
+</pre></div>
+</div>
+</li>
+<li><p>a lot of code will be generated and placed into several folders.</p></li>
+<li><p>this is the moment to add the new my-frist-agent folder to your git repo.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git add .
+</pre></div>
+</div>
+<p>After we go with cmake, a lot of <em>garbage</em> will be created that you don’t want to upload</p>
+</li>
+<li><p>build the agent:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
+<span class="nb">cd</span> build
+cmake ..
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>edit the etc/config file and give an id-number to the agent, i.e. 30. <em>Also set the 3d_view flag as <em>false</em> for now</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ..
+sed -i <span class="s1">&#39;s/agent_id = 0/agent_id = 30/g&#39;</span> etc/config
+sed -i <span class="s1">&#39;s/3d_view = true/3d_view = false/g&#39;</span> etc/config
+</pre></div>
+</div>
+</li>
+<li><p>execute it : /bin/my_first_agent etc/config:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./bin/my_first_agent etc/config
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Now you should see a new window with the “good-old” graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent’s internal threads.</p>
+<p><strong>The thirty seconds end here!</strong> Now let’s write some control code for our Viriato robot.</p>
+</section>
+<section id="modifying-your-brand-new-agent">
+<h2>Modifying your brand new agent<a class="headerlink" href="#modifying-your-brand-new-agent" title="Permalink to this headline"></a></h2>
+<p>We will add code to SpecificWorker.h and cpp, so let’s start with the first one.</p>
+<ul>
+<li><p>Add these two lines to the <em>include</em> section</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include  &quot;../../../etc/viriato_graph_names.h&quot;</span>
+<span class="c1">#include &lt;random&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Now in SpecificWorler.cpp. In the class constructor add this line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QLoggingCategory</span><span class="p">::</span><span class="n">setFilterRules</span><span class="p">(</span><span class="s2">&quot;*.debug=false</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p>and replace the compute() method there with this one. Laser data in Viriato comes from the composition of two 180º LIDARS placed in opposite corners. A 360º representation is built and inserted in G as two float arrays, one with the scanning angles in radians and starting with -M_PI, and another one of the same size with the distances in millimeters. We seek a frontal cone starting in -PI/6 and ending in PI/6, given that the robot’s front is 0º.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">void</span> <span class="n">SpecificWorker</span><span class="p">::</span><span class="n">compute</span><span class="p">()</span>
+<span class="p">{</span> 
+ <span class="n">const</span> <span class="nb">float</span> <span class="n">MIN_DIST</span> <span class="o">=</span> <span class="mf">800.</span><span class="p">;</span>  <span class="o">//</span> <span class="nb">min</span> <span class="n">distance</span> <span class="n">allowed</span> <span class="n">to</span> <span class="n">obstacles</span>
+ <span class="n">const</span> <span class="nb">float</span> <span class="n">MAX_ROT</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="o">//</span> <span class="n">rad</span><span class="o">/</span><span class="n">sg</span>
+ <span class="n">const</span> <span class="nb">float</span> <span class="n">MAX_ADV</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>  <span class="o">//</span> <span class="n">mm</span><span class="o">/</span><span class="n">sg</span>
+
+ <span class="o">//</span> <span class="n">Here</span> <span class="n">we</span> <span class="n">retrieve</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span> <span class="n">Since</span> <span class="n">G</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">distributed</span> <span class="n">data</span> <span class="n">structure</span> <span class="n">shared</span> <span class="k">with</span> <span class="n">other</span> <span class="n">agents</span><span class="p">,</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">no</span> <span class="n">guarante</span> 
+ <span class="o">//</span> <span class="n">that</span> <span class="n">the</span> <span class="n">selected</span> <span class="n">nodes</span> <span class="n">will</span> <span class="n">be</span> <span class="n">there</span><span class="o">.</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">why</span> <span class="n">the</span> <span class="n">API</span> <span class="n">returns</span> <span class="n">std</span><span class="p">::</span><span class="n">optional</span><span class="o">&lt;&gt;</span> <span class="n">types</span><span class="o">.</span>
+ <span class="o">//</span> <span class="n">In</span> <span class="n">this</span> <span class="n">case</span> <span class="n">we</span> <span class="n">trust</span> <span class="n">others</span> <span class="ow">and</span> <span class="n">directly</span> <span class="n">access</span> <span class="n">its</span> <span class="n">value</span> <span class="k">with</span> <span class="n">value</span><span class="p">()</span><span class="o">.</span>
+ 
+ <span class="o">//</span> <span class="n">Safely</span> <span class="n">get</span> <span class="n">a</span> <span class="n">local</span> <span class="n">copy</span> <span class="n">of</span> <span class="n">the</span> <span class="n">complete</span> <span class="n">laser_node</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">being</span> <span class="n">updated</span> <span class="n">by</span> <span class="n">the</span> <span class="n">viriatoDSR</span> <span class="n">agent</span> <span class="k">with</span> <span class="n">data</span> <span class="kn">from</span> <span class="nn">CoppeliaSim.</span> 
+ <span class="n">auto</span> <span class="n">laser_node</span> <span class="o">=</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">get_node</span><span class="p">(</span><span class="n">laser_name</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">();</span>
+ 
+ <span class="o">//</span> <span class="n">Define</span> <span class="n">a</span> <span class="n">const</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">the</span> <span class="n">laser_node</span> <span class="n">attribute</span><span class="p">:</span> <span class="n">_laser_angles_att_</span> <span class="ow">and</span> <span class="n">avoid</span> <span class="n">copying</span> <span class="n">the</span> <span class="n">data</span><span class="o">.</span>
+ <span class="n">const</span> <span class="n">auto</span> <span class="o">&amp;</span><span class="n">angles</span> <span class="o">=</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">get_attrib_by_name</span><span class="o">&lt;</span><span class="n">laser_angles_att</span><span class="o">&gt;</span><span class="p">(</span><span class="n">laser_node</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">();</span>  <span class="o">//</span> <span class="kn">from</span> <span class="o">-</span><span class="n">PI</span> <span class="n">to</span> <span class="n">PI</span>
+ 
+ <span class="o">//</span> <span class="n">Find</span> <span class="n">the</span> <span class="n">index</span> <span class="n">of</span> <span class="n">the</span> <span class="n">first</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">angles</span> <span class="n">that</span> <span class="ow">is</span> <span class="n">greater</span> <span class="n">than</span> <span class="o">-</span><span class="n">PI</span><span class="o">/</span><span class="mi">6</span>
+ <span class="n">auto</span> <span class="n">left_limit</span> <span class="o">=</span> <span class="n">std</span><span class="p">::</span><span class="n">distance</span><span class="p">(</span><span class="n">angles</span><span class="o">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">std</span><span class="p">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">angles</span><span class="o">.</span><span class="n">begin</span><span class="p">(),</span><span class="n">angles</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="p">[](</span><span class="n">auto</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">){</span> <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">M_PI</span><span class="o">/</span><span class="mi">6</span><span class="p">;}));</span>
+ 
+ <span class="o">//</span> <span class="n">Find</span> <span class="n">the</span> <span class="n">index</span> <span class="n">of</span> <span class="n">the</span> <span class="n">first</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">angles</span> <span class="n">that</span> <span class="ow">is</span> <span class="n">greater</span> <span class="n">than</span> <span class="n">PI</span><span class="o">/</span><span class="mi">6</span>
+ <span class="n">auto</span> <span class="n">right_limit</span> <span class="o">=</span> <span class="n">std</span><span class="p">::</span><span class="n">distance</span><span class="p">(</span><span class="n">angles</span><span class="o">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">std</span><span class="p">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">angles</span><span class="o">.</span><span class="n">begin</span><span class="p">(),</span><span class="n">angles</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="p">[](</span><span class="n">auto</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">){</span> <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">M_PI</span><span class="o">/</span><span class="mi">6</span><span class="p">;}));</span>
+ 
+ <span class="o">//</span> <span class="n">Define</span> <span class="n">a</span> <span class="n">const</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">the</span> <span class="n">laser_node</span> <span class="n">attribute</span><span class="p">:</span> <span class="n">_laser_dists_att_</span> <span class="ow">and</span> <span class="n">avoid</span> <span class="n">copying</span> <span class="n">the</span> <span class="n">data</span><span class="o">.</span> 
+ <span class="n">const</span> <span class="n">auto</span> <span class="o">&amp;</span><span class="n">dists</span> <span class="o">=</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">get_attrib_by_name</span><span class="o">&lt;</span><span class="n">laser_dists_att</span><span class="o">&gt;</span><span class="p">(</span><span class="n">laser_node</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">();</span>
+ 
+ <span class="o">//</span> <span class="n">Compute</span> <span class="n">the</span> <span class="n">minimum</span> <span class="n">of</span> <span class="n">the</span> <span class="n">dists</span> <span class="n">vector</span> <span class="n">between</span> <span class="n">the</span> <span class="n">computed</span> <span class="n">limits</span>
+ <span class="n">auto</span> <span class="n">min_dist</span> <span class="o">=</span> <span class="n">std</span><span class="p">::</span><span class="nb">min</span><span class="p">(</span><span class="n">dists</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">+</span> <span class="n">left_limit</span><span class="p">,</span> <span class="n">dists</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">+</span> <span class="n">right_limit</span><span class="p">);</span>
+ 
+ <span class="o">//</span> <span class="n">Define</span> <span class="n">the</span> <span class="n">three</span> <span class="n">target</span> <span class="n">speeds</span> <span class="k">for</span> <span class="n">the</span> <span class="n">robot</span>
+ <span class="nb">float</span> <span class="n">adv</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nb">float</span> <span class="n">rot</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nb">float</span> <span class="n">side</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+ <span class="o">//</span> <span class="n">The</span> <span class="n">final</span> <span class="n">simple</span> <span class="n">logic</span>
+ <span class="k">if</span><span class="p">(</span><span class="o">*</span><span class="n">min_dist</span> <span class="o">&lt;</span> <span class="n">MIN_DIST</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">adv</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">side</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">MAX_ROT</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="k">else</span>
+ <span class="p">{</span>
+     <span class="n">adv</span> <span class="o">=</span> <span class="n">MAX_ADV</span><span class="p">;</span> <span class="n">side</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">rot</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="o">//</span> <span class="n">Get</span> <span class="n">robot_node</span> <span class="kn">from</span> <span class="nn">robot</span><span class="s1">&#39;s name </span>
+    <span class="n">auto</span> <span class="n">robot_node</span> <span class="o">=</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">get_node</span><span class="p">(</span><span class="n">robot_name</span><span class="p">);</span>
+ <span class="o">//</span> <span class="n">Write</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">robot_node</span><span class="s1">&#39;s attributes the desired target speeds for the robot</span>
+ <span class="n">G</span><span class="o">-&gt;</span><span class="n">add_or_modify_attrib_local</span><span class="o">&lt;</span><span class="n">robot_ref_adv_speed_att</span><span class="o">&gt;</span><span class="p">(</span><span class="n">robot_node</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="n">adv</span><span class="p">);</span>
+ <span class="n">G</span><span class="o">-&gt;</span><span class="n">add_or_modify_attrib_local</span><span class="o">&lt;</span><span class="n">robot_ref_rot_speed_att</span><span class="o">&gt;</span><span class="p">(</span><span class="n">robot_node</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="n">rot</span><span class="p">);</span>
+ <span class="n">G</span><span class="o">-&gt;</span><span class="n">add_or_modify_attrib_local</span><span class="o">&lt;</span><span class="n">robot_ref_side_speed_att</span><span class="o">&gt;</span><span class="p">(</span><span class="n">robot_node</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="n">side</span><span class="p">);</span>
+ 
+ <span class="o">//</span> <span class="n">Write</span> <span class="n">back</span> <span class="n">the</span> <span class="n">node</span> <span class="n">to</span> <span class="n">G</span> <span class="n">so</span> <span class="n">_viriatoDSR_</span> <span class="n">notices</span> <span class="ow">and</span> <span class="n">sends</span> <span class="n">the</span> <span class="n">commands</span> <span class="n">down</span> <span class="n">to</span> <span class="n">the</span> <span class="n">simulator</span><span class="o">.</span>
+ <span class="n">G</span><span class="o">-&gt;</span><span class="n">update_node</span><span class="p">(</span><span class="n">robot_node</span><span class="o">.</span><span class="n">value</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Now you can compile again the agent with <em>make</em> and give it a run. It is far from perfect but should give an idea of how a basic agent is built. Now we can improve it and add new agents to keep on building the robot’s brain.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

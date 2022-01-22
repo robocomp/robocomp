@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Brief Introduction to Software Components in RoboComp &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>A Brief Introduction to Software Components in RoboComp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/components.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="a-brief-introduction-to-software-components-in-robocomp">
+<h1>A Brief Introduction to Software Components in RoboComp<a class="headerlink" href="#a-brief-introduction-to-software-components-in-robocomp" title="Permalink to this headline"></a></h1>
+<section id="some-background">
+<h2>Some Background<a class="headerlink" href="#some-background" title="Permalink to this headline"></a></h2>
+<p>Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls the robots nowadays.</p>
+<p>Robotics is a mixed bag of technology, where almost everything finds its way through. Also, Robotics is the place where our dreams of intelligent machines meet, in an endless attempt to build a truly useful tool for our daily lives.</p>
+<p>Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand as intelligent behavior. The most audacious architectures are called <em>cognitive architectures</em> and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, like <a class="reference external" href="http://soar.eecs.umich.edu/">SOAR</a>.</p>
+<p>The problem with building these little monsters is that you need a very powerful underlying infrastructure, that lets you build and modify software created by many people, and that has to execute on real, moving machines. Also, everybody expects robots to be smarter than they really are and that is a lot of pressure.</p>
+</section>
+<section id="why-use-components-in-the-first-place">
+<h2>Why use Components in the first place?<a class="headerlink" href="#why-use-components-in-the-first-place" title="Permalink to this headline"></a></h2>
+<p>Components provide a new, developing technology that can be very helpful. Components are <em>programs that communicate</em> and as such, they are built with everything at hand: libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program.</p>
+<p>Components need a way to share information among them, and here is where communication middlewares get in. If you want applications written in different languages to communicate, running across the internet, executing on different hardware architectures -even browsers- then you cannot deal with just a socket. You need a middleware.</p>
+<p>Putting together programs and a communication middleware, you can almost come up with a way to make more components. Except, one more thing is needed, a model for your components.</p>
+<p>You need to define what is a generic component and consequently how its internal structure is going to be, its directory and building ecosystem, how it has to be documented, its default behavior, how it will be deployed and its modes of communicating. There are several proposals that do exactly this, one of them being the famous <a class="reference external" href="http://www.corba.org">CORBA</a>.</p>
+</section>
+<section id="robocomp-components">
+<h2>Robocomp Components<a class="headerlink" href="#robocomp-components" title="Permalink to this headline"></a></h2>
+<p>In RoboComp (2005- ) we have created our own component model, inspired by the <a class="reference external" href="http://orca-robotics.sourceforge.net/">ORCA</a> model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses <a class="reference external" href="http://www.zeroc.com">Ice</a> and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as <a class="reference external" href="https://www.dds-foundation.org/">DDS</a>.</p>
+<p>RoboComp’s components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction.</p>
+<p><strong>IDSL</strong> stands for “Interface Definition Specific Language” and currently is a subset of Ice’s Slice interface language. With IDSL you write the data structures and functions that a component can implement, require, subscribe to or publish. A component can implement several interfaces, offering different views of its internal functioning. Also, the same interface can be implemented by many components. This is an example of a simple interface written in IDSL:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">RoboCompSpeech</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">interface</span><span class="w"> </span><span class="n">Speech</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="nf">say</span><span class="p">(</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">,</span><span class="kt">bool</span><span class="w"> </span><span class="n">overwrite</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isBusy</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<p><strong>CDSL</strong> stands for “Component Definition Specific Language” and allows the user to specify its name, accessible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s">&quot;/robocomp/interfaces/IDSLs/DifferentialRobot.idsl&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="s">&quot;/robocomp/interfaces/IDSLs/Laser.idsl&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="n">Component</span><span class="w"> </span><span class="n">prueba</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Communications</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">requires</span><span class="w"> </span><span class="n">DifferentialRobot</span><span class="p">,</span><span class="w"> </span><span class="n">Laser</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="n">language</span><span class="w"> </span><span class="n">cpp</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">gui</span><span class="w"> </span><span class="nf">Qt</span><span class="p">(</span><span class="n">QWidget</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user-specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to newly defined proxies will be there.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

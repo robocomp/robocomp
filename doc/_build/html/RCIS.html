@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoboComp Innermodel Simulator (RCIS) &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>RoboComp Innermodel Simulator (RCIS)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/RCIS.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="robocomp-innermodel-simulator-rcis">
+<h1>RoboComp Innermodel Simulator (RCIS)<a class="headerlink" href="#robocomp-innermodel-simulator-rcis" title="Permalink to this headline"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RCIS</span></code> is one of the core tools of RoboComp, which creates a simulation environment for operational testing of individual components or system testing of a combined aggregated system of components. To be concrete, <code class="docutils literal notranslate"><span class="pre">RCIS</span></code> simulates a <a class="reference internal" href="innermodel.html"><span class="doc std std-doc">RoboComp’s representation of the world and the robot itself</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">RCIS</span></code> is implemented in C++ using <strong>QGLWidget</strong> library to draw various sprites such as planes, walls, boxes, robots, etc that represent the simulated world. The picture below describes a general view of implementation parts of <code class="docutils literal notranslate"><span class="pre">RCIS</span></code>:</p>
+<p><img alt="RCIS overview" src="_images/RCIS.png" /></p>
+<p>RCIS consists of two main implementation parts: <strong>Innermodel Manager</strong> and <strong>RoboComp interfaces: Sensors and Actuators</strong>. The <strong>Innermodel Manager</strong> part deals with internal physics and transformation between simulated objects. Currently, these are the list of implemented RoboComp interfaces that are ready for simulation:</p>
+<ul class="simple">
+<li><p>Camera</p></li>
+<li><p>DifferentialRobot</p></li>
+<li><p>IMU</p></li>
+<li><p>JointMotor</p></li>
+<li><p>Laser</p></li>
+<li><p>RGBD</p></li>
+<li><p>Display</p></li>
+</ul>
+<p>When starting simulation, <code class="docutils literal notranslate"><span class="pre">RCIS</span></code> will read an XML file with the definitions of the simulated world and robot, then it populates the objects defined in the XML file and starts component servers for each of these interfaces. These component servers dedicatedly process information captured from or interacted with the simulation environment. The default port of <code class="docutils literal notranslate"><span class="pre">RCIS</span></code> is 11175, any other components, which want to connect and send message to <code class="docutils literal notranslate"><span class="pre">RCIS</span></code>, must set the forward port accordingly.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>This section assumes the user has already installed the RoboComp core library as in this <a class="reference internal" href="README.html"><span class="doc std std-doc">guide</span></a>, then we can fetch some meshes and textures used by the simulator (it will take a while):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">robocomp</span>
+<span class="n">git</span> <span class="n">annex</span> <span class="n">get</span> <span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="usages">
+<h2>Usages<a class="headerlink" href="#usages" title="Permalink to this headline"></a></h2>
+<p>In this section, we will demonstrate an example usage of <code class="docutils literal notranslate"><span class="pre">RCIS</span></code>.</p>
+<section id="run-the-rcis">
+<h3>Run the RCIS<a class="headerlink" href="#run-the-rcis" title="Permalink to this headline"></a></h3>
+<p>Now let’s run the simulator with “simple world” definitions <code class="docutils literal notranslate"><span class="pre">simpleworld.xml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">robocomp</span><span class="o">/</span><span class="n">files</span><span class="o">/</span><span class="n">innermodel</span>
+<span class="n">rcis</span> <span class="n">simpleworld</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>Now, RCIS should be up and running with a simple robot endowed with a differential base, a laser, and an RGBD camera. The robot will be shown in an environment with four walls, some boxes, and a wooden floor. Please interact with the GUI window by dragging the mouse to see the world with different views.</p>
+</section>
+<section id="using-the-keyboard-as-a-joystick">
+<h3>Using the keyboard as a JoyStick<a class="headerlink" href="#using-the-keyboard-as-a-joystick" title="Permalink to this headline"></a></h3>
+<p>To control the robot in the simulated world, we must first install the basic RoboComp components:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">robocomp</span><span class="o">/</span><span class="n">components</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">robocomp</span><span class="o">/</span><span class="n">robocomp</span><span class="o">-</span><span class="n">robolab</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>We want to use our keyboard to control the robot, we can compile the component and call it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">robocomp</span><span class="o">/</span><span class="n">components</span><span class="o">/</span><span class="n">robocomp</span><span class="o">-</span><span class="n">robolab</span><span class="o">/</span><span class="n">components</span><span class="o">/</span><span class="n">keyboardrobotcontroller</span>
+<span class="n">cmake</span> <span class="o">.</span>
+<span class="n">make</span>
+<span class="n">src</span><span class="o">/</span><span class="n">keyboardrobotcontroller</span><span class="o">.</span><span class="n">py</span> <span class="n">etc</span><span class="o">/</span><span class="n">config</span>
+</pre></div>
+</div>
+<p>Please use the arrow keys to navigate the robot, the space bar to stop it an ‘q’ to exit.</p>
+<p>Note that you must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having <code class="docutils literal notranslate"><span class="pre">RCIS</span></code> already running. Also, remember that each RoboComp basic component has its README file, you should check the README file if the component supports the simulation or not.</p>
+</section>
+<section id="resolving-issues">
+<h3>Resolving Issues<a class="headerlink" href="#resolving-issues" title="Permalink to this headline"></a></h3>
+<p>If the keyboard control is unresponsive, it could be that your TCP port of <code class="docutils literal notranslate"><span class="pre">keyboardrobotcontroller</span></code> does not match with the TCP port of <code class="docutils literal notranslate"><span class="pre">DifferentialRobotComp</span></code> component defined in <code class="docutils literal notranslate"><span class="pre">simpleworld.xml</span></code>.</p>
+<p>To check for <code class="docutils literal notranslate"><span class="pre">DifferentialRobotComp</span></code> TCP port, find the following tag in file <code class="docutils literal notranslate"><span class="pre">robocomp/files/innermodel/simpleworld.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">differentialrobot</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;base&quot;</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;10004&quot;</span><span class="o">&gt;</span>
+
+<span class="o">...</span>
+
+<span class="o">&lt;/</span><span class="n">differentialrobot</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>To check for <code class="docutils literal notranslate"><span class="pre">keyboardrobotcontroller</span></code> TCP port, find the following parameter in config file <code class="docutils literal notranslate"><span class="pre">robocomp/components/robocomp-robolab/components/keyboardrobotcontroller/etc/config</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Proxies for required interfaces</span>
+<span class="n">DifferentialRobotProxy</span> <span class="o">=</span> <span class="n">differentialrobot</span><span class="p">:</span><span class="n">tcp</span> <span class="o">-</span><span class="n">h</span> <span class="n">localhost</span> <span class="o">-</span><span class="n">p</span> <span class="mi">10004</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Whenever you want to control or receive data from the component interfaces defined in the XML file, you must ensure the correct matching port between your component and the simulated component.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

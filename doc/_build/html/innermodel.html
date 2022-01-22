@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to InnerModel: RoboComp’s internal representation of the world and the robot itself. &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Introduction to InnerModel: RoboComp’s internal representation of the world and the robot itself.</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/innermodel.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-innermodel-robocomp-s-internal-representation-of-the-world-and-the-robot-itself">
+<h1>Introduction to InnerModel: RoboComp’s internal representation of the world and the robot itself.<a class="headerlink" href="#introduction-to-innermodel-robocomp-s-internal-representation-of-the-world-and-the-robot-itself" title="Permalink to this headline"></a></h1>
+<p><strong>InnerModel</strong> is a C++ group of classes used by RoboComp to represent the world and the robot in it. As a data structure, InnerModel is a tree whose nodes represent entities in the world and geometric transformations among those entities. The current list of entities include:</p>
+<p><em>Geometry</em></p>
+<ul class="simple">
+<li><p>innermodel</p></li>
+<li><p>transform</p></li>
+<li><p>translation</p></li>
+<li><p>rotation</p></li>
+</ul>
+<p><em>Bodies</em></p>
+<ul class="simple">
+<li><p>mesh</p></li>
+<li><p>plane</p></li>
+</ul>
+<p><em>Robots</em></p>
+<ul class="simple">
+<li><p>differentialrobot</p></li>
+<li><p>omnirobot</p></li>
+</ul>
+<p><em>Actuators</em></p>
+<ul class="simple">
+<li><p>prismaticjoint</p></li>
+<li><p>joint</p></li>
+</ul>
+<p><em>Sensors</em></p>
+<ul class="simple">
+<li><p>laser</p></li>
+<li><p>pointcloud</p></li>
+<li><p>touchsensor</p></li>
+<li><p>display</p></li>
+<li><p>imu</p></li>
+<li><p>rgbd</p></li>
+</ul>
+<p>A tree made up of elements (robots, bodies, sensors, and actuators) connected through 6D geometric transformations is a <em>kinematic tree</em> . The basic relationship among elements is “part_of” meaning that a child is rigidly attached to her parent and will move with it. The precise position of the child with respect to her parent is encoded in an intermediate node that will typically be a <em>transform</em> (6D geometric transformation). It also can be divided into a <em>translation</em> or a <em>rotation</em>.</p>
+<p>The InnerModel tree can be expressed as an XML file. This file can be written to disk at any time or read from a file when the components start. Once in memory, the InnerModel class holds a tree data structure and offers an API to access and modify its nodes and edges.</p>
+<p>Let’s start with a simple XML file describing a 5000mm x 5000mm square, a few boxes on it and a differential drive robot endowed with a laser and an RGBD camera: (the file can be found in ~/robocomp/files/innermodel/simplesimple.xml)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;innerModel&gt;
+	&lt;transform id=&quot;world&quot;&gt;
+		&lt;transform id=&quot;floor&quot; rx=&quot;3,14&gt;
+			&lt;plane id=&quot;ddG&quot; ny=&quot;1&quot;  px=&quot;-0&quot; py=&quot;0&quot; pz=&quot;0&quot; size=&quot;5000,5000,10&quot; texture=&quot;/home/robocomp/robocomp/files/osgModels/textures/wood.jpg&quot; /&gt; 
+		    
+			&lt;plane id=&quot;ddR&quot; nx=&quot;1&quot;  px=&quot;2500&quot; py=&quot;200&quot; pz=&quot;0&quot; size=&quot;5000,500,10&quot; texture=&quot;#eeeeee&quot; /&gt;
+			&lt;plane id=&quot;ddL&quot; nx=&quot;1&quot; px=&quot;-2500&quot; py=&quot;200&quot; pz=&quot;0&quot; size=&quot;5000,500,10&quot; texture=&quot;#eeeeee&quot; /&gt;	
+			&lt;plane id=&quot;ddF&quot; nz=&quot;1&quot;  pz=&quot;2500&quot; py=&quot;200&quot; px=&quot;0&quot; size=&quot;5000,500,10&quot; texture=&quot;#555555&quot; /&gt;
+			&lt;plane id=&quot;ddB&quot; nz=&quot;1&quot; pz=&quot;-2500&quot; py=&quot;200&quot; px=&quot;0&quot; size=&quot;5000,500,10&quot; texture=&quot;#555555&quot; /&gt;
+		&lt;/transform&gt;
+
+		&lt;!--OBSTACLES--&gt;
+		&lt;transform id=&quot;caja1&quot; tx=&quot;0&quot; tz=&quot;1000&quot; ty=&quot;0&quot; &gt;
+			&lt;plane id=&quot;cajaMesh1&quot; nx=&quot;1&quot; size=&quot;400,400,400&quot;  texture=&quot;/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg&quot; /&gt;
+		&lt;/transform&gt;
+			
+		&lt;differentialrobot id=&quot;base&quot; port=&quot;10004&quot;&gt;
+			&lt;mesh id=&quot;base_robex&quot; file=&quot;/home/robocomp/robocomp/files/osgModels/robex/robex.ive&quot;  tx=&quot;0&quot; ty=&quot;0&quot; tz=&quot;0&quot; scale=&quot;1000&quot; /&gt;
+				&lt;translation id=&quot;laserPose&quot; tx=&quot;0&quot; ty=&quot;140&quot; tz=&quot;200&quot;&gt;
+					&lt;laser id=&quot;laser&quot; port=&quot;10003&quot; measures=&quot;100&quot; min=&quot;100&quot; max=&quot;30000&quot; angle=&quot;3&quot; ifconfig=&quot;10000&quot; /&gt;
+						&lt;plane id=&quot;sensorL&quot; nz=&quot;1&quot; pz=&quot;-200&quot; size=&quot;100&quot; repeat=&quot;1&quot; texture=&quot;#ff0000&quot; /&gt; 
+				&lt;/translation&gt;	
+				&lt;transform id=&quot;camera&quot; ty=&quot;210&quot; tz=&quot;200&quot;&gt;
+						&lt;rgbd id=&quot;rgbd&quot; focal=&quot;490&quot; width=&quot;640&quot; height=&quot;480&quot; port=&quot;10096&quot; noise=&quot;0.00&quot; ifconfig=&quot;40000,50000&quot; /&gt;
+						&lt;plane id=&quot;rgbd_mesh1&quot; nz=&quot;1&quot; pz=&quot;-200&quot; size=&quot;200,50,10&quot; repeat=&quot;1&quot; texture=&quot;#550000&quot; /&gt;
+				&lt;/transform&gt;
+				&lt;translation id=&quot;robotGeometricCenter&quot; tx=&quot;0&quot; ty=&quot;0&quot; tz=&quot;50&quot;&gt;
+				&lt;/translation&gt;
+			&lt;/differentialrobot&gt;
+	&lt;/transform&gt;
+&lt;/innerModel&gt;
+</pre></div>
+</div>
+<p>The whole world is embraced inside the <em>innermodel</em> tag. Inside it we find the following tags:</p>
+<ul class="simple">
+<li><p>1 transform with id “world”</p>
+<ul>
+<li><p>1 transform with id “floor”</p>
+<ul>
+<li><p>1 plane for the floor object with nice wood texture</p></li>
+<li><p>4 planes for the walls</p></li>
+<li><p>1 transform for the object</p>
+<ul>
+<li><p>1 plane(box) for the object</p></li>
+</ul>
+</li>
+<li><p>1 differentialrobot object</p>
+<ul>
+<li><p>1 mesh for the robot’s body representation</p></li>
+</ul>
+</li>
+<li><p>1 translation to position the laser</p>
+<ul>
+<li><p>1 laser</p></li>
+<li><p>1 plane for the laser’s body representation
+and so on for the rgbd camera …</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Each of these elements is read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y-axis pointing up, Z-axis pointing front and X-axis pointing right.</p>
+<p>InnerModel’s API provides methods to:</p>
+<ul class="simple">
+<li><p>access the nodes and their specific APIs</p></li>
+<li><p>add and remove new nodes</p></li>
+<li><p>compute a kinematic transformation between any two nodes in the tree. This transformation is read as ” given a 3D point in some A node reference system, compute how it is seen from the reference system of node B”. This is, by large, the most used method of the InnerModel API.</p></li>
+</ul>
+<p>Perceptive components typically extend or update InnerModel after processing data coming from sensors.</p>
+<p>A simple example of the use of InnerModel in a generated component is when we want to create a controller that drives the robot to reach some 2D point on the floor. The easiest way is to transform the world coordinates of the target into the robot’s reference system. This transformed point is actually a vector coming out from the robot and reaching the target. We only need to compute the angle between this vector and the robot heading direction and use it to set a correcting rotation speed that will eventually align the robot with the target. At the same time, the module of that vector can be a good magnitude to control the advance speed of the robot.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

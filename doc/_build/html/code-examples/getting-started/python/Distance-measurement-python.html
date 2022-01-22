@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Distance and Angle Measurements &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting Distance and Angle Measurements</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/code-examples/getting-started/python/Distance-measurement-python.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-distance-and-angle-measurements">
+<h1>Getting Distance and Angle Measurements<a class="headerlink" href="#getting-distance-and-angle-measurements" title="Permalink to this headline"></a></h1>
+<p>First we create a component, Refer previous tutorials where it is explained in detail.</p>
+<p>For this example import both the DifferentialRobot and Laser interfaces hence your cdsl file should be</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import &quot;/robocomp/interfaces/IDSLs/Laser.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/DifferentialRobot.idsl&quot;;
+Component pydist{
+	Communications{
+		requires DifferentialRobot, Laser;
+
+	};
+	language Python;
+};
+</pre></div>
+</div>
+<p>Generate the code using robocompdsl into a build folder. And navigate to src folder which is inside the build folder and open specificworker.py in any text editor.</p>
+<p>Now you can edit the compute function in the file according to the problem statement. To get the distance and angle measurements we use laser interface and for movements we use DifferentialRobot interface</p>
+<p>The algorithm is as follows we move the bot randomly first and then collect the laser data and store it in a defined vector say ldata. We then sort the distance data and take the first data of the vector list ldata. THe code is as below</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ldata = []
+d= []
+a =[]
+self.differentialrobot_proxy.setSpeedBase(0, 0.8)
+time.sleep(1)
+self.differentialrobot_proxy.setSpeedBase(50, 0)
+time.sleep(1)
+ldata = self.laser_proxy.getLaserData();
+for i in range(0,len(ldata)):
+	dis = ldata[i]
+	x = dis.angle
+	y = dis.dist
+	d.append(y)
+	a.append(x)
+d.sort()
+a.sort()
+distance = d[0]
+angle = a[0]
+print(distance)
+print(angle)
+time.sleep(3)
+</pre></div>
+</div>
+<p>As told in the algorithm we first define the ldata, Start moving the bot randomly and collect the laser data, sort the distance only by appending it to a new list. Take the first element for the new list and output the same on the command window. Your final compute function will look something like this</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>def compute(self):
+	print(&#39;SpecificWorker.compute...&#39;)
+	try:
+		ldata = []
+		d= []
+		a =[]
+		self.differentialrobot_proxy.setSpeedBase(0, 0.8)
+		time.sleep(1)
+		self.differentialrobot_proxy.setSpeedBase(50, 0)
+		time.sleep(1)
+		ldata = self.laser_proxy.getLaserData();
+		for i in range(0,len(ldata)):
+			dis = ldata[i]
+			x = dis.angle
+			y = dis.dist
+			d.append(y)
+			a.append(x)
+		d.sort()
+		a.sort()
+		distance = d[0]
+		angle = a[0]
+		print(distance)
+		print(angle)
+		time.sleep(3)
+	except Ice.Exception as e:
+		traceback.print_exc()
+		print(e)
+	return True
+</pre></div>
+</div>
+<p>Save it and run the component by executing</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python src/pydist.py --Ice.Config=etc/config
+</pre></div>
+</div>
+<p>The distance and angle of the obstacles are outputted on the command window. The entire component can be found <a class="reference external" href="https://github.com/rajathkumarmp/RoboComp-Python-Components/tree/master/LaserAngleCOmp">here</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

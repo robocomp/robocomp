@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDSL &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>CDSL</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/CDSL.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="cdsl">
+<h1>CDSL<a class="headerlink" href="#cdsl" title="Permalink to this headline"></a></h1>
+<p>CDSL is Component Description Specific Language and is used to create and maintain their component descriptions from a textual model. CDSL files contain the basic definition of the structure of the component and information about communication parameters such as proxies, the programming language of the component, interfaces and topics used by the components, the optional support of Qt graphical interfaces.</p>
+<section id="structure-of-a-cdsl">
+<h2>Structure of a CDSL<a class="headerlink" href="#structure-of-a-cdsl" title="Permalink to this headline"></a></h2>
+<p>CDSL permits comments in C and C++ style, starting with //</p>
+<p>Every CDSL file contains the following properties:</p>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="interfaces-and-data-types-defined-in-external-idsl-files">
+<h3>Interfaces and data types defined in external IDSL files.<a class="headerlink" href="#interfaces-and-data-types-defined-in-external-idsl-files" title="Permalink to this headline"></a></h3>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s2">&quot;import1.idsl&quot;</span><span class="p">;</span>
+<span class="kn">import</span> <span class="s2">&quot;import2.idsl&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="component-name">
+<h3>Component name.<a class="headerlink" href="#component-name" title="Permalink to this headline"></a></h3>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Component</span> <span class="n">myComponent</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="communication-model">
+<h3>Communication model:<a class="headerlink" href="#communication-model" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Required and provided interfaces.</p></li>
+<li><p>Topics that the component will publish or subscribe to.</p>
+<ul>
+<li><p>implements: Create RPC server.</p></li>
+<li><p>requires: Create a proxy to RPC server.</p></li>
+<li><p>publishes: Create publication proxy a specific topic.</p></li>
+<li><p>subscribesTo: Subscribe a specific topic.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Communications</span>
+        <span class="p">{</span>
+                <span class="n">implements</span> <span class="n">interfaceName</span><span class="p">;</span>
+                <span class="n">requires</span> <span class="n">otherName</span><span class="p">;</span>
+                <span class="n">subscribesTo</span> <span class="n">topicToSubscribeTo</span><span class="p">;</span>
+                <span class="n">publishes</span> <span class="n">topicToPublish</span><span class="p">;</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="programming-language-of-the-component">
+<h3>Programming language of the component.<a class="headerlink" href="#programming-language-of-the-component" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>CPP: Implement component using C++</p></li>
+<li><p>CPP11: Implement component using C++ 11 to allow use of <a class="reference external" href="https://doc.zeroc.com/ice/3.7/language-mappings/c++11-mapping">new Ice implementation.</a></p></li>
+<li><p>Python: Implement component using python 3.x.</p></li>
+</ul>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">language</span> <span class="n">Cpp</span><span class="o">//</span><span class="n">Cpp11</span><span class="o">//</span><span class="n">Python</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="graphical-interface-support-optional">
+<h3>Graphical interface support. (Optional)<a class="headerlink" href="#graphical-interface-support-optional" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qwidget.html">QWidget</a></p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qdialog.html">QDialog</a></p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qmainwindow.html">QMainWindow</a></p></li>
+</ul>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gui</span> <span class="n">Qt</span><span class="p">(</span><span class="n">QWidget</span><span class="o">//</span><span class="n">QDialog</span><span class="o">//</span><span class="n">QMainWindow</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+<section id="dependences-with-external-classes-and-libraries-optional">
+<h3>Dependences with external classes and libraries. (Optional)<a class="headerlink" href="#dependences-with-external-classes-and-libraries-optional" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>agmagent: Include Cortex-Agent communication patterns.</p></li>
+<li><p>InnerModelViewer: Include <a class="reference external" href="https://github.com/robocomp/robocomp/tree/stable/libs/innermodel">InnerModelViewer</a> resources.</p></li>
+<li><p>dsr: Include <a class="reference external" href="https://github.com/robocomp/robocomp/tree/development/libs/dsr">dsr</a> resources.</p></li>
+</ul>
+</section>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="n">dsr</span><span class="p">,</span> <span class="n">agmagent</span><span class="p">,</span> <span class="n">InnerModelViewer</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2><a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robocomp Workspace Model &mdash; RoboComp 2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoboComp
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoboComp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Robocomp Workspace Model</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/workspaceModel.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="robocomp-workspace-model">
+<h1>Robocomp Workspace Model<a class="headerlink" href="#robocomp-workspace-model" title="Permalink to this headline"></a></h1>
+<p>The Robocomp workspace is used by people who are developing components rather than the framework itself.</p>
+<p>The main advantage of having a workspace is that it will make the workflow a lot more organized and easier to work with. It basically tidies up the development process.</p>
+<p>For example, for building or running a component you have to go to its directory, create a build directory and then use cmake. Using workspace and build tools you could achieve the same in a single command.</p>
+<p><strong>The recommended layout for development is as follows:</strong></p>
+<p><img alt=" Robocomp workspace model" src="_images/workspace_model.png" /></p>
+<section id="elements-of-a-workspace">
+<h2>Elements of a Workspace<a class="headerlink" href="#elements-of-a-workspace" title="Permalink to this headline"></a></h2>
+<section id="workspace">
+<h3>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is the folder inside which you are going to be actively developing components. Keeping things in a folder with connected development helps keep development models separated. In other words, a workspace can be thought of as a group different components.</p>
+<p>For example, Robocomp has some default components, if you create new components, Robocomp’s components can be in a workspace while your components are in another.</p>
+<ul class="simple">
+<li><p>The config file in ~/.config/RoboComp/rc_worksapce.config maintains a list of all the registered workspaces.</p></li>
+</ul>
+</section>
+<section id="source-space">
+<h3>Source space<a class="headerlink" href="#source-space" title="Permalink to this headline"></a></h3>
+<p>The source space (a folder that is inside <code class="docutils literal notranslate"><span class="pre">workspace</span></code>) contains the source code of all the components in the workspace. The source space is the folder where build tools will look for components.</p>
+<p>This folder is easily identified, as it is where the <code class="docutils literal notranslate"><span class="pre">toplevel.cmake</span></code> is linked to the Robocomp installed folder, and has the name <code class="docutils literal notranslate"><span class="pre">src</span></code>.</p>
+<ul class="simple">
+<li><p>Each component should be in a direct subdirectory.</p></li>
+<li><p>If the directory contains a file named <code class="docutils literal notranslate"><span class="pre">IGNORE_COMP</span></code> the component will be ignored while building the workspace.</p></li>
+</ul>
+</section>
+<section id="build-space">
+<h3>Build Space<a class="headerlink" href="#build-space" title="Permalink to this headline"></a></h3>
+<p>The build space is the folder in which <code class="docutils literal notranslate"><span class="pre">cmake</span></code> is invoked and generates artifacts such as the <code class="docutils literal notranslate"><span class="pre">CMakeCache</span></code>.</p>
+<ul class="simple">
+<li><p>This need not be a direct subdirectory of workspace, it can be anywhere. This is basically a build directory of all the components.</p></li>
+</ul>
+</section>
+<section id="development-space">
+<h3>Development Space<a class="headerlink" href="#development-space" title="Permalink to this headline"></a></h3>
+<p>The development space is where the build system generates the binaries and config files, which are executable before installation.</p>
+<p>It will have a separate directory for each component. Each component directory contains a folder <code class="docutils literal notranslate"><span class="pre">bin</span></code> which has the build binaries and a <code class="docutils literal notranslate"><span class="pre">etc</span></code> directory which contain config files. This should be a direct subdirectory of the workspace.</p>
+<ul class="simple">
+<li><p>Currently, the devel space is merged with the source space, as you can see in the layout graph.</p></li>
+</ul>
+</section>
+<section id="install-space">
+<h3>Install Space<a class="headerlink" href="#install-space" title="Permalink to this headline"></a></h3>
+<p>This is the default directory in which components in the current workspace will get installed, along with generated docs. This directory contains a file named <em>.rc_install</em> which marks this as an install space.</p>
+<ul class="simple">
+<li><p>Please note that the robocomp install path <code class="docutils literal notranslate"><span class="pre">/opt/robocomp</span></code> is also an install space by default.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, RoboLab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
