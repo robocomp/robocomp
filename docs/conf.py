@@ -16,9 +16,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- General configuration ------------------------------------------------
@@ -42,12 +44,12 @@ source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = '../README.md'
+master_doc = 'index'
 
 # General information about the project.
 project = u'RoboComp'
-copyright = u'2017, RobLab'
-author = u'RobLab'
+copyright = u'2017, RoboLab'
+author = u'RoboLab'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -127,7 +129,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'RoboComp.tex', u'RoboComp Documentation',
-     u'RobLab', 'manual'),
+     u'RoboLab', 'manual'),
 ]
 
 

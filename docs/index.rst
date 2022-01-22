@@ -3,35 +3,37 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to RoboComp's documentation!
-====================================
+RoboComp — open-source robotics framework
+=========================================
 
-The main documentation for the site is organized into a couple sections:
+:ref:`setup`
+   Project dependencies and workspace setup.
+
+:ref:`resources`
+   Useful links for working on RoboComp projects.
+
+:ref:`components`
+   Details about RoboComp's component architecture.
+
 
 * :ref:`user-docs`
 * :ref:`contributing`
 
-.. _user-docs:
+.. _setup:
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Documentation
-   
-   ../doc/IDSL
-   ../doc/RobocomoRosChatter
-   ../doc/buildTools
-   ../doc/components
-   ../doc/robocomp-robolab-components
-   ../doc/robocompdsl
-   ../doc/workspaceModel  
+   :caption: Setup
 
-.. _contributing:
+.. _resources:
 
 .. toctree::
    :maxdepth: 2
-   :caption: About Read the Docs
+   :caption: Resources
 
-   ../doc/using_github
-   ../doc/contribute/contribute
-   ../doc/packaging/*
 
+.. _Components:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Components
