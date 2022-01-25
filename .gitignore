@@ -101,4 +101,4 @@ tools/rcinnerModelSimulator/src/InnerModelManager.h
 
 tools/rcinnerModelSimulator/src/InnerModelManager.cpp
 
-/docs/_build/
+/doc/_build/
