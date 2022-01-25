@@ -49,6 +49,11 @@ source_suffix = ['.rst', '.md']
 # The master toctree document.
 master_doc = 'index'
 
+# MyST extensions
+myst_enable_extensions = [
+    'deflist',
+]
+
 # General information about the project.
 project = u'RoboComp'
 copyright = u'2017, RoboLab'
