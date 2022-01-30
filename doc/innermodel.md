@@ -35,7 +35,7 @@ The InnerModel tree can be expressed as an XML file. This file can be written to
 
 Let's start with a simple XML file describing a 5000mm x 5000mm square, a few boxes on it and a differential drive robot endowed with a laser and an RGBD camera: (the file can be found in ~/robocomp/files/innermodel/simplesimple.xml)
 
-~~~~
+```xml
 <innerModel>
 	<transform id="world">
 		<transform id="floor" rx="3,14>
@@ -67,7 +67,8 @@ Let's start with a simple XML file describing a 5000mm x 5000mm square, a few bo
 			</differentialrobot>
 	</transform>
 </innerModel>
-~~~~
+```
+
 The whole world is embraced inside the _innermodel_ tag. Inside it we find the following tags:
 - 1 transform with id "world"
   - 1 transform with id "floor"
@@ -85,9 +86,11 @@ The whole world is embraced inside the _innermodel_ tag. Inside it we find the f
 Each of these elements is read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y-axis pointing up, Z-axis pointing front and X-axis pointing right.
 
 InnerModel's API provides methods to:
+
 - access the nodes and their specific APIs
 - add and remove new nodes
 - compute a kinematic transformation between any two nodes in the tree. This transformation is read as " given a 3D point in some A node reference system, compute how it is seen from the reference system of node B". This is, by large, the most used method of the InnerModel API.
+
 
 Perceptive components typically extend or update InnerModel after processing data coming from sensors.
 
