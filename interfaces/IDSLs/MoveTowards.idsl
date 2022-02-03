@@ -1,0 +1,8 @@
+module RoboCompMoveTowards
+{
+	interface MoveTowards
+    {
+		void move(float x, float y, float alpha);
+	};
+};
+
