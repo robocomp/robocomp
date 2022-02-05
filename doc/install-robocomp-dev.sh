@@ -7,7 +7,7 @@ sudo aptitude update #&& sudo aptitude upgrade
 
 
 
-git clone https://github.com/robocomp/robocomp.git
+git clone --recursive https://github.com/robocomp/robocomp.git
 cd ~/robocomp
 git annex get .
 

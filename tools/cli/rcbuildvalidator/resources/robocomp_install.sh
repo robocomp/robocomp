@@ -16,7 +16,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends p
 
 sudo pip3 rich install networkx pyside2 argcomplete termcolor cogapp
 
-git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
+git clone -b $ROBOCOMP_BRANCH --recursive https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
 echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc

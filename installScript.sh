@@ -62,7 +62,7 @@ echo -e $cyan"Installing Source from Github.
 "
 echo -e $white
 
-git clone https://github.com/robocomp/robocomp.git
+git clone --recursive https://github.com/robocomp/robocomp.git
 cd ~/robocomp
 
 echo -e $cyan"Preparing folder and synchronizing files."
