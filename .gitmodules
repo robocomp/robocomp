@@ -4,3 +4,7 @@
 [submodule "tools/rcmanager/widgets/QNetworkxGraph"]
 	path = tools/rcmanager/widgets/QNetworkxGraph
 	url = https://github.com/orensbruli/QNetworkxGraph.git
+[submodule "libs/dsr"]
+	path = libs/dsr
+	url = https://github.com/robocomp/cortex
+	branch = development
