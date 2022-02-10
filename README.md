@@ -113,7 +113,7 @@ If you have a joystick around, connect it to the USB port and:
     make
     cd bin
     sudo addgroup your-user dialout   // If you find permissions issues in Ubuntu
-    check the config file in the component's etc folder and male sure that the port matches the DifferentialRobot endpoint in     RCIS.
+    check the config file in the component's etc folder and make sure that the port matches the DifferentialRobot endpoint in     RCIS.
     bin/joystick etc/config
     
 Your joystick should be now running. It will make the robot advance and turn at your will. If it does not work, 

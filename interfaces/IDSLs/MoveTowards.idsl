@@ -1,0 +1,13 @@
+module RoboCompMoveTowards
+{
+	struct Command
+	{
+		float adv;
+		float rot;
+	};
+	interface MoveTowards
+    {
+		Command move(float x, float y, float alpha);
+	};
+};
+

@@ -20,6 +20,7 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node_laser_widget.h>
 #include <dsr/gui/viewers/graph_viewer/graph_node_widget.h>
 #include <dsr/gui/viewers/graph_viewer/graph_node_rgbd_widget.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node_person_widget.h>
 
 
 GraphNode::GraphNode(const std::shared_ptr<DSR::GraphViewer>&
@@ -51,7 +52,7 @@ void GraphNode::setTag(const std::string &tag_)
 void GraphNode::setType(const std::string &type_)
 {
     type = type_;
-    if(type == "laser" or type == "rgbd")
+    if(type == "laser" or type == "rgbd" or type == "person")
     {
         contextMenu = new QMenu();
         QAction *table_action = new QAction("View table");
@@ -261,6 +262,8 @@ void GraphNode::show_node_widget(const std::string &show_type)
         node_widget = std::make_unique<GraphNodeLaserWidget>(graph, id_in_graph);
     else if(show_type=="rgbd")
         node_widget = std::make_unique<GraphNodeRGBDWidget>(graph, id_in_graph);
+    else if(show_type=="person")
+        node_widget = std::make_unique<GraphNodePersonWidget>(graph, id_in_graph);
     else
         node_widget = std::make_unique<GraphNodeWidget>(graph, id_in_graph);
 

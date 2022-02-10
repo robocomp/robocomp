@@ -273,10 +273,15 @@ QRectF GraphEdge::boundingRect() const
     qreal penWidth = 1;
     qreal extra = (penWidth + arrowSize) / 2.0;
 
-    return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
+    if(source!=dest)
+        return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
             line().p2().y() - line().p1().y()))//.united(source->boundingRect()).united(dest->boundingRect())
             .normalized()
             .adjusted(-extra, -extra, extra, extra);
+    else
+    {
+        return QRectF(this->line().p1().x()-GraphNode::DEFAULT_RADIUS*2, this->line().p1().y(), GraphNode::DEFAULT_RADIUS*2, GraphNode::DEFAULT_RADIUS*2);
+    }
 //    qDebug()<<QGraphicsLineItem::boundingRect();
 //    return QGraphicsLineItem::boundingRect();
 //    if (this->graphic_debug) { return QRectF(-400, -400, 800, 800); }
@@ -299,6 +304,8 @@ void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
     draw_arrows(painter);
     draw_arc(painter);
     painter->restore();
+    if(source==dest)
+        this->setZValue(-10);
 
     //    if (!source || !dest)
 //        return;
@@ -431,32 +438,40 @@ void GraphEdge::draw_arrows(QPainter* painter) const
 
 void GraphEdge::draw_arc(QPainter* painter) const
 {
-    auto m_controlPos = (this->line().p1() + this->line().p2()) / 2;
-    QPointF t1 = m_controlPos;
-    float posFactor = qAbs(m_bendFactor);
+    if(this->source != this->dest) {
+        auto m_controlPos = (this->line().p1() + this->line().p2()) / 2;
+        QPointF t1 = m_controlPos;
+        float posFactor = qAbs(m_bendFactor);
 
-    bool bendDirection = true;
-    if (m_bendFactor < 0)
-        bendDirection = !bendDirection;
+        bool bendDirection = true;
+        if (m_bendFactor < 0)
+            bendDirection = !bendDirection;
 
-    QLineF f1(t1, this->line().p2());
-    f1.setAngle(bendDirection ? f1.angle() + 90 : f1.angle() - 90);
-    f1.setLength(f1.length() * 0.2 * posFactor);
+        QLineF f1(t1, this->line().p2());
+        f1.setAngle(bendDirection ? f1.angle() + 90 : f1.angle() - 90);
+        f1.setLength(f1.length() * 0.2 * posFactor);
 
-    m_controlPos = f1.p2();
-    auto m_controlPoint = m_controlPos - (t1 - m_controlPos) * 0.33;
+        m_controlPos = f1.p2();
+        auto m_controlPoint = m_controlPos - (t1 - m_controlPos) * 0.33;
 
-    auto path = QPainterPath();
-    path.moveTo(this->line().p1());
-    path.cubicTo(m_controlPoint, m_controlPoint, this->line().p2());
-    auto r = tag->boundingRect();
-    int w = r.width();
-    int h = r.height();
-    tag->setDefaultTextColor(this->color);
-    tag->setPos(m_controlPoint.x() - w / 2, m_controlPoint.y() - h / 2);
-    painter->setBrush(Qt::NoBrush);
-    painter->setPen(this->color);
-    painter->drawPath(path);
+        auto path = QPainterPath();
+        path.moveTo(this->line().p1());
+        path.cubicTo(m_controlPoint, m_controlPoint, this->line().p2());
+        auto r = tag->boundingRect();
+        int w = r.width();
+        int h = r.height();
+        tag->setDefaultTextColor(this->color);
+        tag->setPos(m_controlPoint.x() - w / 2, m_controlPoint.y() - h / 2);
+        painter->setBrush(Qt::NoBrush);
+        painter->setPen(this->color);
+        painter->drawPath(path);
+    }
+    else
+    {
+        painter->setBrush(Qt::NoBrush);
+        painter->drawEllipse(this->line().p1().x()-GraphNode::DEFAULT_RADIUS*2, this->line().p1().y(), GraphNode::DEFAULT_RADIUS*2, GraphNode::DEFAULT_RADIUS*2);
+        qDebug()<<"//////////////////////";
+    }
 }
 
 //void GraphEdge::drawArrow(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, bool first,
