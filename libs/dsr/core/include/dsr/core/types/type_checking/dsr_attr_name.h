@@ -207,7 +207,7 @@ REGISTER_TYPE(robot_ref_side_speed, float, true)
 REGISTER_TYPE(robot_target_x, float, true)
 REGISTER_TYPE(robot_target_y, float, true)
 REGISTER_TYPE(robot_target_angle, float, true)
-
+REGISTER_TYPE(robot_occupied, bool, false)
 /*
  * Arm
  * */
@@ -247,7 +247,12 @@ REGISTER_TYPE(path_is_cyclic, bool, false)
 /*
  * Battery
  * */
-REGISTER_TYPE(battery_load, int, false);
+REGISTER_TYPE(battery_load, float, false);
+REGISTER_TYPE(battery_V, float, false);
+REGISTER_TYPE(battery_A, float, false);
+REGISTER_TYPE(battery_P, float, false);
+REGISTER_TYPE(battery_CE, float, false);
+REGISTER_TYPE(battery_TTG, float, false);
 
 /*
  * Wifi signal
@@ -322,6 +327,11 @@ REGISTER_TYPE(gps_time_stamp, float, false)
 REGISTER_TYPE(gps_sensor_tick, float, false)
 REGISTER_TYPE(gps_map_x, float, false)
 REGISTER_TYPE(gps_map_y, float, false)
+REGISTER_TYPE(gps_azimut, float, false)
+REGISTER_TYPE(gps_rot, float, false)
+REGISTER_TYPE(gps_UTMx, float, false)
+REGISTER_TYPE(gps_UTMy, float, false)
+
 /*
  * IMU
  * */
@@ -358,6 +368,22 @@ REGISTER_TYPE(wayp_y, int, false)
 REGISTER_TYPE(wayp_time_stamp, float, false)
 REGISTER_TYPE(wayp_sensor_tick, float, false)
 
+/*
+* TASK
+* */
+REGISTER_TYPE(task_id, int, false)
+REGISTER_TYPE(task_assigned, bool, false)
+REGISTER_TYPE(task_car, int, false)
+REGISTER_TYPE(task_completed, bool, true)
+REGISTER_TYPE(task_creation, uint64_t, false)
+REGISTER_TYPE(task_movement, bool, false)
+REGISTER_TYPE(task_pickup_values, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(task_destination_values, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(task_time_stamp, float, false)
+REGISTER_TYPE(task_sensor_tick, float, false)
+
+
+
 
 /* TESTS
  * */
@@ -377,6 +403,10 @@ REGISTER_TYPE(test_vec3_type, std::reference_wrapper<const vec3> , false)
 REGISTER_TYPE(test_vec4_type, std::reference_wrapper<const vec4> , false)
 REGISTER_TYPE(test_vec6_type, std::reference_wrapper<const vec6> , false)
 
-
+/*
+*COMPRESSED
+*/
+REGISTER_TYPE(compresssed_id, int, false)
+REGISTER_TYPE(compressed_data, std::reference_wrapper<const std::vector<uchar>>, false)
 
 #endif //DSR_ATTR_NAME_H
