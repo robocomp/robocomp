@@ -53,13 +53,13 @@ class AbstractGraphicViewer : public QGraphicsView
             scene.addLine(y_axis, QPen(QColor("Green"), 30));
             this->adjustSize();
         }
-        QGraphicsPolygonItem* add_robot(float robot_length)
+        QGraphicsPolygonItem* add_robot(float robot_length, const QString &color)
         {
             float s = robot_length / 2.f;
             QPolygonF poly2;
             poly2 << QPoint(-s, -s) << QPoint(-s, s) << QPoint(-s / 3, s * 1.6) << QPoint(s / 3, s * 1.6) << QPoint(s, s) << QPoint(s, -s);
-            QBrush brush(QColor("DarkRed"), Qt::SolidPattern);
-            robot_polygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), brush);
+            QBrush brush(QColor(color), Qt::SolidPattern);
+            robot_polygon = scene.addPolygon(poly2, QPen(QColor(color)), brush);
             robot_polygon->setZValue(5);
             robot_polygon->setPos(0, 0);
             return robot_polygon;
