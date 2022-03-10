@@ -268,8 +268,8 @@ private:
         case 8:
         {
             QDoubleSpinBox *spin = new QDoubleSpinBox();
-            spin->setMinimum(-10000);
-            spin->setMaximum(10000);
+            spin->setMinimum(-1000000);
+            spin->setMaximum(1000000);
             spin->setValue(v.dob());
             setCellWidget(rc, 1, spin);
             widget_map[k] = spin;
@@ -306,8 +306,8 @@ private:
             widget->setLayout(layout);
             for (float i : v.vec2()) {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(i);
                 layout->addWidget(spin);
             }
@@ -321,8 +321,8 @@ private:
             widget->setLayout(layout);
             for (float i : v.vec3()) {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(i);
                 layout->addWidget(spin);
             }
@@ -336,8 +336,8 @@ private:
             widget->setLayout(layout);
             for (float i : v.vec4()) {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(i);
                 layout->addWidget(spin);
             }
@@ -351,8 +351,8 @@ private:
             widget->setLayout(layout);
             for (float i : v.vec6()) {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(i);
                 layout->addWidget(spin);
             }

@@ -10,6 +10,9 @@ module RoboCompBatteryStatus
     BatteryStates state;
     float voltage;
     float current;
+    float time_to_go;
+    float power;
+    float consumption_per_hour;
   };
 
   interface BatteryStatus

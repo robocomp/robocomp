@@ -223,8 +223,8 @@ class GraphNodeWidget : public  QTableWidget
             }
             case 2: {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
                 setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
@@ -242,8 +242,8 @@ class GraphNodeWidget : public  QTableWidget
                 if (!v.float_vec().empty() and v.float_vec().size() <= 10) {
                     for (float i : v.float_vec()) {
                         QDoubleSpinBox *spin = new QDoubleSpinBox();
-                        spin->setMinimum(-10000);
-                        spin->setMaximum(10000);
+                        spin->setMinimum(-1000000);
+                        spin->setMaximum(1000000);
                         spin->setValue(i);
                         layout->addWidget(spin);
                     }
@@ -314,8 +314,8 @@ class GraphNodeWidget : public  QTableWidget
             case 8:
             {
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(-1000000);
+                spin->setMaximum(1000000);
                 spin->setValue(v.dob());
                 setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
@@ -352,8 +352,8 @@ class GraphNodeWidget : public  QTableWidget
                 widget->setLayout(layout);
                 for (float i : v.vec2()) {
                     QDoubleSpinBox *spin = new QDoubleSpinBox();
-                    spin->setMinimum(-10000);
-                    spin->setMaximum(10000);
+                    spin->setMinimum(-1000000);
+                    spin->setMaximum(1000000);
                     spin->setValue(i);
                     layout->addWidget(spin);
                 }
@@ -367,8 +367,8 @@ class GraphNodeWidget : public  QTableWidget
                 widget->setLayout(layout);
                 for (float i : v.vec3()) {
                     QDoubleSpinBox *spin = new QDoubleSpinBox();
-                    spin->setMinimum(-10000);
-                    spin->setMaximum(10000);
+                    spin->setMinimum(-1000000);
+                    spin->setMaximum(1000000);
                     spin->setValue(i);
                     layout->addWidget(spin);
                 }
@@ -382,8 +382,8 @@ class GraphNodeWidget : public  QTableWidget
                 widget->setLayout(layout);
                 for (float i : v.vec4()) {
                     QDoubleSpinBox *spin = new QDoubleSpinBox();
-                    spin->setMinimum(-10000);
-                    spin->setMaximum(10000);
+                    spin->setMinimum(-1000000);
+                    spin->setMaximum(1000000);
                     spin->setValue(i);
                     layout->addWidget(spin);
                 }
@@ -397,8 +397,8 @@ class GraphNodeWidget : public  QTableWidget
                 widget->setLayout(layout);
                 for (float i : v.vec6()) {
                     QDoubleSpinBox *spin = new QDoubleSpinBox();
-                    spin->setMinimum(-10000);
-                    spin->setMaximum(10000);
+                    spin->setMinimum(-1000000);
+                    spin->setMaximum(1000000);
                     spin->setValue(i);
                     layout->addWidget(spin);
                 }

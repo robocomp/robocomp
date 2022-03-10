@@ -23,8 +23,9 @@ class AbstractGraphicViewer : public QGraphicsView
     private:
         qreal m_scaleX, m_scaleY;
         QGraphicsPolygonItem *robot_polygon;
+        QGraphicsEllipseItem *laser_in_robot_sr;
 
-    public:
+public:
         AbstractGraphicViewer(QWidget *parent, QRectF dim_)
         {
             QVBoxLayout *vlayout = new QVBoxLayout(parent);
@@ -53,16 +54,21 @@ class AbstractGraphicViewer : public QGraphicsView
             scene.addLine(y_axis, QPen(QColor("Green"), 30));
             this->adjustSize();
         }
-        QGraphicsPolygonItem* add_robot(float robot_length, const QString &color)
+        std::tuple<QGraphicsPolygonItem*, QGraphicsEllipseItem*> add_robot(float robot_width, float robot_length, float laser_x_offset = 0, float laser_y_offset= 100)
         {
-            float s = robot_length / 2.f;
+            float sl = robot_length / 2.f;
+            float sw = robot_width / 2.f;
             QPolygonF poly2;
-            poly2 << QPoint(-s, -s) << QPoint(-s, s) << QPoint(-s / 3, s * 1.6) << QPoint(s / 3, s * 1.6) << QPoint(s, s) << QPoint(s, -s);
-            QBrush brush(QColor(color), Qt::SolidPattern);
-            robot_polygon = scene.addPolygon(poly2, QPen(QColor(color)), brush);
+            poly2 << QPoint(-sw, -sl) << QPoint(-sw, sl) << QPoint(sw, sl) << QPoint(sw, -sl);
+            QBrush brush(QColor("DarkRed"), Qt::SolidPattern);
+            robot_polygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), brush);
+            laser_in_robot_sr = new QGraphicsEllipseItem(-30, -30, 60, 60, robot_polygon);
+            laser_in_robot_sr->setBrush(QBrush(QColor("White")));
+            scene.addItem(laser_in_robot_sr);
+            laser_in_robot_sr->setPos(laser_x_offset, laser_y_offset);
             robot_polygon->setZValue(5);
             robot_polygon->setPos(0, 0);
-            return robot_polygon;
+            return std::make_tuple(robot_polygon, laser_in_robot_sr);
         }
         QGraphicsScene scene;
 

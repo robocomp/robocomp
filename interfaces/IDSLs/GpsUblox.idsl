@@ -9,6 +9,8 @@ module RoboCompGpsUblox
 	float UTMy;
 	float mapx;
 	float mapy;
+	float azimut;
+	float rot;
     };
   interface GpsUblox
   {
