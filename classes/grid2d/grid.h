@@ -1,5 +1,4 @@
-/*
- * Copyright 2018 <copyright holder> <email>
+/* Copyright 2018 <copyright holder> <email>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,8 +10,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License.*/
 
 #ifndef GRID_H
 #define GRID_H
@@ -117,7 +115,11 @@ public:
                     QGraphicsScene *scene,
                     bool read_from_file = true,
                     const std::string &file_name = std::string(),
-                    std::uint16_t num_threads = 10);
+                    QPointF grid_center = QPointF(0,0),
+                    float grid_angle = 0.f);
+    void clear();
+    std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
+    std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
 
     std::tuple<bool, T &> getCell(long int x, long int z);
     std::tuple<bool, T &> getCell(const Key &k);
@@ -136,12 +138,10 @@ public:
     size_t size() const
     { return fmap.size(); };
     void insert(const Key &key, const T &value);
-    void clear();
     void saveToFile(const std::string &fich);
     void readFromFile(const std::string &fich);
     std::string saveToString() const;
     void readFromString(const std::string &cadena);
-    std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     Key pointToGrid(long int x, long int z) const;
     Key pointToGrid(const QPointF &p) const;
     void setFree(const Key &k);

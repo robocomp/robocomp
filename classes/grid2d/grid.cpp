@@ -2,6 +2,7 @@
 #include <cppitertools/zip.hpp>
 #include <cppitertools/range.hpp>
 #include <cppitertools/slice.hpp>
+#include <cppitertools/enumerate.hpp>
 #include <execution>
 
 auto operator<<(std::ostream &os, const Grid::Key &k) -> decltype(k.save(os), os)
@@ -31,19 +32,28 @@ void Grid::initialize(  QRectF dim_,
                         QGraphicsScene *scene_,
                         bool read_from_file,
                         const std::string &file_name,
-                        std::uint16_t num_threads)
+                        QPointF grid_center,
+                        float grid_angle)
 {
+    static QGraphicsRectItem *bounding_box = nullptr;
     dim = dim_;
     TILE_SIZE = tile_size;
     scene = scene_;
     qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
-    qInfo() << __FUNCTION__ <<  "World dimension: " << dim.left() << dim.right() << dim.bottom() << dim.top() << TILE_SIZE;
+    qInfo() << __FUNCTION__ <<  "World dimension: ";
+    qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
+
+    for (const auto &[key, value]: fmap)
+        scene->removeItem(value.tile);
+    if(bounding_box != nullptr) scene->removeItem(bounding_box);
     fmap.clear();
 
 //    if(read_from_file and not file_name.empty())
 //        readFromFile(file_name);
     std::uint32_t id=0;
+    Eigen::Matrix2f matrix;
+    matrix << cos(grid_angle) , -sin(grid_angle) , sin(grid_angle) , cos(grid_angle);
     for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
         for (float j = dim.top(); j < dim.bottom(); j += TILE_SIZE)
         {
@@ -56,19 +66,18 @@ void Grid::initialize(  QRectF dim_,
             my_color.setAlpha(40);
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
             tile->setZValue(1);
-            tile->setPos(i, j);
+            auto res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
+            tile->setPos(res.x(), res.y());
+            tile->setRotation(qRadiansToDegrees(grid_angle));
+            //tile->setPos(i, j);
             aux.tile = tile;
             insert(Key(i, j), aux);
             //qInfo() << __FUNCTION__ << i << j << aux.id << aux.free << aux.tile->pos();
         }
-
-//
-//        auto duration = Myclock::now() - start_time;
-//        std::cout << __FUNCTION__ << " " << count << " elements inserted.  It took " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "secs" << std::endl;
-//
-//        if(not file_name.empty())
-//            saveToFile(file_name);
-
+    // draw bounding box
+    bounding_box = scene->addRect(dim, QPen(QColor("Grey"), 40));
+    bounding_box->setPos(grid_center);
+    bounding_box->setRotation(qRadiansToDegrees(grid_angle));
 }
 void Grid::insert(const Key &key, const T &value)
 {
@@ -94,17 +103,18 @@ std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
           return std::forward_as_tuple(false, T());
       }
 }
-typename Grid::Key Grid::pointToGrid(long int x, long int z) const
+Grid::Key Grid::pointToGrid(long int x, long int z) const
 {
+    // bottom is top since Y axis is inverted
     int kx = rint((x - dim.left()) / TILE_SIZE);
-    int kz = rint((z - dim.bottom()) / TILE_SIZE);
-    return Key(dim.left() + kx * TILE_SIZE, dim.bottom() + kz * TILE_SIZE);
+    int kz = rint((z - dim.top()) / TILE_SIZE);
+    return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
 };
 Grid::Key Grid::pointToGrid(const QPointF &p) const
 {
     int kx = rint((p.x() - dim.left()) / TILE_SIZE);
-    int kz = rint((p.y() - dim.bottom()) / TILE_SIZE);
-    return Key(dim.left() + kx * TILE_SIZE, dim.bottom() + kz * TILE_SIZE);
+    int kz = rint((p.y() - dim.top()) / TILE_SIZE);
+    return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
 };
 ////////////////////////////////////////////////////////////////////////////////
 void Grid::saveToFile(const std::string &fich)
@@ -248,13 +258,16 @@ void Grid::add_miss(const Eigen::Vector2f &p)
         v.misses++;
         if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold)
         {
-            if(not v.free) this->flipped++;
+            if(not v.free)
+                this->flipped++;
             v.free = true;
             v.tile->setBrush(QBrush(QColor(params.free_color)));
         }
-        v.misses = std::clamp(v.misses, 0.f, 20.f);
+        v.misses = std::clamp(v.misses, 0.f, 15.f);
         this->updated++;
     }
+//    else
+//        qWarning() << __FUNCTION__ << "Cell not found" << "[" << p.x() << p.y() << "]";
 }
 void Grid::add_hit(const Eigen::Vector2f &p)
 {
@@ -265,11 +278,12 @@ void Grid::add_hit(const Eigen::Vector2f &p)
         //qInfo() << __FUNCTION__ << v.hits << (float)v.hits/(v.hits+v.misses);
         if((float)v.hits/(v.hits+v.misses) >= params.occupancy_threshold)
         {
-            if(v.free) this->flipped++;
+            if(v.free)
+                this->flipped++;
             v.free = false;
             v.tile->setBrush(QBrush(QColor(params.occupied_color)));
         }
-        v.hits = std::clamp(v.hits, 0.f, 20.f);
+        v.hits = std::clamp(v.hits, 0.f, 15.f);
         this->updated++;
     }
 }
@@ -404,7 +418,7 @@ std::tuple<bool, QVector2D> Grid::vectorToClosestObstacle(QPointF center)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &target_)
 {
-    qInfo() << __FUNCTION__  << " from nose pos: " << source_ << " to " << target_ ;
+    //qInfo() << __FUNCTION__  << " from nose pos: " << source_ << " to " << target_ ;
     Key source = pointToGrid(source_.x(), source_.y());
     Key target = pointToGrid(target_.x(), target_.y());
 
@@ -424,19 +438,17 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
         qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
         return std::list<QPointF>();
     }
-
     //source in a non-free cell (red cell)
     if(neighboors_8(source_).empty())
     {
-        qInfo() << __FUNCTION__ << "SE INICIA EL A* EN UN ROJO: " << source.x << ", " << source.z;
+        qInfo() << __FUNCTION__ << "Source on an occupied cell: " << source.x << ", " << source.z << "Returning empty path";
         std::optional<QPointF> new_source = closest_free(source_);
         source = pointToGrid(new_source->x(), new_source->y());
     }
-
     const auto &[success, val] = getCell(source);
     if(not success)
     {
-        qWarning() << "Could not find source position in Grid";
+        qWarning() << "Could not find source position in Grid. Returning empty path";
         return std::list<QPointF>();
     }
     set_all_costs(1.0);
@@ -494,6 +506,15 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     qInfo() << __FUNCTION__ << "Path from (" << source.x << "," << source.z << ") to (" <<  target_.x() << "," << target_.y() << ") not  found. Returning empty path";
     return std::list<QPointF>();
 };
+std::vector<Eigen::Vector2f> Grid::compute_path(const QPointF &source_, const QPointF &target_)
+{
+    auto lpath = computePath(source_, target_);
+    std::vector<Eigen::Vector2f> path(lpath.size());
+    for(auto &&[i, p] : lpath | iter::enumerate)
+        path[i] = Eigen::Vector2f(p.x(), p.y());
+    return  path;
+}
+
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs, bool all)
 {
     std::vector<std::pair<Key, T>> neigh;
@@ -623,6 +644,8 @@ void Grid::draw()
 }
 void Grid::clear()
 {
+    for (const auto &[key, value]: fmap)
+        scene->removeItem(value.tile);
     fmap.clear();
 }
 
