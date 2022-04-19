@@ -11,7 +11,7 @@ CameraAPI::CameraAPI(DSR::DSRGraph *G_, const DSR::Node &camera)
     if( auto o_focal_x = G->get_attrib_by_name<cam_rgb_focalx_att>(camera); o_focal_x.has_value())
         focal_x = o_focal_x.value();
     else qFatal("CameraAPI constructor: aborting since no focal_x attr found in camera");
-    if( auto o_focal_y = G->get_attrib_by_name<cam_rgb_focalx_att>(camera); o_focal_y.has_value())
+    if( auto o_focal_y = G->get_attrib_by_name<cam_rgb_focaly_att>(camera); o_focal_y.has_value())
         focal_y = o_focal_y.value();
     else qFatal("CameraAPI constructor: aborting since no focal_y attr found in camera");
     if( auto o_width = G->get_attrib_by_name<cam_rgb_width_att>(camera); o_width.has_value())

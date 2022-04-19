@@ -54,14 +54,17 @@ public:
             scene.addLine(y_axis, QPen(QColor("Green"), 30));
             this->adjustSize();
         }
-        std::tuple<QGraphicsPolygonItem*, QGraphicsEllipseItem*> add_robot(float robot_width, float robot_length, float laser_x_offset = 0, float laser_y_offset= 100)
+        std::tuple<QGraphicsPolygonItem*, QGraphicsEllipseItem*> add_robot(float robot_width, float robot_length,
+                                                                           float laser_x_offset = 0,
+                                                                           float laser_y_offset= 100,
+                                                                           QColor color= QColor("Blue"))
         {
             float sl = robot_length / 2.f;
             float sw = robot_width / 2.f;
             QPolygonF poly2;
             poly2 << QPoint(-sw, -sl) << QPoint(-sw, sl) << QPoint(sw, sl) << QPoint(sw, -sl);
-            QBrush brush(QColor("DarkRed"), Qt::SolidPattern);
-            robot_polygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), brush);
+            QBrush brush(color, Qt::SolidPattern);
+            robot_polygon = scene.addPolygon(poly2, QPen(color), brush);
             laser_in_robot_sr = new QGraphicsEllipseItem(-30, -30, 60, 60, robot_polygon);
             laser_in_robot_sr->setBrush(QBrush(QColor("White")));
             scene.addItem(laser_in_robot_sr);

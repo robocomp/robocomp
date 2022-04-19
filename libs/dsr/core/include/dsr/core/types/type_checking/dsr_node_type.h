@@ -107,6 +107,8 @@ REGISTER_NODE_TYPE(fork)
 REGISTER_NODE_TYPE(knife)
 REGISTER_NODE_TYPE(bowl)
 REGISTER_NODE_TYPE(diningtable)
+REGISTER_NODE_TYPE(container)
+
 
 //melex-rodao types
 REGISTER_NODE_TYPE(road)

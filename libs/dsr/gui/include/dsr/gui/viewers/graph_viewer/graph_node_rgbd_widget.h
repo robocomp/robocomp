@@ -79,11 +79,6 @@ class GraphNodeRGBDWidget : public QWidget
               Node node = n.value();
               //auto t = get_unix_timestamp();
               //std::cout << "[DRAW IMG] " << timestamp << ", " << t << ": " << static_cast<double>(t - timestamp) / 1000000 << std::endl;
-              if (cam == nullptr) {
-                  if (graph->get_attrib_by_name<cam_rgb_focalx_att>(node).has_value())
-                      cam = graph->get_camera_api(node);
-                  else return;
-              }
               //rgb
               if (rgb and update_rgb) {
                   if (show_rgb->isChecked()) {
@@ -104,14 +99,46 @@ class GraphNodeRGBDWidget : public QWidget
               //depth
               if (d and update_d) {
                   if (show_depth->isChecked()) {
-                      const auto depth_width = graph->get_attrib_by_name<cam_depth_width_att>(n.value());
-                      const auto depth_height = graph->get_attrib_by_name<cam_depth_height_att>(n.value());
-                      const std::optional<std::vector<std::uint8_t>> gray_scale = cam->get_depth_as_gray_image();
-                      if (gray_scale.has_value() and depth_width.has_value() and depth_height.has_value()) {
-                          depth_label.setPixmap(QPixmap::fromImage(
-                                  QImage(&gray_scale.value()[0], depth_width.value(), depth_height.value(),
-                                         QImage::Format_Indexed8)));
-                          last_update_d = now;
+                      if (cam == nullptr) {
+                          std::vector<std::string_view> att_names;
+                          std::for_each(node.attrs().begin(), node.attrs().end(),
+                                        [&](auto &p){ att_names.emplace_back(p.first); });
+
+                          std::vector<std::string_view> required_atts = {
+                                  cam_rgb_focalx_att::attr_name,
+                                  cam_rgb_focaly_att::attr_name,
+                                  cam_rgb_width_att::attr_name,
+                                  cam_rgb_height_att::attr_name,
+                                  cam_rgb_depth_att::attr_name,
+                                  cam_rgb_cameraID_att::attr_name
+                          };
+
+                          std::sort(att_names.begin(), att_names.end());
+                          std::sort(required_atts.begin(), required_atts.end());
+
+                          std::vector<std::string_view> diff;
+                          std::set_difference(required_atts.begin(), required_atts.end(),
+                                              att_names.begin(), att_names.end(),
+                                              std::inserter(diff, diff.begin()));
+
+                          if (diff.empty())
+                              cam = graph->get_camera_api(node);
+                          else {
+                              std::cout << "Camera API constructor expects the attributes 'cam_rgb_focalx_att', "
+                                           "'cam_rgb_focaly_att', 'cam_rgb_width_att', 'cam_rgb_height_att' and "
+                                           "'cam_rgb_cameraID_att' to exist in the camera node. Can't show depth image.\n";
+                          }
+                      }
+                      if (cam) {
+                          const auto depth_width = graph->get_attrib_by_name<cam_depth_width_att>(n.value());
+                          const auto depth_height = graph->get_attrib_by_name<cam_depth_height_att>(n.value());
+                          const std::optional <std::vector<std::uint8_t>> gray_scale = cam->get_depth_as_gray_image();
+                          if (gray_scale.has_value() and depth_width.has_value() and depth_height.has_value()) {
+                              depth_label.setPixmap(QPixmap::fromImage(
+                                      QImage(&gray_scale.value()[0], depth_width.value(), depth_height.value(),
+                                             QImage::Format_Indexed8)));
+                              last_update_d = now;
+                          }
                       }
                   } else {
                       depth_label.clear();

@@ -135,6 +135,7 @@ REGISTER_TYPE(is_ready, bool, false)
 REGISTER_TYPE(person_name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(person_role, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(person_age, int, false)
+REGISTER_TYPE(person_velocity, std::vector<float>, false)
 
 /*
  * Personal Space
