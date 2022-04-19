@@ -439,7 +439,8 @@ std::optional<std::tuple<float,float,float>> CameraAPI::get_roi_depth(const std:
                 values[k++] = depth[i * width + j];
 
         //auto mv = std::ranges::min(values);
-        std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
+        //std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
+        std::sort(values.begin(), values.end());
         // const int px = (left + right) / 2;
         // const int py = (top + bot) / 2;
         // const auto mv = depth[py * width + px];
