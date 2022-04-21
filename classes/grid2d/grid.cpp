@@ -3,6 +3,7 @@
 #include <cppitertools/range.hpp>
 #include <cppitertools/slice.hpp>
 #include <cppitertools/enumerate.hpp>
+#include <cppitertools/chunked.hpp>
 #include <execution>
 
 auto operator<<(std::ostream &os, const Grid::Key &k) -> decltype(k.save(os), os)
@@ -480,6 +481,7 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
         {
             //qInfo() << __FILE__ << __FUNCTION__  << "Min distance found:" << min_distance[fmap.at(where).id];  //exit point
             auto p = orderPath(previous, source, target);
+            p = decimate_path(p);  // just to remove one point out of two
             //qInfo() << "p.size() = " << p.size();
             //esto es solo pa cd encuentra un path eh xd
             if (p.size() > 1)
@@ -515,7 +517,8 @@ std::vector<Eigen::Vector2f> Grid::compute_path(const QPointF &source_, const QP
     return  path;
 }
 
-std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs, bool all)
+std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs,
+                                                            bool all)
 {
     std::vector<std::pair<Key, T>> neigh;
     // list of increments to access the neighboors of a given position
@@ -596,6 +599,13 @@ std::list<QPointF> Grid::orderPath(const std::vector<std::pair<std::uint32_t, Ke
     //qDebug() << __FILE__ << __FUNCTION__ << "Path length:" << res.size();  //exit point
     return res;
 };
+std::list<QPointF> Grid::decimate_path(const std::list<QPointF> &path)
+{
+    std::list<QPointF> res;
+    for(const auto &p: iter::chunked(path, 2))
+        res.push_back(p[0]);
+    return res;
+}
 inline double Grid::heuristicL2(const Key &a, const Key &b) const
 {
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
