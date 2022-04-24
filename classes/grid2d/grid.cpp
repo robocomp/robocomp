@@ -477,18 +477,8 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
         if (where == target)  // target found
         {
             auto p = orderPath(previous, source, target);
-<<<<<<< HEAD
             p = decimate_path(p);  // reduce size of path to half
             return p;
-=======
-            p = decimate_path(p);  // just to remove one point out of two
-            //qInfo() << "p.size() = " << p.size();
-            //esto es solo pa cd encuentra un path eh xd
-            if (p.size() > 1)
-                return p;
-            else
-                return std::list<QPointF>();
->>>>>>> 05b913f7e6ee2441e6346fa312a4c24c255fa223
         }
         active_vertices.erase(active_vertices.begin());
         for (auto ed : neighboors_8(where))
@@ -535,7 +525,7 @@ std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, 
             neigh.emplace_back(std::make_pair(lk, p));
         else // if all cells covered by the robot are free
         {
-            bool all_free = true;
+            //bool all_free = true;
             if (p.free)
                 neigh.emplace_back(std::make_pair(lk, p));
 //            {
@@ -602,11 +592,7 @@ std::list<QPointF> Grid::orderPath(const std::vector<std::pair<std::uint32_t, Ke
 std::list<QPointF> Grid::decimate_path(const std::list<QPointF> &path)
 {
     std::list<QPointF> res;
-<<<<<<< HEAD
     for(auto &&p : iter::chunked(path,2))
-=======
-    for(const auto &p: iter::chunked(path, 2))
->>>>>>> 05b913f7e6ee2441e6346fa312a4c24c255fa223
         res.push_back(p[0]);
     return res;
 }
