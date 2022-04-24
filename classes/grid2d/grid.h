@@ -29,6 +29,8 @@
 #include <Eigen/Dense>
 #include <QVector2D>
 #include <QColor>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 class Grid
 {
@@ -108,7 +110,7 @@ public:
     };
 
     using FMap = std::unordered_map<Key, T, KeyHasher>;
-    Dimensions dim;
+    Dimensions dim = QRectF();
 
     void initialize(QRectF dim_,
                     int tile_size,
@@ -165,7 +167,7 @@ public:
     int count_total_visited() const;
     void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
     void modifyCostInGrid(const QPolygonF &poly, float cost);
-
+    void update_costs();
     std::optional<QPointF> closest_obstacle(const QPointF &p);
     std::optional<QPointF> closest_free(const QPointF &p);
     std::optional<QPointF> closest_free_4x4(const QPointF &p);
@@ -180,8 +182,10 @@ private:
     QGraphicsScene *scene;
     std::vector<QGraphicsRectItem *> scene_grid_points;
     double updated=0.0, flipped=0.0;
+    cv::Mat costs;
 
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
+    std::list<QPointF> decimate_path(const std::list<QPointF> &path);
     inline double heuristicL2(const Key &a, const Key &b) const;
     std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
     void set_all_costs(float value);
