@@ -187,6 +187,7 @@ private:
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
     std::list<QPointF> decimate_path(const std::list<QPointF> &path);
     inline double heuristicL2(const Key &a, const Key &b) const;
+    std::list<QPointF> decimate_path(const std::list<QPointF> &path);
     std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
     void set_all_costs(float value);
 
