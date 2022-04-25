@@ -92,7 +92,7 @@ void Grid::insert(const Key &key, const T &value)
 // FIX THIS
 std::tuple<bool, Grid::T&> Grid::getCell(long int x, long int z)
 {
-    return getCell(pointToGrid(x,z));
+    return getCell(pointToKey(x, z));
 }
 std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
 {
@@ -101,7 +101,7 @@ std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
     else
       try
       {
-          return std::forward_as_tuple(true, fmap.at(pointToGrid(k.x, k.z)));
+          return std::forward_as_tuple(true, fmap.at(pointToKey(k.x, k.z)));
       }
       catch(const std::exception &e)
       {
@@ -109,19 +109,27 @@ std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)  //overladed version
           return std::forward_as_tuple(false, T());
       }
 }
-Grid::Key Grid::pointToGrid(long int x, long int z) const
+std::tuple<bool, Grid::T&> Grid::getCell(const Eigen::Vector2f &p)
+{
+    return getCell(pointToKey(p.x(), p.y()));
+}
+Grid::Key Grid::pointToKey(long int x, long int z) const
 {
     // bottom is top since Y axis is inverted
     int kx = rint((x - dim.left()) / TILE_SIZE);
     int kz = rint((z - dim.top()) / TILE_SIZE);
     return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
 };
-Grid::Key Grid::pointToGrid(const QPointF &p) const
+Grid::Key Grid::pointToKey(const QPointF &p) const
 {
     int kx = rint((p.x() - dim.left()) / TILE_SIZE);
     int kz = rint((p.y() - dim.top()) / TILE_SIZE);
     return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
 };
+Eigen::Vector2f Grid::pointToGrid(const Eigen::Vector2f &p) const
+{
+    return Eigen::Vector2f(rint((p.x() - dim.left()) / TILE_SIZE), rint((p.y()) - dim.top()) / TILE_SIZE);
+}
 ////////////////////////////////////////////////////////////////////////////////
 void Grid::saveToFile(const std::string &fich)
 {
@@ -158,7 +166,7 @@ void Grid::readFromString(const std::string &cadena)
         float cost;
         std::string node_name;
         ss >> x >> z >> free >> visited >> cost>> node_name;
-        fmap.emplace(pointToGrid(x, z), T{count++, free, false, cost});
+        fmap.emplace(pointToKey(x, z), T{count++, free, false, cost});
     }
     std::cout << __FUNCTION__ << " " << fmap.size() << " elements read from "  << std::endl;
 }
@@ -180,7 +188,7 @@ void Grid::readFromFile(const std::string &fich)
         bool free, visited;
         std::string node_name;
         ss >> x >> z >> free >> visited >> node_name;
-        fmap.emplace(pointToGrid(x, z), T{count++, free, false, 1.f});
+        fmap.emplace(pointToKey(x, z), T{count++, free, false, 1.f});
     }
     std::cout << __FUNCTION__ << " " << fmap.size() << " elements read from " << fich << std::endl;
 }
@@ -207,7 +215,7 @@ void Grid::setFree(const Key &k)
 }
 void Grid::set_free(int cx, int cy)
 {
-    setFree(pointToGrid(cx, cy));
+    setFree(pointToKey(cx, cy));
 }
 void Grid::set_free(const QPointF &p)
 {
@@ -269,7 +277,7 @@ void Grid::add_miss(const Eigen::Vector2f &p)
             v.free = true;
             //v.tile->setBrush(QBrush(QColor(params.free_color)));
         }
-        v.misses = std::clamp(v.misses, 0.f, 10.f);
+        v.misses = std::clamp(v.misses, 0.f, 20.f);
         this->updated++;
     }
 //    else
@@ -281,7 +289,6 @@ void Grid::add_hit(const Eigen::Vector2f &p)
     if(success)
     {
         v.hits++;
-        //qInfo() << __FUNCTION__ << v.hits << (float)v.hits/(v.hits+v.misses);
         if((float)v.hits/(v.hits+v.misses) >= params.occupancy_threshold)
         {
             if(v.free)
@@ -289,9 +296,50 @@ void Grid::add_hit(const Eigen::Vector2f &p)
             v.free = false;
             //v.tile->setBrush(QBrush(QColor(params.occupied_color)));
         }
-        v.hits = std::clamp(v.hits, 0.f, 10.f);
+        v.hits = std::clamp(v.hits, 0.f, 20.f);
         this->updated++;
     }
+}
+void Grid::log_update(const Eigen::Vector2f &p, float prob)
+{
+    static double TRESHOLD_P_FREE = log_odds(0.3);
+    static double TRESHOLD_P_OCC = log_odds(0.6);
+
+    // update probability matrix using inverse sensor model
+    auto &&[success, v] = getCell(p);
+    if(success)
+    {
+        v.log_odds += log_odds(prob);
+        qInfo() << __FUNCTION__ << v.log_odds;
+        auto r = retrieve_p(v.log_odds);
+        if (r < TRESHOLD_P_FREE)
+        {
+            v.free = true;
+            v.tile->setBrush(QColor("White"));
+        }
+        else if (r > TRESHOLD_P_OCC)
+        {
+            v.free = false;
+            v.tile->setBrush(QColor("Red"));
+        }
+    }
+}
+double Grid::log_odds(double prob)
+{
+    // Log odds ratio of p(x):
+    //              p(x)
+    // l(x) = log ----------
+    //              1 - p(x)
+    return log(prob / (1 - prob));
+}
+double Grid::retrieve_p(double l)
+{
+    // Retrieve p(x) from log odds ratio:
+    //                   1
+    // p(x) = 1 - ---------------
+    //             1 + exp(l(x))
+
+    return 1 - 1 / (1 + exp(l));
 }
 float Grid::percentage_changed()
 {
@@ -361,9 +409,9 @@ void Grid::markAreaInGridAs(const QPolygonF &poly, bool free)
             if (poly.containsPoint(QPointF(x, y), Qt::OddEvenFill))
             {
                 if (free)
-                    setFree(pointToGrid(x, y));
+                    setFree(pointToKey(x, y));
                 else
-                    setOccupied(pointToGrid(x, y));
+                    setOccupied(pointToKey(x, y));
             }
         }
 }
@@ -374,14 +422,14 @@ void Grid::modifyCostInGrid(const QPolygonF &poly, float cost)
     for (auto &&x : iter::range(box.x() - step / 2, box.x() + box.width() + step / 2, step))
         for (auto &&y : iter::range(box.y() - step / 2, box.y() + box.height() + step / 2, step))
             if (poly.containsPoint(QPointF(x, y), Qt::OddEvenFill))
-                setCost(pointToGrid(x, y),cost);
+                setCost(pointToKey(x, y), cost);
 }
 std::tuple<bool, QVector2D> Grid::vectorToClosestObstacle(QPointF center)
 {
     QTime reloj = QTime::currentTime();
     qDebug()<<" reloj "<< reloj.restart();
     qDebug()<< "Computing neighboors of " << center;
-    auto k = pointToGrid(center.x(),center.y());
+    auto k = pointToKey(center.x(), center.y());
     QVector2D closestVector;
     bool obstacleFound = false;
 
@@ -424,9 +472,11 @@ std::tuple<bool, QVector2D> Grid::vectorToClosestObstacle(QPointF center)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &target_)
 {
+    update_costs();
+
     //qInfo() << __FUNCTION__  << " from nose pos: " << source_ << " to " << target_ ;
-    Key source = pointToGrid(source_.x(), source_.y());
-    Key target = pointToGrid(target_.x(), target_.y());
+    Key source = pointToKey(source_.x(), source_.y());
+    Key target = pointToKey(target_.x(), target_.y());
 
     // Admission rules
     if (not dim.contains(target_))
@@ -449,7 +499,7 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     {
         qInfo() << __FUNCTION__ << "Source on an occupied cell: " << source.x << ", " << source.z << "Returning empty path";
         std::optional<QPointF> new_source = closest_free(source_);
-        source = pointToGrid(new_source->x(), new_source->y());
+        source = pointToKey(new_source->x(), new_source->y());
     }
     const auto &[success, val] = getCell(source);
     if(not success)
@@ -603,6 +653,8 @@ inline double Grid::heuristicL2(const Key &a, const Key &b) const
 void Grid::update_costs()
 {
     set_all_costs(1);
+    for (const auto &[key, value]: fmap)
+        value.tile->setBrush(QBrush(QColor(params.free_color)));
     //update grid values
     for(auto &&[k,v] : iter::filterfalse([](auto v){ return std::get<1>(v).free;}, fmap))
     {
@@ -633,6 +685,15 @@ void Grid::update_costs()
                 vv.tile->setBrush(QColor("Yellow"));
             }
         }
+//    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==25;}, fmap))
+//        for(auto neighs = neighboors_8(k); auto &[kk, vv] : neighs)
+//        {
+//            if(vv.cost < 25)
+//            {
+//                fmap.at(kk).cost = 15;
+//                vv.tile->setBrush(QColor("Yellow"));
+//            }
+//        }
 }
 ///////////////////////////////////////////////////////////////////////////////////////
 void Grid::draw()
@@ -682,7 +743,6 @@ void Grid::clear()
         scene->removeItem(value.tile);
     fmap.clear();
 }
-
 std::optional<QPointF> Grid::closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred)
 {
     size_t moveUnit = TILE_SIZE;
@@ -693,7 +753,7 @@ std::optional<QPointF> Grid::closestMatching_spiralMove(const QPointF &p, std::f
     {
         i += vi; j += vj; ++recorrido;
         retPoint.setX(i); retPoint.setY(j);
-        Key key = pointToGrid(retPoint);
+        Key key = pointToKey(retPoint);
         const auto &[success, v] = getCell(key);
         if(success and pred(std::make_pair(key, v)))
             return std::optional<QPointF>(retPoint);
@@ -705,23 +765,20 @@ std::optional<QPointF> Grid::closestMatching_spiralMove(const QPointF &p, std::f
         }
     }
 }
-
 std::optional<QPointF> Grid::closest_obstacle(const QPointF &p)
 {
     return this->closestMatching_spiralMove(p, [](auto cell){ return not cell.second.free; });
 }
-
 std::optional<QPointF> Grid::closest_free(const QPointF &p)
 {
     return this->closestMatching_spiralMove(p, [](auto cell){ return cell.second.free; });
 }
-
 std::optional<QPointF> Grid::closest_free_4x4(const QPointF &p)
 {
     return this->closestMatching_spiralMove(p, [this, p](const auto &cell){
         if (not cell.second.free)
             return false;
-        Key key = pointToGrid(QPointF(cell.first.x, cell.first.z));
+        Key key = pointToKey(QPointF(cell.first.x, cell.first.z));
         std::vector<std::pair<Grid::Key, Grid::T>> L1 = neighboors_16(key, false);
         return (L1.size() == 16);
     });

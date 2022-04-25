@@ -100,6 +100,7 @@ public:
         float hits = 0;
         float misses = 0;
         QGraphicsRectItem *tile;
+        double log_odds = 0.0;  //log prior
 
         // method to save the value
         void save(std::ostream &os) const
@@ -125,6 +126,7 @@ public:
 
     std::tuple<bool, T &> getCell(long int x, long int z);
     std::tuple<bool, T &> getCell(const Key &k);
+    std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
     T at(const Key &k) const
     { return fmap.at(k); };
     T &at(const Key &k)
@@ -144,8 +146,9 @@ public:
     void readFromFile(const std::string &fich);
     std::string saveToString() const;
     void readFromString(const std::string &cadena);
-    Key pointToGrid(long int x, long int z) const;
-    Key pointToGrid(const QPointF &p) const;
+    Key pointToKey(long int x, long int z) const;
+    Key pointToKey(const QPointF &p) const;
+    Eigen::Vector2f pointToGrid(const Eigen::Vector2f &p) const;
     void setFree(const Key &k);
     void set_free(int cx, int cy);
     void set_free(const QPointF &p);
@@ -162,6 +165,9 @@ public:
     void setCost(const Key &k, float cost);
     void add_miss(const Eigen::Vector2f &p);
     void add_hit(const Eigen::Vector2f &p);
+    void log_update(const Eigen::Vector2f &p, float prob);
+    double log_odds(double prob);
+    double retrieve_p(double l);
     float percentage_changed();
     int count_total() const;
     int count_total_visited() const;
