@@ -199,7 +199,7 @@ private:
     struct Params
     {
         const QString free_color = "white";
-        const QString occupied_color = "orange";
+        const QString occupied_color = "red";
         const float occupancy_threshold = 0.5;
     };
     Params params;

@@ -627,10 +627,15 @@ inline double Grid::heuristicL2(const Key &a, const Key &b) const
 }
 void Grid::update_costs()
 {
-    //for (auto &&[k, v]: fmap)
+    static QBrush free_brush(QColor(params.free_color));
+    static QBrush occ_brush(QColor(params.occupied_color));
+    static QBrush orange_brush(QColor("Orange"));
+    static QBrush yellow_brush(QColor("Yellow"));
+    static QBrush gray_brush(QColor("LightGray"));
+
     for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost > 1;}, fmap))
     {
-        v.tile->setBrush(QBrush(QColor(params.free_color)));
+        v.tile->setBrush(free_brush);
         v.cost = 1.f;
     }
 
@@ -638,12 +643,11 @@ void Grid::update_costs()
     for(auto &&[k,v] : iter::filterfalse([](auto v){ return std::get<1>(v).free;}, fmap))
     {
         v.cost = 100;
-        v.tile->setBrush(QColor("Red"));
-        // fill 16 adjacent cells
+        v.tile->setBrush(occ_brush);
         for(auto neighs = neighboors_16(k); auto &&[kk, vv] : neighs)
         {
             fmap.at(kk).cost = 100;
-            fmap.at(kk).tile->setBrush(QColor("Red"));
+            fmap.at(kk).tile->setBrush(occ_brush);
         }
     }
     for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==100;}, fmap))
@@ -652,7 +656,7 @@ void Grid::update_costs()
             if(vv.cost < 100)
             {
                 fmap.at(kk).cost = 50;
-                fmap.at(kk).tile->setBrush(QColor("Orange"));
+                fmap.at(kk).tile->setBrush(orange_brush);
             }
         }
     for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==50;}, fmap))
@@ -661,18 +665,18 @@ void Grid::update_costs()
             if(vv.cost < 50)
             {
                 fmap.at(kk).cost = 25;
-                fmap.at(kk).tile->setBrush(QColor("Yellow"));
+                fmap.at(kk).tile->setBrush(yellow_brush);
             }
         }
-//    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==25;}, fmap))
-//        for(auto neighs = neighboors_8(k); auto &[kk, vv] : neighs)
-//        {
-//            if(vv.cost < 25)
-//            {
-//                fmap.at(kk).cost = 15;
-//                vv.tile->setBrush(QColor("Yellow"));
-//            }
-//        }
+    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==25;}, fmap))
+        for(auto neighs = neighboors_8(k); auto &[kk, vv] : neighs)
+        {
+            if(vv.cost < 25)
+            {
+                fmap.at(kk).cost = 15;
+                fmap.at(kk).tile->setBrush(gray_brush);
+            }
+        }
 }
 
 ////////////////////////////// DRAW /////////////////////////////////////////////////////////
