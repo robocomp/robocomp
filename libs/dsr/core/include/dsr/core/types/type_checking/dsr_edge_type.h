@@ -53,5 +53,6 @@ REGISTER_EDGE_TYPE(thinks)
 REGISTER_EDGE_TYPE(goto_action)
 REGISTER_EDGE_TYPE(attention_action)
 REGISTER_EDGE_TYPE(testtype_e)
+REGISTER_EDGE_TYPE(on_focus)
 
 #endif //DSR_EDGE_TYPE_H

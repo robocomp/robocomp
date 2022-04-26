@@ -161,6 +161,9 @@ REGISTER_TYPE(obj_visible, int, false)
 REGISTER_TYPE(projected_bounding_box, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(unseen_time, int, false)
 REGISTER_TYPE(average_size, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(yolo_attention, bool, false)
+
+
 /*
  * Object affordances
  * 
