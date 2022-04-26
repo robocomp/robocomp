@@ -124,13 +124,13 @@ public:
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
 
-    std::tuple<bool, T &> getCell(long int x, long int z);
-    std::tuple<bool, T &> getCell(const Key &k);
-    std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
-    T at(const Key &k) const
-    { return fmap.at(k); };
-    T &at(const Key &k)
-    { return fmap.at(k); };
+    inline std::tuple<bool, T &> getCell(long int x, long int z);
+    inline std::tuple<bool, T &> getCell(const Key &k);
+    inline std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
+//    T at(const Key &k) const
+//    { return fmap.at(k); };
+//    T &at(const Key &k)
+//    { return fmap.at(k); };
     typename FMap::iterator begin()
     { return fmap.begin(); };
     typename FMap::iterator end()
