@@ -83,6 +83,7 @@ RUN python3 -m pip install pyrep
 COPY Connection.h /usr/include/Ice/Connection.h
 
 ### Third party dependencies
+RUN (curl -O https://raw.githubusercontent.com/robocomp/robocomp/development/classes/threadpool/threadpool.h && mkdir -p /usr/include/threadpool && mv threadpool.h /usr/include/threadpool )
 RUN curl -S https://raw.githubusercontent.com/robocomp/cortex/development/installation.sh | bash -x
 RUN rm -r /usr/local/include/cppitertools
 RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
