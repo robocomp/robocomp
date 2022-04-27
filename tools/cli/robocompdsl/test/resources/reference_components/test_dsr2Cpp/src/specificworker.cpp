@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2021 by YOUR NAME HERE
+ *    Copyright (C) 2022 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -24,6 +24,10 @@
 SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorker(tprx)
 {
 	this->startup_check_flag = startup_check;
+	// Uncomment if there's too many debug messages
+	// but it removes the possibility to see the messages
+	// shown in the console with qDebug()
+//	QLoggingCategory::setFilterRules("*.debug=false\n");
 }
 
 /**
@@ -108,6 +112,15 @@ void SpecificWorker::initialize(int period)
 		}
 		graph_viewer = std::make_unique<DSR::DSRViewer>(this, G, current_opts, main);
 		setWindowTitle(QString::fromStdString(agent_name + "-") + QString::number(agent_id));
+
+		/***
+		Custom Widget
+		In addition to the predefined viewers, Graph Viewer allows you to add various widgets designed by the developer.
+		The add_custom_widget_to_dock method is used. This widget can be defined like any other Qt widget,
+		either with a QtDesigner or directly from scratch in a class of its own.
+		The add_custom_widget_to_dock method receives a name for the widget and a reference to the class instance.
+		***/
+		//graph_viewer->add_custom_widget_to_dock("CustomWidget", &custom_widget);
 
 		this->Period = period;
 		timer.start(Period);

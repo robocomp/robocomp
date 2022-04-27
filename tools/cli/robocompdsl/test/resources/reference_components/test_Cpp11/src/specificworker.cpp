@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2021 by YOUR NAME HERE
+ *    Copyright (C) 2022 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -24,6 +24,10 @@
 SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorker(tprx)
 {
 	this->startup_check_flag = startup_check;
+	// Uncomment if there's too many debug messages
+	// but it removes the possibility to see the messages
+	// shown in the console with qDebug()
+//	QLoggingCategory::setFilterRules("*.debug=false\n");
 }
 
 /**
