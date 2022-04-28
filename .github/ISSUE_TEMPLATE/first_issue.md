@@ -31,7 +31,9 @@ You do not need to know anything prior to taking up this issue! Welcome to opens
 
 - [ ] **Ask in comments for a maintainer to review**.
 
+<!-- markdown-link-check-disable -->
 If you are not familiar with GitHub or how to create a pull request, [here is a guide you can follow on how GitHub works.](https://docs.github.com/en/get-started/quickstart/hello-world)
+<!-- markdown-link-check-enable -->
 
 If you are familiar with the terminal or would like to learn to use it, here is a great tutorial on how to send a pull request using the terminal :-
 [Doc-Tutorial](https://github.com/robocomp/robocomp/blob/development/doc/contribute/contribute.md) or  [Video-Tutorial](https://www.youtube.com/watch?v=rgbCcBNZcdQ&t=8s)
