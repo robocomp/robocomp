@@ -50,7 +50,7 @@ gui Qt(QWidget//QDialog//QMainWindow);
 - #### Dependences with external classes and libraries. (Optional)
 	- agmagent: Include Cortex-Agent communication patterns.
 	- InnerModelViewer: Include [InnerModelViewer](https://github.com/robocomp/robocomp/tree/stable/libs/innermodel) resources.
-	- dsr: Include [dsr](https://github.com/robocomp/robocomp/tree/development/libs/dsr) resources.
+	- dsr: Include [dsr](https://github.com/robocomp/cortex) resources.
 ```
 options dsr, agmagent, InnerModelViewer;
 ```
