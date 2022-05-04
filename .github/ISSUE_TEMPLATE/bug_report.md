@@ -48,4 +48,4 @@ A list of relevant files for this issue. This will help people navigate the proj
 Yes / No (Help can be provided if you need assistance submitting a PR)
 
 ### Any logs?
-(If it’s long, please paste to https://ghostbin.com/ and insert the link here.)
+(If it’s long, please paste to https://pastebin.com/ and insert the link here.)

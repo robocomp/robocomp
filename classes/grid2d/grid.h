@@ -29,6 +29,8 @@
 #include <Eigen/Dense>
 #include <QVector2D>
 #include <QColor>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 class Grid
 {
@@ -98,6 +100,7 @@ public:
         float hits = 0;
         float misses = 0;
         QGraphicsRectItem *tile;
+        double log_odds = 0.0;  //log prior
 
         // method to save the value
         void save(std::ostream &os) const
@@ -108,7 +111,7 @@ public:
     };
 
     using FMap = std::unordered_map<Key, T, KeyHasher>;
-    Dimensions dim;
+    Dimensions dim = QRectF();
 
     void initialize(QRectF dim_,
                     int tile_size,
@@ -121,12 +124,13 @@ public:
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
 
-    std::tuple<bool, T &> getCell(long int x, long int z);
-    std::tuple<bool, T &> getCell(const Key &k);
-    T at(const Key &k) const
-    { return fmap.at(k); };
-    T &at(const Key &k)
-    { return fmap.at(k); };
+    inline std::tuple<bool, T &> getCell(long int x, long int z);
+    inline std::tuple<bool, T &> getCell(const Key &k);
+    inline std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
+//    T at(const Key &k) const
+//    { return fmap.at(k); };
+//    T &at(const Key &k)
+//    { return fmap.at(k); };
     typename FMap::iterator begin()
     { return fmap.begin(); };
     typename FMap::iterator end()
@@ -142,8 +146,9 @@ public:
     void readFromFile(const std::string &fich);
     std::string saveToString() const;
     void readFromString(const std::string &cadena);
-    Key pointToGrid(long int x, long int z) const;
-    Key pointToGrid(const QPointF &p) const;
+    Key pointToKey(long int x, long int z) const;
+    Key pointToKey(const QPointF &p) const;
+    Eigen::Vector2f pointToGrid(const Eigen::Vector2f &p) const;
     void setFree(const Key &k);
     void set_free(int cx, int cy);
     void set_free(const QPointF &p);
@@ -160,12 +165,15 @@ public:
     void setCost(const Key &k, float cost);
     void add_miss(const Eigen::Vector2f &p);
     void add_hit(const Eigen::Vector2f &p);
+    void log_update(const Eigen::Vector2f &p, float prob);
+    double log_odds(double prob);
+    double retrieve_p(double l);
     float percentage_changed();
     int count_total() const;
     int count_total_visited() const;
     void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
     void modifyCostInGrid(const QPolygonF &poly, float cost);
-
+    void update_costs();
     std::optional<QPointF> closest_obstacle(const QPointF &p);
     std::optional<QPointF> closest_free(const QPointF &p);
     std::optional<QPointF> closest_free_4x4(const QPointF &p);
@@ -180,16 +188,18 @@ private:
     QGraphicsScene *scene;
     std::vector<QGraphicsRectItem *> scene_grid_points;
     double updated=0.0, flipped=0.0;
+    cv::Mat costs;
 
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
     inline double heuristicL2(const Key &a, const Key &b) const;
+    std::list<QPointF> decimate_path(const std::list<QPointF> &path);
     std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Grid::Key, Grid::T>)> pred);
     void set_all_costs(float value);
 
     struct Params
     {
         const QString free_color = "white";
-        const QString occupied_color = "orange";
+        const QString occupied_color = "red";
         const float occupancy_threshold = 0.5;
     };
     Params params;

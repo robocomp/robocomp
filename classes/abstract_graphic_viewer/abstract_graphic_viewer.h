@@ -69,7 +69,7 @@ public:
             laser_in_robot_sr->setBrush(QBrush(QColor("White")));
             scene.addItem(laser_in_robot_sr);
             laser_in_robot_sr->setPos(laser_x_offset, laser_y_offset);
-            robot_polygon->setZValue(5);
+            robot_polygon->setZValue(55);
             robot_polygon->setPos(0, 0);
             return std::make_tuple(robot_polygon, laser_in_robot_sr);
         }

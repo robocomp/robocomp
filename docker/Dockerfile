@@ -83,18 +83,10 @@ RUN python3 -m pip install pyrep
 COPY Connection.h /usr/include/Ice/Connection.h
 
 ### Third party dependencies
-RUN curl -S https://raw.githubusercontent.com/robocomp/robocomp/development/libs/dsr/dependencies.sh | bash -x
+RUN (curl -O https://raw.githubusercontent.com/robocomp/robocomp/development/classes/threadpool/threadpool.h && mkdir -p /usr/include/threadpool && mv threadpool.h /usr/include/threadpool )
+RUN curl -S https://raw.githubusercontent.com/robocomp/cortex/development/installation.sh | bash -x
 RUN rm -r /usr/local/include/cppitertools
 RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
-
-#Compilation of DSR libs in Robocomp
-USER robolab
-ENV PATH $PATH:/opt/robocomp/bin/
-RUN export PATH=$PATH:/opt/robocomp/bin/
-RUN cd ~/robocomp/ && git pull && mkdir -p build && cd build && cmake -DFCL_SUPPORT=True -DDSR=True  .. && make -j$(nproc)
-USER root
-RUN cd /home/robolab/robocomp/build && make install
-RUN ldconfig
 USER robolab
 
 
