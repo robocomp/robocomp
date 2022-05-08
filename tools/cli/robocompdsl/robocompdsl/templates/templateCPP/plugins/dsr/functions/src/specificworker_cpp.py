@@ -5,6 +5,16 @@ import robocompdsl.dsl_parsers.parsing_utils as p_utils
 from robocompdsl.templates.templateCPP.plugins.base.functions import function_utils as utils
 from robocompdsl.templates.common.templatedict import TemplateDict
 
+DSR_DELETE = """\
+//G->write_to_json_file("./"+agent_name+".json");
+auto grid_nodes = G->get_nodes_by_type("grid");
+for (auto grid : grid_nodes)
+{
+	G->delete_node(grid);
+}
+G.reset();
+"""
+
 DSR_SET_PARAMS = """\
 try
 {
@@ -79,7 +89,7 @@ class specificworker_cpp(TemplateDict):
     def dsr_destructor(self):
         result = ""
         if self.component.dsr:
-            result = "G->write_to_json_file(\"./\"+agent_name+\".json\");\nG.reset();\n"
+            result += DSR_DELETE
         return result
 
     def dsr_set_params(self):

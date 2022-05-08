@@ -36,7 +36,12 @@ SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorke
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
-	G->write_to_json_file("./"+agent_name+".json");
+	//G->write_to_json_file("./"+agent_name+".json");
+	auto grid_nodes = G->get_nodes_by_type("grid");
+	for (auto grid : grid_nodes)
+	{
+		G->delete_node(grid);
+	}
 	G.reset();
 }
 
