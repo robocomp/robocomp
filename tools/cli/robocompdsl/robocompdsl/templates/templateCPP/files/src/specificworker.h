@@ -50,12 +50,12 @@ public slots:
 	int startup_check();
 	void initialize(int period);
 	${statemachine_methods_definitions}
+	${dsr_slots}
 private:
 	${innermodel_attribute}
 	${innermodelviewer_attributes}
 	${agm_attributes}
 	${dsr_attributes}
-	${dsr_slots}
 	bool startup_check_flag;
 
 };

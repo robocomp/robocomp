@@ -5,14 +5,27 @@ import robocompdsl.dsl_parsers.parsing_utils as p_utils
 from robocompdsl.templates.templateCPP.plugins.base.functions import function_utils as utils
 from robocompdsl.templates.common.templatedict import TemplateDict
 
-DSR_SET_PARAMS = """\
-agent_name = params["agent_name"].value;
-agent_id = stoi(params["agent_id"].value);
+DSR_DELETE = """\
+//G->write_to_json_file("./"+agent_name+".json");
+auto grid_nodes = G->get_nodes_by_type("grid");
+for (auto grid : grid_nodes)
+{
+	G->delete_node(grid);
+}
+G.reset();
+"""
 
-tree_view = params["tree_view"].value == "true";
-graph_view = params["graph_view"].value == "true";
-qscene_2d_view = params["2d_view"].value == "true";
-osg_3d_view = params["3d_view"].value == "true";
+DSR_SET_PARAMS = """\
+try
+{
+	agent_name = params.at("agent_name").value;
+	agent_id = stoi(params.at("agent_id").value);
+	tree_view = params.at("tree_view").value == "true";
+	graph_view = params.at("graph_view").value == "true";
+	qscene_2d_view = params.at("2d_view").value == "true";
+	osg_3d_view = params.at("3d_view").value == "true";
+}
+catch(const std::exception &e){ std::cout << e.what() << " Error reading params from config file" << std::endl;};
 """
 
 DSR_INITIALIZE = """\
@@ -21,11 +34,12 @@ G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, ""); // Init nodes
 std::cout<< __FUNCTION__ << "Graph loaded" << std::endl;  
 
 //dsr update signals
-connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &SpecificWorker::modify_node_slot);
-connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &SpecificWorker::modify_edge_slot);
-connect(G.get(), &DSR::DSRGraph::update_node_attr_signal, this, &SpecificWorker::modify_attrs_slot);
-connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &SpecificWorker::del_edge_slot);
-connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &SpecificWorker::del_node_slot);
+//connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &SpecificWorker::modify_node_slot);
+//connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &SpecificWorker::modify_edge_slot);
+//connect(G.get(), &DSR::DSRGraph::update_node_attr_signal, this, &SpecificWorker::modify_node_attrs_slot);
+//connect(G.get(), &DSR::DSRGraph::update_edge_attr_signal, this, &SpecificWorker::modify_edge_attrs_slot);
+//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &SpecificWorker::del_edge_slot);
+//connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &SpecificWorker::del_node_slot);
 
 // Graph viewer
 using opts = DSR::DSRViewer::view;
@@ -75,7 +89,7 @@ class specificworker_cpp(TemplateDict):
     def dsr_destructor(self):
         result = ""
         if self.component.dsr:
-            result = "G->write_to_json_file(\"./\"+agent_name+\".json\");\nG.reset();\n"
+            result += DSR_DELETE
         return result
 
     def dsr_set_params(self):

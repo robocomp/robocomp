@@ -66,7 +66,7 @@ void Grid::initialize(  QRectF dim_,
             aux.visited = false;
             aux.cost = 1.0;
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
-            tile->setZValue(10);
+            //tile->setZValue(10);
             auto res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
             tile->setPos(res.x(), res.y());
             tile->setRotation(qRadiansToDegrees(grid_angle));
