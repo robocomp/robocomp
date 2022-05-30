@@ -39,9 +39,9 @@ void Grid::initialize(  QRectF dim_,
     dim = dim_;
     TILE_SIZE = tile_size;
     scene = scene_;
-    qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
-    qInfo() << __FUNCTION__ <<  "World dimension: ";
-    qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
+    qInfo() << __FILE__ << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
+    //qInfo() << __FUNCTION__ <<  "World dimension: ";
+    //qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
     qInfo() << __FUNCTION__ << "Grid coord" << grid_center << grid_angle;
     for (const auto &[key, value]: fmap)
@@ -56,7 +56,6 @@ void Grid::initialize(  QRectF dim_,
     std::uint32_t id=0;
     Eigen::Matrix2f matrix;
     matrix << cos(grid_angle) , -sin(grid_angle) , sin(grid_angle) , cos(grid_angle);
-    std::cout << matrix << std::endl;
     for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
         for (float j = dim.top(); j < dim.bottom(); j += TILE_SIZE)
         {
@@ -66,7 +65,7 @@ void Grid::initialize(  QRectF dim_,
             aux.visited = false;
             aux.cost = 1.0;
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
-            //tile->setZValue(10);
+            //tile->setZValue(50);
             auto res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
             tile->setPos(res.x(), res.y());
             tile->setRotation(qRadiansToDegrees(grid_angle));
