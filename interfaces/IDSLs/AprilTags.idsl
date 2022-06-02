@@ -1,26 +1,22 @@
 import "CameraRGBDSimple.idsl";
-
-module RoboCompAprilTagsServer
+module RoboCompAprilTags
 {
-	struct Tag
-	{
-		int id;
-		float tx;
-		float ty;
-		float tz;
-		float rx;
-		float ry;
-		float rz;
-		int cx;
-		int cy;
-	};
-
-	sequence<tag> TagsList;
-
-	interface AprilTags
-	{
-		TagsList getAprilTags(RobocompCameraRGBDSimple::TImage, double tagsize, string tagfamily);
-	};
+  struct Tag
+  {
+    int id;
+    float tx;
+    float ty;
+    float tz;
+    float rx;
+    float ry;
+    float rz;
+    int cx;
+    int cy;
+  };
+  sequence<Tag> TagsList;
+  interface AprilTags
+  {
+    TagsList getAprilTags(RoboCompCameraRGBDSimple::TImage image, double tagsize, string tagfamily);
+  };
 };
-
 
