@@ -43,7 +43,7 @@ void Grid::initialize(  QRectF dim_,
     //qInfo() << __FUNCTION__ <<  "World dimension: ";
     //qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
-    qInfo() << __FUNCTION__ << "Grid coord" << grid_center << grid_angle;
+    qInfo() << __FUNCTION__ << "Grid coordinates. Center:" << grid_center << "Angle:" << grid_angle;
     for (const auto &[key, value]: fmap)
         scene->removeItem(value.tile);
     if(bounding_box != nullptr) scene->removeItem(bounding_box);
