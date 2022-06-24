@@ -1,0 +1,313 @@
+{
+    "main_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+    "lines" : [    
+                {
+                    "line_name" : "compras_0",
+                    "next_possible_lines" : ["compras_0_1", "compras_0_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Te gusta ir de compras?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 1,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                },  
+                {
+                    "line_name" : "compras_0_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_0",      
+                    "phrase" : "A mí también me gusta ir de compras",
+                    "emotion" : 0,
+                    "keywords" : ["claro", "por supuesto", "si"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_0_2",
+                    "next_possible_lines" : ["compras_0_2_1"],
+                    "past_line" : "compras_0",      
+                    "phrase" : "¿Por qué no le gusta ir de compras?",
+                    "emotion" : 0,
+                    "keywords" : ["no", "que va", "para nada", "en absoluto"],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                },  
+                {
+                    "line_name" : "compras_0_2_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_0_2",      
+                    "phrase" : "A mi tampoco me gusta ir cuando hay mucha gente.",
+                    "emotion" : 0,
+                    "keywords" : ["aburrido", "gusta", "lejos", "pereza"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                },  
+                {
+                    "line_name" : "compras_1",
+                    "next_possible_lines" : ["compras_1_1", "compras_1_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Quién es el encargado de hacer las compras en su familia?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,       
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_1_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_1",      
+                    "phrase" : "Yo también hago las compras de mi hogar.",
+                    "emotion" : 0,
+                    "keywords" : ["yo"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_1_2",
+                    "next_possible_lines" : ["compras_1_2_1", "compras_1_2_2"],
+                    "past_line" : "compras_1",      
+                    "phrase" : "¿Usted le acompaña a hacer la compra o espera en casa?",
+                    "emotion" : 0,
+                    "keywords" : ["mujer", "marido", "hija", "hijo", "ayudante", "suegra", "suegro"],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_1_2_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_1_2",      
+                    "phrase" : "A mi me gusta acompañar y así me distraigo.",
+                    "emotion" : 0,
+                    "keywords" : ["espero", "quedo"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_1_2_2",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_1_2",      
+                    "phrase" : "Muy bien, siempre viene bien salir de casa.",
+                    "emotion" : 0,
+                    "keywords" : ["acompaño", "voy"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_2",
+                    "next_possible_lines" : ["compras_2_1"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Cuántas veces hace las compras de alimentos para su hogar?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_2_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_2",      
+                    "phrase" : "Yo suelo comprar todas las semanas lo más necesario.",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_3",
+                    "next_possible_lines" : ["compras_3_1"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Qué supermercado prefiere para hacer sus compras?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_3_1",
+                    "next_possible_lines" : ["compras_3_1_1"],
+                    "past_line" : "compras_3",      
+                    "phrase" : "¿Por qué?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_3_1_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_3_1",      
+                    "phrase" : "Que interesante",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_4",
+                    "next_possible_lines" : ["compras_4_1"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Qué alimentos compra usted habitualmente?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_4_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_4",      
+                    "phrase" : "Yo suelo comprar mucha pasta y fruta.",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_5",
+                    "next_possible_lines" : ["compras_5_1"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Cuánto dinero se gasta cada vez que va a comprar alimentos?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_5_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_5",      
+                    "phrase" : "Yo gasto 120€ cada semana.",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                },
+                {
+                    "line_name" : "compras_6",
+                    "next_possible_lines" : ["compras_6_1", "compras_6_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Pagas con tarjeta de crédito o con dinero en efectivo?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_6_1",
+                    "next_possible_lines" : ["compras_6_1_1", "compras_6_1_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Recuerdas el código de la tarjeta o lo llevas apuntado?",
+                    "emotion" : 0,
+                    "keywords" : ["tarjeta", "credito"],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_6_1_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_6_1",      
+                    "phrase" : "genial",
+                    "emotion" : 0,
+                    "keywords" : ["recuerdo", "sé"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_6_1_2",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_6_1",      
+                    "phrase" : "yo lo memorizo para evitar riesgos.",
+                    "emotion" : 0,
+                    "keywords" : ["apuntado", "escrito"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_6_2",
+                    "next_possible_lines" : ["compras_6_2_1", "compras_6_2_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Te aseguras de que te den el cambio correcto?",
+                    "emotion" : 0,
+                    "keywords" : ["dinero", "efectivo"],
+                    "binary" : 1,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_6_2_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_6_2",      
+                    "phrase" : "Muy bien.",
+                    "emotion" : 0,
+                    "keywords" : ["claro", "por supuesto", "si"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_6_2_2",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_6_2",      
+                    "phrase" : "Es importante hacerlo, hay veces que se equivocan.",
+                    "emotion" : 0,
+                    "keywords" : ["no", "que va", "para nada", "en absoluto"],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_7",
+                    "next_possible_lines" : ["compras_7_1", "compras_7_2"],
+                    "past_line" : "start",      
+                    "phrase" : "¿Cómo se desplaza para realizar las compras?",
+                    "emotion" : 0,
+                    "keywords" : [],
+                    "binary" : 0,
+                    "to_start" : 0,
+                    "needs_response" : 1
+                }, 
+                {
+                    "line_name" : "compras_7_1",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_7",      
+                    "phrase" : "eso es muy bueno para la salud.",
+                    "emotion" : 0,
+                    "keywords" : ["andando", "paseando", "pie"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }, 
+                {
+                    "line_name" : "compras_7_2",
+                    "next_possible_lines" : ["compras_1", "compras_2", "compras_3", "compras_4", "compras_5", "compras_6", "compras_7"],
+                    "past_line" : "compras_7",      
+                    "phrase" : "yo también, para poder llevar toda la compra que hago.",
+                    "emotion" : 0,
+                    "keywords" : ["coche", "autobus"],
+                    "binary" : 0,
+                    "to_start" : 1,
+                    "needs_response" : 0
+                }
+            ]
+}

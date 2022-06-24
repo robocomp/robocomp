@@ -1,5 +1,6 @@
 module RoboCompSoundRotation{
 	interface SoundRotation{
 		void getKeyWord(string word);
+		void personFound(bool found);
   };
 };

@@ -1,0 +1,15 @@
+# Endpoints for implements interfaces
+Speech.Endpoints=tcp -p 11339
+
+
+# Proxies for required interfaces
+RecorderProxy = recorder:tcp -h localhost -p 17218
+
+EmotionalMotorProxy = emotionalmotor:tcp -h localhost -p 10945
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.MessageSizeMax=20004800
