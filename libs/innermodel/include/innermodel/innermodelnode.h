@@ -22,7 +22,7 @@
 #include <qmat/QMatAll>
 
 #ifdef FCL_SUPPORT
-#include <fcl/collision.h>
+#include <fcl/narrowphase/collision.h>
 #include <fcl/distance.h>
 #include <fcl/narrowphase/narrowphase.h>
 #include <fcl/ccd/motion.h>

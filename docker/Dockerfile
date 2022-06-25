@@ -1,5 +1,5 @@
-ARG base_image="nvidia/opengl"
-ARG base_tag="base-ubuntu20.04"
+ARG base_image="ubuntu"
+ARG base_tag="22.04"
 ARG branch="development"
 ARG robocomp_version="dsr-components"
 
