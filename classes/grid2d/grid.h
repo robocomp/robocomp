@@ -26,7 +26,7 @@
 #include <chrono>
 #include <unistd.h>
 #include <QtCore>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <QVector2D>
 #include <QColor>
 #include <opencv2/core.hpp>
