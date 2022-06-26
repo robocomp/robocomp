@@ -173,7 +173,7 @@ public:
     int count_total_visited() const;
     void markAreaInGridAs(const QPolygonF &poly, bool free);   // if true area becomes free
     void modifyCostInGrid(const QPolygonF &poly, float cost);
-    void update_costs();
+    void update_costs(bool wide=true);
     std::optional<QPointF> closest_obstacle(const QPointF &p);
     std::optional<QPointF> closest_free(const QPointF &p);
     std::optional<QPointF> closest_free_4x4(const QPointF &p);
