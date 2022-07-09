@@ -88,7 +88,7 @@ float InnerModelPrismaticJoint::setPosition(float v)
 	else
 	{
 		QString error;
-		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		error.asprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
 	return ret;

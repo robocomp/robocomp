@@ -46,7 +46,7 @@ InnerModel::InnerModel(std::string xmlFilePath)
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
 		QString error;
-		error.sprintf("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
+		error.asprintf("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
 		throw error;
 	}
 }
@@ -453,7 +453,7 @@ InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,fl
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelJoint *newnode = new InnerModelJoint(id,lx,ly,lz,hx,hy,hz, tx, ty, tz, rx, ry, rz, min, max, port, axis, home, parent);
@@ -468,7 +468,7 @@ InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransfor
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelTouchSensor *newnode = new InnerModelTouchSensor(id, stype, nx, ny, nz, min, max, port, parent);
@@ -483,7 +483,7 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPrismaticJoint *newnode = new InnerModelPrismaticJoint(id, min, max, value, offset, port, axis, home, parent);
@@ -498,7 +498,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
@@ -513,7 +513,7 @@ InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *p
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
@@ -528,7 +528,7 @@ InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, floa
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelCamera *newnode = new InnerModelCamera(id, width, height, focal, this, parent);
@@ -543,13 +543,13 @@ InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float wi
 	if (noise < 0)
 	{
 		QString error;
-		error.sprintf("InnerModel::newRGBD: noise can't have negative values");
+		error.asprintf("InnerModel::newRGBD: noise can't have negative values");
 		throw error;
 	}
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelRGBD *newnode = new InnerModelRGBD(id, width, height, focal, noise, port, ifconfig, this, parent);
@@ -564,7 +564,7 @@ InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t p
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newIMU: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newIMU: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	// 	printf("newIMU id=%s  parentId=%s port=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port);
@@ -580,7 +580,7 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, this, parent);
@@ -595,7 +595,7 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
@@ -610,7 +610,7 @@ InnerModelDisplay *InnerModel::newDisplay(QString id,uint32_t port, InnerModelNo
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newDisplay: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newDisplay: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
@@ -626,7 +626,7 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, collidable, parent);
@@ -647,7 +647,7 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPointCloud *newnode = new InnerModelPointCloud(id, parent);
@@ -663,7 +663,7 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 	if (hash.contains(id))
 	{
 		QString error;
-		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		error.asprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
@@ -806,7 +806,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		listA.push_back(a);
 		if(a->parent == NULL)
 		{
-			// 			error.sprintf("InnerModel::setLists: It wouldn't be here!!!!");
+			// 			error.asprintf("InnerModel::setLists: It wouldn't be here!!!!");
 			break;
 		}
 		a=a->parent;
@@ -818,7 +818,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		listB.push_front(b);
 		if(b->parent == NULL)
 		{
-			// 			error.sprintf("InnerModel::setLists: It wouldn't be here!!!!");
+			// 			error.asprintf("InnerModel::setLists: It wouldn't be here!!!!");
 			break;
 		}
 		b=b->parent;
@@ -867,7 +867,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	if (not n1) throw 1;
 	//qDebug() << "collide " << a << b << n1->id;
 	QMat r1q = getRotationMatrixTo("root", a);
-	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	fcl::Matrix3f R1{ {r1q(0,0), r1q(0,1), r1q(0,2)}, {r1q(1,0), r1q(1,1), r1q(1,2)}, {r1q(2,0), r1q(2,1), r1q(2,2)} };
 	QVec t1v = getTranslationVectorTo("root", a);
 	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
 	n1->collisionObject->setTransform(R1, T1);
@@ -875,13 +875,13 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	InnerModelNode *n2 = getNode(b);
 	if (not n1) throw 2;
 	QMat r2q = getRotationMatrixTo("root", b);
-	fcl::Matrix3f R2( r2q(0,0), r2q(0,1), r2q(0,2), r2q(1,0), r2q(1,1), r2q(1,2), r2q(2,0), r2q(2,1), r2q(2,2) );
+	fcl::Matrix3f R2{ {r2q(0,0), r2q(0,1), r2q(0,2)}, {r2q(1,0), r2q(1,1), r2q(1,2)}, {r2q(2,0), r2q(2,1), r2q(2,2) } };
 	QVec t2v = getTranslationVectorTo("root", b);
 	fcl::Vec3f T2( t2v(0), t2v(1), t2v(2) );
 	n2->collisionObject->setTransform(R2, T2);
 
-	fcl::CollisionRequest request;
-	fcl::CollisionResult result;
+	fcl::CollisionReq request;
+	fcl::CollisionRes result;
 
 	n1->collisionObject->computeAABB();
 
@@ -893,7 +893,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	return result.isCollision();
 #else
 	QString error;
-	error.sprintf("InnerModel was not compiled with collision support");
+	error.asprintf("InnerModel was not compiled with collision support");
 	throw error;
 	return false;
 #endif
@@ -908,19 +908,19 @@ bool InnerModel::collide(const QString &a, const QString &b)
  * @return bool
  */
 #if FCL_SUPPORT==1
-bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
+bool InnerModel::collide(const QString &a, const fcl::CollisionObj *obj)
 {
 	
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
 	QMat r1q = getRotationMatrixTo("root", a);
-	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	fcl::Matrix3f R1{ {r1q(0,0), r1q(0,1), r1q(0,2)}, {r1q(1,0), r1q(1,1), r1q(1,2)}, {r1q(2,0), r1q(2,1), r1q(2,2)} };
 	QVec t1v = getTranslationVectorTo("root", a);
 	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
 	n1->collisionObject->setTransform(R1, T1);
 
-	fcl::CollisionRequest request;
-	fcl::CollisionResult result;
+	fcl::CollisionReq request;
+	fcl::CollisionRes result;
 
 	fcl::collide(n1->collisionObject, obj, request, result);
 
@@ -999,7 +999,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
 	QMat r1q = getRotationMatrixTo("root", a);
-	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	fcl::Matrix3f R1{ {r1q(0,0), r1q(0,1), r1q(0,2)}, {r1q(1,0), r1q(1,1), r1q(1,2)}, {r1q(2,0), r1q(2,1), r1q(2,2)} };
 	QVec t1v = getTranslationVectorTo("root", a);
 	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
 	n1->collisionObject->setTransform(R1, T1);
@@ -1007,13 +1007,13 @@ float InnerModel::distance(const QString &a, const QString &b)
 	InnerModelNode *n2 = getNode(b);
 	if (not n1) throw 2;
 	QMat r2q = getRotationMatrixTo("root", b);
-	fcl::Matrix3f R2( r2q(0,0), r2q(0,1), r2q(0,2), r2q(1,0), r2q(1,1), r2q(1,2), r2q(2,0), r2q(2,1), r2q(2,2) );
+	fcl::Matrix3f R2{ {r2q(0,0), r2q(0,1), r2q(0,2)}, {r2q(1,0), r2q(1,1), r2q(1,2)}, {r2q(2,0), r2q(2,1), r2q(2,2)} };
 	QVec t2v = getTranslationVectorTo("root", b);
 	fcl::Vec3f T2( t2v(0), t2v(1), t2v(2) );
 	n2->collisionObject->setTransform(R2, T2);
 
-	fcl::DistanceResult result;
-	fcl::DistanceRequest request;
+	fcl::DistanceRes result;
+	fcl::DistanceReq request;
 
 	n1->collisionObject->computeAABB();
 	n2->collisionObject->computeAABB();
@@ -1022,7 +1022,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 	return result.min_distance;
 #else
 	QString error;
-	error.sprintf("InnerModel was not compiled with collision support");
+	error.asprintf("InnerModel was not compiled with collision support");
 	throw error;
 	return -1;
 #endif
@@ -1039,7 +1039,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	if (not camera)
 // 	{
 // 		QString error;
-// 		error.sprintf("No such %s camera", qPrintable(cameraId));
+// 		error.asprintf("No such %s camera", qPrintable(cameraId));
 // 		throw error;
 // 	}
 //
@@ -1058,7 +1058,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	if (not camera)
 // 	{
 // 		QString error;
-// 		error.sprintf("No such %s camera", qPrintable(cameraId));
+// 		error.asprintf("No such %s camera", qPrintable(cameraId));
 // 		throw error;
 // 	}
 //
@@ -1225,7 +1225,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 		if (abs(dy) <= 1)
 // 		{
 // 			QString error;
-// 			error.sprintf("Degenerated camera");
+// 			error.asprintf("Degenerated camera");
 // 			throw error;
 // 		}
 // 		return QVec::vec3(-1, 0, p1(0));
@@ -1320,7 +1320,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	{
 // 		QString error;
 // 		       printf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
-// 		error.sprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+// 		error.asprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
 // 		throw error;
 // 	}
 // 	return cam->getFocal();

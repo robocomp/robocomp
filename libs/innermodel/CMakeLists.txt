@@ -55,6 +55,8 @@ else (FCL_SUPPORT)
 	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT=0" )
 endif (FCL_SUPPORT)
 
+target_compile_options(innermodel PUBLIC "-std=c++14") # upgrade this you need it
+
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.

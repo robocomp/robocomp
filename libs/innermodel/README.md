@@ -36,9 +36,9 @@
 		{
 			QString error;
 			if (not hash[id])
-				error.sprintf("No such joint %s", id.toStdString().c_str());
+				error.asprintf("No such joint %s", id.toStdString().c_str());
 			else
-				error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
+				error.asprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
 			throw error;
 		}
 		return r;
@@ -67,7 +67,7 @@
 	float distance(const QString &a, const QString &b);
 
 #if FCL_SUPPORT==1
-	bool collide(const QString &a, const fcl::CollisionObject *obj);
+	bool collide(const QString &a, const fcl::CollisionObj *obj);
 #endif
 
 	/**

@@ -83,7 +83,7 @@ InnerModelDisplay::InnerModelDisplay(QString id_, uint32_t port_, QString textur
 	fclMesh->beginModel();
 	fclMesh->addSubModel(vertices, triangles);
 	fclMesh->endModel();
-	collisionObject = new fcl::CollisionObject(fclMesh);
+	collisionObject = new fcl::CollisionObj(fclMesh);
 
 #endif
 }

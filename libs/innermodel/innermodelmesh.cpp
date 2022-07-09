@@ -101,13 +101,13 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 		fclMesh->beginModel();
 		fclMesh->addSubModel(vertices, triangles);
 		fclMesh->endModel();
-		collisionObject = new fcl::CollisionObject(fclMesh);
+		collisionObject = new fcl::CollisionObj(fclMesh);
 		
 	}
 	else
 	{
 		QString error;
-		error.sprintf("Failed to read mesh \"%s\" for collision support!\n", meshPath.toStdString().c_str());
+		error.asprintf("Failed to read mesh \"%s\" for collision support!\n", meshPath.toStdString().c_str());
 		throw error;
 	}
 #endif
@@ -166,7 +166,7 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 #if FCL_SUPPORT==1
 	// Associate the read vertices and triangles vectors to the FCL collision model object
 	ret->fclMesh = FCLModelPtr(new FCLModel(*fclMesh.get()));
-	ret->collisionObject = new fcl::CollisionObject(ret->fclMesh);
+	ret->collisionObject = new fcl::CollisionObj(ret->fclMesh);
 #endif
 
 

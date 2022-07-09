@@ -21,7 +21,8 @@
 // RoboComp includes
 #include <qmat/QMatAll>
 
-#ifdef FCL_SUPPORT
+//#ifdef FCL_SUPPORT
+#if __has_include("fcl/collision.h") // Remove this when people stop using fcl <= 0.5
 #include <fcl/collision.h>
 #include <fcl/distance.h>
 #include <fcl/narrowphase/narrowphase.h>
@@ -34,6 +35,31 @@
 #include <fcl/traversal/traversal_node_bvhs.h>
 typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
 typedef std::shared_ptr<FCLModel> FCLModelPtr;
+namespace fcl{
+	typedef CollisionObject CollisionObj;
+	typedef DistanceResult DistanceRes;
+	typedef DistanceRequest DistanceReq;
+	typedef CollisionRequest CollisionReq;
+	typedef CollisionResult CollisionRes;
+}
+#else 
+#include <fcl/common/types.h>
+#include <fcl/narrowphase/collision.h>
+#include <fcl/narrowphase/distance.h>
+#include <fcl/geometry/bvh/BVH_model.h>
+#include <fcl/math/bv/OBBRSS.h>
+#include <fcl/narrowphase/collision_object.h>
+
+typedef fcl::BVHModel<fcl::OBBRSS<float>> FCLModel;
+typedef std::shared_ptr<FCLModel> FCLModelPtr;
+namespace fcl{
+	typedef Vector3f Vec3f; //redefine so it matches the old definition
+	typedef CollisionObject<float> CollisionObj;
+	typedef DistanceResult<float> DistanceRes;
+	typedef DistanceRequest<float> DistanceReq;
+	typedef CollisionRequest<float> CollisionReq;
+	typedef CollisionResult<float> CollisionRes;
+}
 #endif
 
 class InnerModel;
@@ -78,7 +104,7 @@ class InnerModelNode : public RTMat
 		bool collidable;
         #ifdef FCL_SUPPORT
 			FCLModelPtr fclMesh;
-			fcl::CollisionObject *collisionObject;
+			fcl::CollisionObj *collisionObject;
 		#endif
 };
 
