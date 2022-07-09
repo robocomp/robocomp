@@ -52,7 +52,7 @@ namespace RMat
 		QVec(const QVec & v) : QVector(v)                                                 {}
 		QVec(QVec&& v) noexcept : QVector(std::move(v)) 								  {}
 		QVec(const QVector &vector): QVector(vector)                                      {}
-		QVec(const std::vector<T> &vector): QVector(QVector::fromStdVector( vector ))        {}
+		QVec(const std::vector<T> &vector): QVector( vector.begin(), vector.end() )        {}
 #ifdef PYTHON_BINDINGS_SUPPORT
 		QVec(const boost::python::list &v): QVector(QVector::fromStdVector(to_std_vector_QVec(v))) {}
 #endif
