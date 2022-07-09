@@ -1,0 +1,5 @@
+/home/gerardo/Escritorio/speechasdf/CMakeFiles/rebuild_cache.dir
+/home/gerardo/Escritorio/speechasdf/CMakeFiles/edit_cache.dir
+/home/gerardo/Escritorio/speechasdf/src/CMakeFiles/rebuild_cache.dir
+/home/gerardo/Escritorio/speechasdf/src/CMakeFiles/edit_cache.dir
+/home/gerardo/Escritorio/speechasdf/src/CMakeFiles/ICES__home_gerardo_Escritorio_speechasdf_src.dir

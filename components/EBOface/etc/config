@@ -1,0 +1,14 @@
+# Endpoints for implements interfaces
+EmotionalMotor.Endpoints=tcp -p 10945
+
+
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.MessageSizeMax=20004800
+
+
+

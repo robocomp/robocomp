@@ -1,24 +1,22 @@
-import "GenericBase.idsl";
-import "JointMotor.idsl";
-
+import "CameraRGBDSimple.idsl";
 module RoboCompAprilTags
 {
-	struct tag
-	{
-		int id;
-		float tx;
-		float ty;
-		float tz;
-		float rx;
-		float ry;
-		float rz;
-		string cameraId;
-	};
-
-	sequence<tag> tagsList;
-	
-	interface AprilTags{
-		void newAprilTag(tagsList tags);
-		void newAprilTagAndPose(tagsList tags, RoboCompGenericBase::TBaseState bState,  RoboCompJointMotor::MotorStateMap hState );
-	};
+  struct Tag
+  {
+    int id;
+    float tx;
+    float ty;
+    float tz;
+    float rx;
+    float ry;
+    float rz;
+    int cx;
+    int cy;
+  };
+  sequence<Tag> TagsList;
+  interface AprilTags
+  {
+    TagsList getAprilTags(RoboCompCameraRGBDSimple::TImage image, double tagsize, string tagfamily);
+  };
 };
+

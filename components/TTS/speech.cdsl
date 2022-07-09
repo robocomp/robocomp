@@ -1,0 +1,14 @@
+import "Speech.idsl";
+import "EmotionalMotor.idsl";
+import "Recorder.idsl";
+
+Component speech
+{
+    Communications
+    {
+	implements Speech;
+	requires EmotionalMotor, Recorder;
+    };
+    language python;
+};
+

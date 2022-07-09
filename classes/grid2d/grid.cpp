@@ -39,11 +39,11 @@ void Grid::initialize(  QRectF dim_,
     dim = dim_;
     TILE_SIZE = tile_size;
     scene = scene_;
-    qInfo() << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
-    qInfo() << __FUNCTION__ <<  "World dimension: ";
-    qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
+    qInfo() << __FILE__ << __FUNCTION__ <<  "World dimension: " << dim << TILE_SIZE << "I assume that Y+ axis goes upwards";
+    //qInfo() << __FUNCTION__ <<  "World dimension: ";
+    //qInfo() << "    " << "left:" << dim.left() << "right:" << dim.right() << "bottom:" << dim.bottom() << "top:" << dim.top() << "tile:" << TILE_SIZE;
     /// CHECK DIMENSIONS BEFORE PROCEED
-    qInfo() << __FUNCTION__ << "Grid coord" << grid_center << grid_angle;
+    qInfo() << __FUNCTION__ << "Grid coordinates. Center:" << grid_center << "Angle:" << grid_angle;
     for (const auto &[key, value]: fmap)
         scene->removeItem(value.tile);
     if(bounding_box != nullptr) scene->removeItem(bounding_box);
@@ -56,7 +56,6 @@ void Grid::initialize(  QRectF dim_,
     std::uint32_t id=0;
     Eigen::Matrix2f matrix;
     matrix << cos(grid_angle) , -sin(grid_angle) , sin(grid_angle) , cos(grid_angle);
-    std::cout << matrix << std::endl;
     for (float i = dim.left(); i < dim.right(); i += TILE_SIZE)
         for (float j = dim.top(); j < dim.bottom(); j += TILE_SIZE)
         {
@@ -66,7 +65,7 @@ void Grid::initialize(  QRectF dim_,
             aux.visited = false;
             aux.cost = 1.0;
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
-            //tile->setZValue(10);
+            //tile->setZValue(50);
             auto res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
             tile->setPos(res.x(), res.y());
             tile->setRotation(qRadiansToDegrees(grid_angle));
@@ -625,7 +624,8 @@ inline double Grid::heuristicL2(const Key &a, const Key &b) const
 {
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
 }
-void Grid::update_costs()
+/////////////////////////////// COSTS /////////////////////////////////////////////////////////
+void Grid::update_costs(bool wide)
 {
     static QBrush free_brush(QColor(params.free_color));
     static QBrush occ_brush(QColor(params.occupied_color));
@@ -640,43 +640,56 @@ void Grid::update_costs()
     }
 
     //update grid values
-    for(auto &&[k,v] : iter::filterfalse([](auto v){ return std::get<1>(v).free;}, fmap))
+    if(wide)
     {
-        v.cost = 100;
-        v.tile->setBrush(occ_brush);
-        for(auto neighs = neighboors_16(k); auto &&[kk, vv] : neighs)
+        for (auto &&[k, v]: iter::filterfalse([](auto v) { return std::get<1>(v).free; }, fmap))
         {
-            fmap.at(kk).cost = 100;
-            fmap.at(kk).tile->setBrush(occ_brush);
+            v.cost = 100;
+            v.tile->setBrush(occ_brush);
+            for (auto neighs = neighboors_16(k); auto &&[kk, vv]: neighs)
+            {
+                fmap.at(kk).cost = 100;
+                fmap.at(kk).tile->setBrush(occ_brush);
+            }
+        }
+        for (auto &&[k, v]: iter::filter([](auto v) { return std::get<1>(v).cost == 100; }, fmap))
+            for (auto neighs = neighboors_8(k); auto &&[kk, vv]: neighs)
+            {
+                if (vv.cost < 100)
+                {
+                    fmap.at(kk).cost = 50;
+                    fmap.at(kk).tile->setBrush(orange_brush);
+                }
+            }
+        for (auto &&[k, v]: iter::filter([](auto v) { return std::get<1>(v).cost == 50; }, fmap))
+            for (auto neighs = neighboors_8(k); auto &&[kk, vv]: neighs)
+            {
+                if (vv.cost < 50)
+                {
+                    fmap.at(kk).cost = 25;
+                    fmap.at(kk).tile->setBrush(yellow_brush);
+                }
+            }
+        for (auto &&[k, v]: iter::filter([](auto v) { return std::get<1>(v).cost == 25; }, fmap))
+            for (auto neighs = neighboors_8(k); auto &[kk, vv]: neighs)
+            {
+                if (vv.cost < 25)
+                {
+                    fmap.at(kk).cost = 15;
+                    fmap.at(kk).tile->setBrush(gray_brush);
+                }
+            }
+    }
+    else
+    {
+        for (auto &&[k, v]: iter::filterfalse([](auto v) { return std::get<1>(v).free; }, fmap))
+        {
+            v.cost = 100;
+            v.tile->setBrush(occ_brush);
+            fmap.at(k).cost = 100;
+            fmap.at(k).tile->setBrush(occ_brush);
         }
     }
-    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==100;}, fmap))
-        for(auto neighs = neighboors_8(k); auto &&[kk, vv] : neighs)
-        {
-            if(vv.cost < 100)
-            {
-                fmap.at(kk).cost = 50;
-                fmap.at(kk).tile->setBrush(orange_brush);
-            }
-        }
-    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==50;}, fmap))
-        for(auto neighs = neighboors_8(k); auto &&[kk, vv] : neighs)
-        {
-            if(vv.cost < 50)
-            {
-                fmap.at(kk).cost = 25;
-                fmap.at(kk).tile->setBrush(yellow_brush);
-            }
-        }
-    for(auto &&[k,v] : iter::filter([](auto v){ return std::get<1>(v).cost==25;}, fmap))
-        for(auto neighs = neighboors_8(k); auto &[kk, vv] : neighs)
-        {
-            if(vv.cost < 25)
-            {
-                fmap.at(kk).cost = 15;
-                fmap.at(kk).tile->setBrush(gray_brush);
-            }
-        }
 }
 
 ////////////////////////////// DRAW /////////////////////////////////////////////////////////

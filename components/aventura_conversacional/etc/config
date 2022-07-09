@@ -1,0 +1,16 @@
+# Proxies for required interfaces
+EmotionalMotorProxy = emotionalmotor:tcp -h localhost -p 10945
+SoundRotationProxy = soundrotation:tcp -h localhost -p 13075
+SpeechProxy = speech:tcp -h localhost -p 11339
+
+
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.MessageSizeMax=20004800
+
+
+
