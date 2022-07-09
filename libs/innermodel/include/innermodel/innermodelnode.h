@@ -21,7 +21,7 @@
 // RoboComp includes
 #include <qmat/QMatAll>
 
-//#ifdef FCL_SUPPORT
+#ifdef FCL_SUPPORT
 #if __has_include("fcl/collision.h") // Remove this when people stop using fcl <= 0.5
 #include <fcl/collision.h>
 #include <fcl/distance.h>
@@ -61,7 +61,7 @@ namespace fcl{
 	typedef CollisionResult<float> CollisionRes;
 }
 #endif
-
+#endif
 class InnerModel;
 
 class InnerModelNode : public RTMat
