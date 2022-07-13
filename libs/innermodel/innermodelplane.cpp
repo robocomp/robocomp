@@ -107,7 +107,7 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	fcl::Matrix3f R;
 	fcl::Vec3f T;
 		
-	collisionObject = new fcl::CollisionObject(fclMesh, R, T);
+	collisionObject = new fcl::CollisionObj(fclMesh, R, T);
 	
 #endif
 }

@@ -224,7 +224,7 @@ QVec InnerModelCamera::horizonLine(QString planeId, QString cameraId, float heig
 		if (abs(dy) <= 1)
 		{
 			QString error;
-			error.sprintf("Degenerated camera");
+			error.asprintf("Degenerated camera");
 			throw error;
 		}
 		return QVec::vec3(-1, 0, p1(0));

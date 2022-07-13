@@ -22,6 +22,7 @@
 #include <math.h>
 #include <iostream>
 #include <QtCore>
+#include <QtGlobal>
 #include <vector>
 #include <limits>
 #include <qmat/qmat.h>
@@ -52,7 +53,12 @@ namespace RMat
 		QVec(const QVec & v) : QVector(v)                                                 {}
 		QVec(QVec&& v) noexcept : QVector(std::move(v)) 								  {}
 		QVec(const QVector &vector): QVector(vector)                                      {}
-		QVec(const std::vector<T> &vector): QVector(QVector::fromStdVector( vector ))        {}
+		//TODO: Remove this when we stop supporting ubuntu 20
+		#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) 
+		QVec(const std::vector<T> &vector): QVector( vector.begin(), vector.end() )        {}
+		#else
+		QVec(const std::vector<T> &vector): QVector(QVector::fromStdVector( vector ))      {}		
+		#endif
 #ifdef PYTHON_BINDINGS_SUPPORT
 		QVec(const boost::python::list &v): QVector(QVector::fromStdVector(to_std_vector_QVec(v))) {}
 #endif

@@ -58,7 +58,7 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 	else
 	{
 		QString error;
-		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		error.asprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
 }
@@ -163,7 +163,7 @@ float InnerModelJoint::setAngle(float angle, bool force)
 	else
 	{
 		QString error;
-		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		error.asprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
 

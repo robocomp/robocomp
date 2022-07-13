@@ -170,9 +170,9 @@ public:
 		{
 			QString error;
 			if (not hash[QString::fromStdString(id)])
-				error.sprintf("No such node %s", id.c_str());
+				error.asprintf("No such node %s", id.c_str());
 			else
-				error.sprintf("%s doesn't seem to be a node", id.c_str());
+				error.asprintf("%s doesn't seem to be a node", id.c_str());
 			throw error;
 		}
 		return r;
@@ -185,9 +185,9 @@ public:
 		{
 			QString error;
 			if (not hash[QString::fromStdString(id)])
-				error.sprintf("No such node %s", id);
+				error.asprintf("No such node %s", id);
 			else
-				error.sprintf("%s doesn't seem to be a node", id);
+				error.asprintf("%s doesn't seem to be a node", id);
 			throw error;
 		}
 		return r;
@@ -200,9 +200,9 @@ public:
 		{
 			QString error;
 			if (not hash[id])
-				error.sprintf("No such node %s", id.toStdString().c_str());
+				error.asprintf("No such node %s", id.toStdString().c_str());
 			else
-				error.sprintf("%s doesn't seem to be a node", id.toStdString().c_str());
+				error.asprintf("%s doesn't seem to be a node", id.toStdString().c_str());
 			throw error;
 		}
 		return r;
@@ -231,7 +231,7 @@ public:
 	float distance(const QString &a, const QString &b);
 
 #ifdef FCL_SUPPORT
-	bool collide(const QString &a, const fcl::CollisionObject *obj);
+	bool collide(const QString &a, const fcl::CollisionObj *obj);
 #endif
 
 	/**

@@ -1,3 +1,5 @@
+// Example: fps.print("FPS:");
+
 class FPSCounter
 {
 	public:
