@@ -111,7 +111,7 @@ target_link_libraries( rcis
 		Robocomp::qmat
 		Robocomp::innermodel
 		Robocomp::osgviewer
-
+		pthread
 		)
 
 target_include_directories(rcis
