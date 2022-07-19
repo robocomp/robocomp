@@ -123,6 +123,9 @@ public:
     void clear();
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
+    void update_map( const std::vector<Eigen::Vector2f> &points, const Eigen::Vector2f &robot_in_grid, float max_laser_range);
+    bool is_path_blocked(const std::vector<Eigen::Vector2f> &path); // grid coordinates
+
 
     inline std::tuple<bool, T &> getCell(long int x, long int z);
     inline std::tuple<bool, T &> getCell(const Key &k);
@@ -148,6 +151,7 @@ public:
     void readFromString(const std::string &cadena);
     Key pointToKey(long int x, long int z) const;
     Key pointToKey(const QPointF &p) const;
+    Key pointToKey(const Eigen::Vector2f &p) const;
     Eigen::Vector2f pointToGrid(const Eigen::Vector2f &p) const;
     void setFree(const Key &k);
     void set_free(int cx, int cy);
@@ -155,6 +159,7 @@ public:
     void set_free(long int x, long int y);
     void set_free(float xf, float yf);
     bool isFree(const Key &k);
+    bool is_occupied(const Eigen::Vector2f &p);
     void setVisited(const Key &k, bool visited);
     bool is_visited(const Key &k);
     void set_all_to_not_visited();
@@ -163,6 +168,7 @@ public:
     void setOccupied(long int x, long int y);
     void setOccupied(const QPointF &p);
     void setCost(const Key &k, float cost);
+    float get_cost(const Eigen::Vector2f &p);
     void add_miss(const Eigen::Vector2f &p);
     void add_hit(const Eigen::Vector2f &p);
     void log_update(const Eigen::Vector2f &p, float prob);
@@ -199,7 +205,7 @@ private:
     struct Params
     {
         const QString free_color = "white";
-        const QString occupied_color = "red";
+        const QString occupied_color = "DarkRed";
         const float occupancy_threshold = 0.5;
     };
     Params params;

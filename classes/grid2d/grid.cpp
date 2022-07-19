@@ -145,6 +145,12 @@ Grid::Key Grid::pointToKey(const QPointF &p) const
     int kz = rint((p.y() - dim.top()) / TILE_SIZE);
     return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
 };
+Grid::Key Grid::pointToKey(const Eigen::Vector2f &p) const
+{
+    int kx = rint((p.x() - dim.left()) / TILE_SIZE);
+    int kz = rint((p.y() - dim.top()) / TILE_SIZE);
+    return Key(dim.left() + kx * TILE_SIZE, dim.top() + kz * TILE_SIZE);
+};
 Eigen::Vector2f Grid::pointToGrid(const Eigen::Vector2f &p) const
 {
     return Eigen::Vector2f(rint((p.x() - dim.left()) / TILE_SIZE), rint((p.y()) - dim.top()) / TILE_SIZE);
@@ -223,6 +229,14 @@ bool Grid::isFree(const Key &k)
     else
         return false;
 }
+bool Grid::is_occupied(const Eigen::Vector2f &p)
+{
+    const auto &[success, v] = getCell(p.x(),p.y());
+    if(success)
+        return not v.free;
+    else
+        return true;  // non existing cells are returned as occupied
+}
 //deprecated
 void Grid::setFree(const Key &k)
 {
@@ -292,6 +306,7 @@ void Grid::add_miss(const Eigen::Vector2f &p)
     {
         v.misses++;
         if((float)v.hits/(v.hits+v.misses) < params.occupancy_threshold)
+        //if((float)v.hits/(v.hits+v.misses) < params.prob_free)
         {
             if(not v.free)
                 this->flipped++;
@@ -311,7 +326,8 @@ void Grid::add_hit(const Eigen::Vector2f &p)
     {
         v.hits++;
         if((float)v.hits/(v.hits+v.misses) >= params.occupancy_threshold)
-        {
+        //if((float)v.hits/(v.hits+v.misses) >= params.prob_occ)
+            {
             if(v.free)
                 this->flipped++;
             v.free = false;
@@ -392,6 +408,15 @@ void Grid::setCost(const Key &k,float cost)
     if(success)
         v.cost = cost;
 }
+float Grid::get_cost(const Eigen::Vector2f &p)
+{
+    auto &&[success, v] = getCell(p.x(), p.y());
+    if(success)
+        return v.cost;
+    else
+        return -1;
+}
+
 void Grid::set_all_costs(float value)
 {
     for(auto &[key, cell] : fmap)
@@ -456,17 +481,17 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     if (not dim.contains(target_))
     {
         qDebug() << __FUNCTION__ << "Target " << target_.x() << target_.y() << "out of limits " << dim << " Returning empty path";
-        return std::list<QPointF>();
+        return {};
     }
     if (not dim.contains(source_))
     {
         qDebug() << __FUNCTION__ << "Robot out of limits. Returning empty path";
-        return std::list<QPointF>();
+        return {};
     }
     if (source == target)
     {
         qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
-        return std::list<QPointF>();
+        return {};
     }
     //source in a non-free cell (red cell)
     if(neighboors_8(source_).empty())
@@ -481,7 +506,6 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
 //        qWarning() << "Could not find source position in Grid. Returning empty path";
         return std::list<QPointF>();
     }
-
 
     // vector de distancias inicializado a UINT_MAX
     std::vector<uint32_t> min_distance(fmap.size(), std::numeric_limits<uint32_t>::max());
@@ -529,7 +553,6 @@ std::vector<Eigen::Vector2f> Grid::compute_path(const QPointF &source_, const QP
         path[i] = Eigen::Vector2f(p.x(), p.y());
     return  path;
 }
-
 std::vector<std::pair<Grid::Key, Grid::T>> Grid::neighboors(const Grid::Key &k, const std::vector<int> &xincs,const std::vector<int> &zincs,
                                                             bool all)
 {
@@ -624,6 +647,7 @@ inline double Grid::heuristicL2(const Key &a, const Key &b) const
 {
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z));
 }
+
 /////////////////////////////// COSTS /////////////////////////////////////////////////////////
 void Grid::update_costs(bool wide)
 {
@@ -691,7 +715,32 @@ void Grid::update_costs(bool wide)
         }
     }
 }
+void Grid::update_map( const std::vector<Eigen::Vector2f> &points, const Eigen::Vector2f &robot_in_grid, float max_laser_range)
+{
+    for(const auto &point : points)
+    {
+        float length = (point-robot_in_grid).norm();
+        int num_steps = ceil(length/(TILE_SIZE));
+        Eigen::Vector2f p;
+        for(const auto &&step : iter::range(0.0, 1.0-(1.0/num_steps), 1.0/num_steps))
+        {
+            p = robot_in_grid * (1-step) + point*step;
+            add_miss(p);
+        }
+        if(length <= max_laser_range)
+            add_hit(point);
 
+        if((p-point).norm() < TILE_SIZE)  // in case last miss overlaps tip
+            add_hit(point);
+    }
+}
+bool Grid::is_path_blocked(const std::vector<Eigen::Vector2f> &path) // grid coordinates
+{
+    for(const auto &p: path)
+        if(is_occupied(p) or get_cost(p)>=50)
+           return true;
+    return false;
+}
 ////////////////////////////// DRAW /////////////////////////////////////////////////////////
 void Grid::draw()
 {
