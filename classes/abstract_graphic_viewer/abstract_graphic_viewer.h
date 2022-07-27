@@ -45,8 +45,8 @@ public:
             this->viewport()->setMouseTracking(true);
             auto r = sceneRect();
             // bounding box
-            auto sr = scene.addRect(r, QPen(QColor("Gray"), 100));
-            sr->setZValue(15);
+            //auto sr = scene.addRect(r, QPen(QColor("Gray"), 100));
+            //sr->setZValue(15);
             // axis
             QLineF x_axis(r.center(), r.center()+QPointF(300,0));
             QLineF y_axis(r.center(), r.center()+QPointF(0,300));
