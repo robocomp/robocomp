@@ -24,6 +24,7 @@
 #include <atomic>
 #include <future>
 #include "threadpool/threadpool.h"
+#include <optional>
 
 using namespace std::chrono_literals;
 
