@@ -27,11 +27,12 @@ class RCBuild:
         self.ws = Workspace()
 
     def build_component(self, bcomponent, do_clean_first=False, reg_exp=False, all_comps=False):
+        component = self.ws.find_component(bcomponent, is_interactive(), reg_exp=reg_exp)
         if all_comps:
             components = self.ws.find_components(bcomponent, reg_exp=reg_exp)
             for component in components:
                 component.build(clean=do_clean_first)
-        elif component := self.ws.find_component(bcomponent, is_interactive(), reg_exp=reg_exp):
+        elif component:
             component.build(clean=do_clean_first)
         else:
             component = ComponentDir.create_component(Path(bcomponent))

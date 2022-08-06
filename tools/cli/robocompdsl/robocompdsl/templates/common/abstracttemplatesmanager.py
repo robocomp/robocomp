@@ -87,8 +87,11 @@ class CustomTemplate(Template):
                 identifiers.append(result[3])
         return identifiers
 
-if not (TEMPLATES_DIR := Path('/opt/robocomp/python/robocompdsl/templates/')).exists():
-    if not (TEMPLATES_DIR := Path(__file__).absolute().parent.parent).absolute().exists():
+
+TEMPLATES_DIR = Path('/opt/robocomp/python/robocompdsl/templates/')
+if not TEMPLATES_DIR.exists():
+    TEMPLATES_DIR = Path(__file__).absolute().parent.parent
+    if not TEMPLATES_DIR.absolute().exists():
         print(f"NO TEMPLATE DIR FOUND FOR ROBOCOMPDSL!!!: {__file__}")
 
 
@@ -130,7 +133,8 @@ class AbstractTemplatesManager(ABC):
         template_name = template.replace(str(full_path), "")
         # look for a method in the class with the name of the file
         for plugin in self.plugins:
-            if new_template_dict := plugin.get_template_dict(template_name, self.ast, interface_name):
+            new_template_dict = plugin.get_template_dict(template_name, self.ast, interface_name)
+            if new_template_dict:
                 for entry, value in new_template_dict.items():
                     if entry in template_dict:
                         template_dict[entry] += new_template_dict[entry]

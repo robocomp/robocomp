@@ -74,7 +74,8 @@ class Workspace:
         return component
 
     def find_component_path(self, searched_component, interactive=False):
-        if component := self.find_component(searched_component, interactive):
+        component = self.find_component(searched_component, interactive)
+        if component:
             return component.path
         return None
 
@@ -126,7 +127,8 @@ class Workspace:
     def get_recursive_components_in_dir(self, initial_path: Path, print_path=False):
         components_parents_dirs = {}
         for sub_dir in initial_path.resolve().rglob("*"):
-            if sub_dir.is_dir() and (comp := ComponentDir.create_component(sub_dir)):
+            comp = ComponentDir.create_component(sub_dir)
+            if sub_dir.is_dir() and comp:
                 components_parents_dirs[sub_dir] = comp
                 if print_path:
                     print(f'Found {str(sub_dir)}')
@@ -135,7 +137,8 @@ class Workspace:
     @staticmethod
     def get_recursive_interfaces_in_dir(initial_path, print_path=False):
         interface_files = []
-        if (initial_path := Path(initial_path)).is_dir():
+        initial_path = Path(initial_path)
+        if initial_path.is_dir():
             interface_files += list(map(str, initial_path.rglob("*.idsl")))
             if print_path:
                 print(f'Found {str(interface_files)}')
