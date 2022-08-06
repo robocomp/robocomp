@@ -45,7 +45,8 @@ class ComponentConfigCheck(ComponentCheck):
     @classmethod
     def check(cls, component_dir: Path, component=None):
         config_files = defaultdict(list)
-        if full_path := component_dir / "etc":
+        full_path = component_dir / "etc"
+        if full_path.exists():
             if full_path.is_dir():
                 if full_path.glob("config"):
                     filepath = full_path / "config"
@@ -183,7 +184,8 @@ class ComponentDir:
                 something_have_been_cleaned=True
             if self.build_path.is_dir():
                 items_to_remove.append(str(self.build_path))
-        if (cmakecache_file := self.path / "CMakeCache.txt").is_file():
+        cmakecache_file = self.path / "CMakeCache.txt"
+        if cmakecache_file.is_file():
             items_to_remove.append(str(cmakecache_file))
         if delete_bin and self.bin_path and self.bin_path.is_dir():
             items_to_remove.append(str(self.bin_path))
