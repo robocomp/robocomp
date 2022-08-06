@@ -11,6 +11,8 @@ RUN echo "branch: ${branch}"
 # DEFAULT LD_LIBRARY_PATH vaiables from the nvidia/opengl image confuses pyside2 about the qt5 Library paths
 ENV LD_LIBRARY_PATH="/lib:/usr/lib"
 RUN export LD_LIBRARY_PATH="/lib:/usr/lib"
+RUN export LC_ALL=C.UTF-8
+RUN export LANG=C.UTF-8
 RUN apt-get update && apt-get install -y --no-install-recommends  \
       ca-certificates \
       curl \
