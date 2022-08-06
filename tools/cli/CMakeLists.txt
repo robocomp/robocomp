@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.10 )
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-execute_process(COMMAND python3 -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+find_package(PythonInterp 3 REQUIRED)
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
 INSTALL(FILES "robocomp.pth" DESTINATION ${PYTHON_SITE_PATH} )
 
 

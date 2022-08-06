@@ -78,10 +78,7 @@ FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
 
 # Specify construction and link process
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-add_executable( rcis  )
-target_sources(rcis
-		PRIVATE
-		${SPECIFIC_SOURCES}
+SET(RCIS_SOURCES ${SPECIFIC_SOURCES}
 		${IDSL_SOURCES}
 		${ICES_SOURCES}
 		${SOURCES}
@@ -101,6 +98,11 @@ target_sources(rcis
 		touchsensorI.cpp
 		${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
 		${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
+		)
+add_executable( rcis ${RCIS_SOURCES})
+target_sources(rcis
+		PRIVATE
+		${RCIS_SOURCES}
 		)
 target_link_libraries( rcis
 		PRIVATE
