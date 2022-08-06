@@ -14,7 +14,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       libboost-thread-dev \
       libgsl-dev \
       libopenscenegraph-dev \
-      libpyside2-dev \
       libqt5opengl5-dev \
       libqt5xmlpatterns5-dev \
       libzeroc-icestorm3.7 \
