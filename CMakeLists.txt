@@ -76,7 +76,7 @@ if (CORE)
 	SET(compile_dirs ${compile_dirs} "libs")
 endif(CORE)
 
-add_subdirectory(libs)
+#add_subdirectory(libs)
 add_subdirectory(tools)
 
 #ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
