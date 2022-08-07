@@ -33,8 +33,9 @@ WORKDIR /home/robolab/
 
 FROM dependencies-version AS base-version
 ARG branch
-RUN echo "branch: ${branch}"
 # Using robocomp installation script
+ADD cmake_binary_download.sh /home/robolab/
+RUN bash -x cmake_binary_download.sh
 RUN cd ~ && export branch=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/robocomp_install.sh | bash -x -s $branch
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
