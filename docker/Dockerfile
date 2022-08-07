@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
       ca-certificates \
       curl \
       sudo \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+RUN echo "branch: ${branch}"
 RUN cd ~ && export branch=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh
 RUN export uid=1000 gid=1000 && \
@@ -35,7 +36,12 @@ FROM dependencies-version AS base-version
 ARG branch
 # Using robocomp installation script
 ADD cmake_binary_download.sh /home/robolab/
+RUN export LC_ALL=C.UTF-8
+RUN export LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 RUN bash -x cmake_binary_download.sh
+RUN echo "branch: ${branch}"
 RUN cd ~ && export branch=$branch \
     && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/robocomp_install.sh | bash -x -s $branch
 ENV PATH=$PATH:/opt/robocomp/bin/:'/home/robolab/.local/bin'
@@ -57,11 +63,13 @@ RUN cp -r -L files /home/robolab/files 2>/dev/null || :
 
 
 FROM base-version AS fcl-version
+RUN export LC_ALL=C.UTF-8
+RUN export LANG=C.UTF-8
 USER root
 RUN apt update && apt-get install --no-install-recommends --yes \
   libfcl-dev
 USER robolab
-RUN cd /home/robolab/robocomp && mkdir -p build && cd build && cmake -DFCL_SUPPORT=True .. && make -j$(nproc)
+RUN cd /home/robolab/robocomp && rcconfig init && mkdir -p build && cd build && cmake -DFCL_SUPPORT=True .. && make -j$(nproc)
 USER root
 RUN cd /home/robolab/robocomp/build && make install
 USER robolab
@@ -69,17 +77,18 @@ USER robolab
 
 FROM fcl-version AS dsr-version
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  g++-10 \
-  gcc-10 \
-  libeigen3-dev \
-  python3-dev \
-  python3-pybind11 \
-  libqglviewer-dev-qt5 \
-  libasio-dev \
-  libtinyxml2-dev  \
-  libqt5svg5-dev \
-  && rm -rf /var/lib/apt/lists/*
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt-get update && apt-get install -y --no-install-recommends \
+	g++-10 \
+	gcc-10 \
+	libeigen3-dev \
+	python3-dev \
+	python3-pybind11 \
+	libqglviewer-dev-qt5 \
+	libasio-dev \
+	libtinyxml2-dev  \
+	libqt5svg5-dev \
+	&& rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
 RUN python3 -m pip install pyrep
