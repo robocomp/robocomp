@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
       sudo \
     && rm -rf /var/lib/apt/lists/*
 RUN cd ~ && export branch=$branch \
-    && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh
+    && curl -sL https://raw.githubusercontent.com/robocomp/robocomp/$branch/tools/install/resources/robocomp_prerequisites_install.sh | bash -x -s $branch
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
     echo "robolab:x:${uid}:${gid}:Robolab,,,:/home/robolab:/bin/bash" >> /etc/passwd && \
@@ -65,54 +65,57 @@ USER root
 RUN cd /home/robolab/robocomp/build && make install
 USER robolab
 
+#
+#FROM fcl-version AS dsr-version
+#ARG branch
+#USER root
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#  g++-10 \
+#  gcc-10 \
+#  libeigen3-dev \
+#  python3-dev \
+#  python3-pybind11 \
+#  libqglviewer-dev-qt5 \
+#  libasio-dev \
+#  libtinyxml2-dev  \
+#  libqt5svg5-dev \
+#  && rm -rf /var/lib/apt/lists/*
+#RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+#RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+#RUN python3 -m pip install pyrep
+#
+## ICE fix
+#COPY Connection.h /usr/include/Ice/Connection.h
+#
+#### Third party dependencies
+#RUN (curl -O https://raw.githubusercontent.com/robocomp/robocomp/development/classes/threadpool/threadpool.h && mkdir -p /usr/include/threadpool && mv threadpool.h /usr/include/threadpool )
+#RUN curl -S https://raw.githubusercontent.com/robocomp/cortex/development/installation.sh | bash -x -s $branch
+#RUN rm -r /usr/local/include/cppitertools
+#RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
+#USER robolab
+#
+#
+#FROM dsr-version AS dsr-components-version
+#USER root
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#  libopencv-dev \
+#  python3-zeroc-ice  \
+#  psmisc \
+#  && rm -rf /var/lib/apt/lists/*
+##Compilation of DSR components
+#USER robolab
+#WORKDIR /home/robolab/robocomp/components/
+#RUN git clone --progress https://github.com/robocomp/dsr-graph.git
+#WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
+#RUN cd idserver && cmake . && make -j10
+#RUN cd pioneer_dsr && cmake . && make -j10
+#RUN cd path_follower && cmake . && make -j10
+#RUN cd path_planner_astar && cmake . && make -j10
+#RUN cd elastic_band && cmake . && make -j10
 
-FROM fcl-version AS dsr-version
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  g++-10 \
-  gcc-10 \
-  libeigen3-dev \
-  python3-dev \
-  python3-pybind11 \
-  libqglviewer-dev-qt5 \
-  libasio-dev \
-  libtinyxml2-dev  \
-  libqt5svg5-dev \
-  && rm -rf /var/lib/apt/lists/*
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
-RUN python3 -m pip install pyrep
-
-# ICE fix
-COPY Connection.h /usr/include/Ice/Connection.h
-
-### Third party dependencies
-RUN (curl -O https://raw.githubusercontent.com/robocomp/robocomp/development/classes/threadpool/threadpool.h && mkdir -p /usr/include/threadpool && mv threadpool.h /usr/include/threadpool )
-RUN curl -S https://raw.githubusercontent.com/robocomp/cortex/development/installation.sh | bash -x
-RUN rm -r /usr/local/include/cppitertools
-RUN git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
-USER robolab
-
-
-FROM dsr-version AS dsr-components-version
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  libopencv-dev \
-  python3-zeroc-ice  \
-  psmisc \
-  && rm -rf /var/lib/apt/lists/*
-#Compilation of DSR components
-USER robolab
-WORKDIR /home/robolab/robocomp/components/
-RUN git clone --progress https://github.com/robocomp/dsr-graph.git
-WORKDIR /home/robolab/robocomp/components/dsr-graph/components/
-RUN cd idserver && cmake . && make -j10
-RUN cd pioneer_dsr && cmake . && make -j10
-RUN cd path_follower && cmake . && make -j10
-RUN cd path_planner_astar && cmake . && make -j10
-RUN cd elastic_band && cmake . && make -j10
-
-
+RUN echo "robocomp_version: ${robocomp_version}"
 FROM ${robocomp_version}-version AS final
 ARG robocomp_version
 RUN echo "Built ${robocomp_version}"
+
+#  docker build --build-arg branch=jetson_18_04_robocompdsl --build-arg base_image=ubuntu --build-arg base_tag=18.04 --build-arg robocomp_version=base -t robocomp/robocomp:jetson_18_04_robocompdsl .
