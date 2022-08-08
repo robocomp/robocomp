@@ -476,6 +476,7 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
     //qInfo() << __FUNCTION__  << " from nose pos: " << source_ << " to " << target_ ;
     Key source = pointToKey(source_.x(), source_.y());
     Key target = pointToKey(target_.x(), target_.y());
+    std::cout<<"KEY= "<<target<<std::endl;
 
     // Admission rules
     if (not dim.contains(target_))
@@ -493,13 +494,22 @@ std::list<QPointF> Grid::computePath(const QPointF &source_, const QPointF &targ
         qDebug() << __FUNCTION__ << "Robot already at target. Returning empty path";
         return {};
     }
+    // std::cout<<"NEIGHBOR SIZE "<<neighboors_16(target).size()<<std::endl;
+
+    if(neighboors_16(target).size()<16){
+        std::optional<QPointF> new_target = closest_free(target_);
+        target = pointToKey(new_target->x(), new_target->y());
+        std::cout<<"TARGET WAS IN OBSTACLE SO CHANGED TARGET TO NEAREST FREE CELL."<<std::endl;
+    }
     //source in a non-free cell (red cell)
-    if(neighboors_8(source_).empty())
+    if(neighboors_8(source).empty())
     {
+        std::cout<<"Source on an occupied cell: "<<std::endl;
         qInfo() << __FUNCTION__ << "Source on an occupied cell: " << source.x << ", " << source.z << "Returning empty path";
         std::optional<QPointF> new_source = closest_free(source_);
         source = pointToKey(new_source->x(), new_source->y());
     }
+
     const auto &[success, val] = getCell(source);
     if(not success)
     {
