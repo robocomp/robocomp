@@ -31,6 +31,7 @@
 #include <QColor>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
+#include "qgraphicscellitem.h"
 
 class Local_Grid
 {
@@ -40,41 +41,23 @@ class Local_Grid
 
 public:
     using Dimensions = QRectF;
-
     struct Key
     {
-        long int x;
-        long int z;
+        int ang;
+        int rad;
         public:
-            Key() : x(0), z(0)
-            {};
-            Key(long int &&x, long int &&z) : x(std::move(x)), z(std::move(z))
-            {};
-            Key(long int &x, long int &z) : x(x), z(z)
-            {};
-            Key(float &x, float &z) : x((long int) x), z((long int) z)
-            {};
-            Key(const long int &x, const long int &z) : x(x), z(z)
-            {};
-            Key(const QPointF &p)
-            {
-                x = p.x();
-                z = p.y();
-            };
-            QPointF toQPointF() const
-            { return QPointF(x, z); };
+            Key() : ang(0), rad(0) {};
+            Key(int ang_, int rad_) : ang(ang_), rad(rad_) {};
+            Key(const QPointF &p) : ang(p.x()), rad(p.y()) {};
+            QPointF toQPointF() const { return QPointF(ang, rad); };
 
-            bool operator==(const Key &other) const
-            {
-                return x == other.x && z == other.z;
-            };
-
+            bool operator==(const Key &other) const { return ang == other.ang && rad == other.rad; };
             void save(std::ostream &os) const
-            { os << x << " " << z << " "; }; //method to save the keys
+            { os << ang << " " << rad << " "; };         //method to save the keys
             void read(std::istream &is)
-            { is >> x >> z; };                       //method to read the keys
+            { is >> ang >> rad; };                       //method to read the keys
+            //float operator-(const Key &other) const { return (ang-other.ang)*(ang-other.ang)+(rad-other.rad)*(rad-other.rad);}
     };
-
     struct KeyHasher
     {
         std::size_t operator()(const Key &k) const
@@ -84,12 +67,11 @@ public:
             // Start with a hash value of 0    .
             std::size_t seed = 0;
             // Modify 'seed' by XORing and bit-shifting in one member of 'Key' after the other:
-            hash_combine(seed, hash_value(k.x));
-            hash_combine(seed, hash_value(k.z));
+            hash_combine(seed, hash_value(k.ang));
+            hash_combine(seed, hash_value(k.rad));
             return seed;
         };
     };
-
     struct T
     {
         std::uint32_t id;
@@ -98,7 +80,7 @@ public:
         float cost = 1;
         float hits = 0;
         float misses = 0;
-        QGraphicsRectItem *tile;
+        QGraphicsCellItem *tile;
         double log_odds = 0.0;  //log prior
 
         // method to save the value
@@ -109,7 +91,12 @@ public:
         { is >> free >> visited; };
     };
 
+//    struct compare_keys
+//    {
+//        bool operator()(const Key &a, const Key &b) const { return (a.ang*a.ang)+(a.rad*a.rad) < (b.ang*b.ang)+(b.rad*b.rad);}
+//    };
     using FMap = std::unordered_map<Key, T, KeyHasher>;
+    std::vector<Key> keys_vector;
     struct Ranges
     {
         float init = 0, end = 0, step = 0;
@@ -126,12 +113,14 @@ public:
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
     void update_map_from_polar_data( const std::vector<Eigen::Vector2f> &points, float max_laser_range);
+    void update_map_from_3D_points(  std::shared_ptr<std::vector<std::tuple<float, float, float>>> points);
     bool is_path_blocked(const std::vector<Eigen::Vector2f> &path); // grid coordinates
 
     // Cell access
-    inline std::tuple<bool, T &> getCell(long int x, long int z);
+    inline std::tuple<bool, T &> getCell(int ang, int rad);
     inline std::tuple<bool, T &> getCell(const Key &k);
     inline std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
+    
     // Iterators
     typename FMap::iterator begin()
     { return fmap.begin(); };
@@ -146,23 +135,19 @@ public:
 
     // Access to content
     void insert(const Key &key, const T &value);
-    Key pointToKey(long int x, long int z) const;
+    Key pointToKey(int ang, int rad) const;
     Key pointToKey(const QPointF &p) const;
     Key pointToKey(const Eigen::Vector2f &p) const;
     Eigen::Vector2f pointToGrid(const Eigen::Vector2f &p) const;
-    void setFree(const Key &k);
-    void set_free(int cx, int cy);
     void set_free(const QPointF &p);
-    void set_free(long int x, long int y);
-    void set_free(float xf, float yf);
+    void set_free(float ang, float yf);
     bool isFree(const Key &k);
     bool is_occupied(const Eigen::Vector2f &p);
     void setVisited(const Key &k, bool visited);
     bool is_visited(const Key &k);
     void set_all_to_not_visited();
     void set_all_to_free();
-    void setOccupied(const Key &k);
-    void setOccupied(long int x, long int y);
+    void setOccupied(float ang, float rad);
     void setOccupied(const QPointF &p);
     void setCost(const Key &k, float cost);
     float get_cost(const Eigen::Vector2f &p);
@@ -200,6 +185,7 @@ private:
     std::list<QPointF> decimate_path(const std::list<QPointF> &path);
     std::optional<QPointF> closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Local_Grid::Key, Local_Grid::T>)> pred);
     void set_all_costs(float value);
+    inline float radians_to_degrees(float a) const { if(a>=0) return a*180.f/M_PI; else return a*180/M_PI+360;};
 
     struct Params
     {
