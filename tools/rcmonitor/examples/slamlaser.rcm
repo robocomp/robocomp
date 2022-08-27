@@ -1,7 +1,0 @@
-/interfaces/SlamLaser.ice
-slamlaser
-localhost
-tcp
-10059
-500
-slamlaser.py
