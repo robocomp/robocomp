@@ -69,7 +69,8 @@ ui_**.pyc
 .idea/
 /components/CMakeLists.txt
 *CMakeFiles/
-
+*.so
+*.in
 *.cmake
 
 *CMakeCache.txt
