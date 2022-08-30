@@ -71,6 +71,7 @@ ui_**.pyc
 *CMakeFiles/
 *.so
 *.in
+.DS_Store
 *.cmake
 
 *CMakeCache.txt
