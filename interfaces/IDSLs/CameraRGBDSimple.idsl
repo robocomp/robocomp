@@ -15,7 +15,8 @@ module RoboCompCameraRGBDSimple
     int depth;
     int focalx;
     int focaly;
-    long alivetime;
+    long alivetime;   // creation time in ms
+    float period;   // acquisition period in ms
     ImgType image;
   };
 
@@ -27,7 +28,8 @@ module RoboCompCameraRGBDSimple
     int height;
     int focalx;
     int focaly;
-    long alivetime;
+    long alivetime;  // creation time in ms
+    float period;    // ms
     float depthFactor;
     DepthType depth;
   };
