@@ -4,6 +4,16 @@ module RoboCompCameraRGBDSimple
 
   sequence<byte> ImgType;
   sequence<byte> DepthType;
+  struct Point3D { float x; float y; float z; };
+  sequence<Point3D> PointsType;
+
+struct TPoints
+  {
+    PointsType points;
+    long alivetime;   // creation time in ms
+    float period;     // acquisition period in ms
+    bool compressed;
+  };
 
   struct TImage
   {
@@ -16,7 +26,7 @@ module RoboCompCameraRGBDSimple
     int focalx;
     int focaly;
     long alivetime;   // creation time in ms
-    float period;   // acquisition period in ms
+    float period;     // acquisition period in ms
     ImgType image;
   };
 
@@ -44,6 +54,7 @@ module RoboCompCameraRGBDSimple
   {
     TImage getImage(string camera)  throws HardwareFailedException;
     TDepth getDepth(string camera)  throws HardwareFailedException;
+    TPoints getPoints(string camera) throws HardwareFailedException;
     TRGBD getAll(string camera)  throws HardwareFailedException;
   };
 };

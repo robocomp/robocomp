@@ -10,7 +10,7 @@ module RoboCompYoloObjects
 		int top;
 		int right;
 		int bot;
-		float prob;
+		float score;
 	};
 	sequence<TBox> TObjects;
 	sequence<string> TObjectNames;
