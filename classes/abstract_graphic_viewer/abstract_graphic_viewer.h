@@ -17,6 +17,7 @@
 #include <QGraphicsPolygonItem>
 #include <iostream>
 
+
 class AbstractGraphicViewer : public QGraphicsView
 {
     Q_OBJECT

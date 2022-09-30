@@ -64,6 +64,15 @@ void Local_Grid::initialize(  Ranges angle_dim_,
 
    // create cost matrix
    costs = cv::Mat::ones(angle_dim.size(), radius_dim.size(), CV_8UC1);   // rows, cols
+
+   // human png
+    human_image.load("human.png");
+    plant_image.load("plant.png");
+    chair_image.load("chair.png");
+    human_image = human_image.scaled(800, 800);
+    plant_image = plant_image.scaled(800, 800);
+    chair_image = chair_image.scaled(800, 800);
+
 }
 void Local_Grid::insert(const Key &key, const T &value)
 {
@@ -492,11 +501,66 @@ void Local_Grid::update_map_from_polar_data( const std::vector<Eigen::Vector2f> 
     }
     //update_costs(true);
 }
-void Local_Grid::update_map_from_3D_points(  std::shared_ptr<std::vector<std::tuple<float, float, float>>> points)
+void Local_Grid::update_map_from_3D_points( const std::vector<std::tuple<float, float, float>> &points)
 {
 
-}
 
+}
+void Local_Grid::update_semantic_layer(float ang, float dist, int object, int type)  // ang: -PI, PI is translated to 0-360 with 0,360 at front. dist mm
+{
+    ang = 180-qRadiansToDegrees(ang);
+    auto &&[success, v] = getCell(int(ang), int(dist));
+    if(success)
+    {
+        if(not semantic_map.contains(object))
+        {
+            float x = dist * sin(qDegreesToRadians(ang));
+            float y= -dist * cos(qDegreesToRadians(ang));
+            semantic_map.insert(std::make_pair(object, Object{.id=object,
+                    .ang=ang,
+                    .dist=dist,
+                    //.bbox=scene->addRect(- 250, - 250, 500, 500, QPen(QColor("green"), 40)),
+                    //.bbox=scene->addPixmap(human_image),
+                    .timestamp=rc::Timer<>::now()}));
+            if(type==0)  //human
+            {
+                semantic_map[object].bbox=scene->addPixmap(human_image);
+                semantic_map[object].bbox->setPos(x-human_image.width()/2, y-human_image.height()/2);
+            }
+            else if(type==56)  //chair
+            {
+                semantic_map[object].bbox=scene->addPixmap(chair_image);
+                semantic_map[object].bbox->setPos(x-chair_image.width()/2, y-chair_image.height()/2);
+
+            }
+            else if(type==58)  //plant
+            {
+                semantic_map[object].bbox = scene->addPixmap(plant_image);
+                semantic_map[object].bbox->setPos(x-chair_image.width()/2, y-chair_image.height()/2);
+            }
+            else
+            {
+                semantic_map[object].bbox = scene->addRect(-250, -250, 500, 500, QPen(QColor("green"), 40), QBrush(QColor("green")));
+                semantic_map[object].bbox->setPos(dist * sin(qDegreesToRadians(ang)), -dist * cos(qDegreesToRadians(ang)));
+            }
+        }
+        else //update only position and timealive
+        {
+            semantic_map[object].ang = ang;
+            semantic_map[object].dist = dist;
+            semantic_map[object].bbox->setPos(dist*sin(qDegreesToRadians(ang)), -dist*cos(qDegreesToRadians(ang)));
+            semantic_map[object].timestamp = rc::Timer<>::now();
+        }
+        // get list of removable objects
+        auto removable = semantic_map | std::views::values | std::views::filter([p = params](auto o) { return (rc::Timer<>::now() - o.timestamp) > p.max_object_unseen_timelife; });
+        for(const auto &r : removable)
+        {
+            scene->removeItem(r.bbox);
+            delete r.bbox;
+            semantic_map.erase(r.id);
+        }
+    }
+}
 /////////////////////////////// AUX /////////////////////////////////////////////////////////
 bool Local_Grid::is_path_blocked(const std::vector<Eigen::Vector2f> &path) // grid coordinates
 {
@@ -505,14 +569,12 @@ bool Local_Grid::is_path_blocked(const std::vector<Eigen::Vector2f> &path) // gr
            return true;
     return false;
 }
-
 void Local_Grid::clear()
 {
     for (const auto &[key, value]: fmap)
         scene->removeItem(value.tile);
     fmap.clear();
 }
-
 ////////////////////////////// NEIGHS /////////////////////////////////////////////////////////
 std::optional<QPointF> Local_Grid::closestMatching_spiralMove(const QPointF &p, std::function<bool(std::pair<Local_Grid::Key, Local_Grid::T>)> pred)
 {

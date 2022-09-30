@@ -32,6 +32,9 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include "qgraphicscellitem.h"
+#include <ranges>
+#include <timer/timer.h>
+
 
 class Local_Grid
 {
@@ -72,6 +75,8 @@ public:
             return seed;
         };
     };
+
+    // Cell data structure
     struct T
     {
         std::uint32_t id;
@@ -83,18 +88,27 @@ public:
         QGraphicsCellItem *tile;
         double log_odds = 0.0;  //log prior
 
+        // semantic elements
+        int semantic_id;
+
         // method to save the value
         void save(std::ostream &os) const
         { os << free << " " << visited; };
-
         void read(std::istream &is)
         { is >> free >> visited; };
     };
 
-//    struct compare_keys
-//    {
-//        bool operator()(const Key &a, const Key &b) const { return (a.ang*a.ang)+(a.rad*a.rad) < (b.ang*b.ang)+(b.rad*b.rad);}
-//    };
+    // Object data structure
+    struct Object
+    {
+        int id;
+        float ang;
+        float dist;
+        QGraphicsItem *bbox;
+        std::int64_t timestamp;
+    };
+    std::map<int, Object> semantic_map;
+
     using FMap = std::unordered_map<Key, T, KeyHasher>;
     std::vector<Key> keys_vector;
     struct Ranges
@@ -113,11 +127,12 @@ public:
     std::list<QPointF> computePath(const QPointF &source_, const QPointF &target_);
     std::vector<Eigen::Vector2f> compute_path(const QPointF &source_, const QPointF &target_);
     void update_map_from_polar_data( const std::vector<Eigen::Vector2f> &points, float max_laser_range);
-    void update_map_from_3D_points(  std::shared_ptr<std::vector<std::tuple<float, float, float>>> points);
+    void update_map_from_3D_points(const std::vector<std::tuple<float, float, float>> &points);
+    void update_semantic_layer(float ang, float dist, int object, int type);
     bool is_path_blocked(const std::vector<Eigen::Vector2f> &path); // grid coordinates
 
     // Cell access
-    inline std::tuple<bool, T &> getCell(int ang, int rad);
+    inline std::tuple<bool, T &> getCell(int ang, int rad);  // deg, mm
     inline std::tuple<bool, T &> getCell(const Key &k);
     inline std::tuple<bool, T &> getCell(const Eigen::Vector2f &p);
     
@@ -190,9 +205,12 @@ private:
     struct Params
     {
         const QString free_color = "white";
-        const QString occupied_color = "DarkRed";
+        const QString occupied_color = "orange";
         const float occupancy_threshold = 0.5;
+        const std::uint32_t max_object_unseen_timelife = 2000; //ms
     };
     Params params;
+
+    QPixmap human_image, plant_image, chair_image;
 };
 #endif // LOCAL_GRID_H
