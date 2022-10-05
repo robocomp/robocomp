@@ -1,0 +1,23 @@
+import "GenericBase.idsl";
+
+module RoboCompDifferentialRobotMulti
+{
+  struct TMechParams
+  {
+    int wheelRadius;
+    int axisLength;
+    int encoderSteps;
+    int gearRatio;
+    float temp;
+    string device;
+    string handler;
+    float maxVelAdv;
+    float maxVelRot;
+  };
+
+  interface DifferentialRobotMulti
+  {
+    void getBaseState(int robotid, out RoboCompGenericBase::TBaseState state) throws RoboCompGenericBase::HardwareFailedException;
+    void setSpeedBase(int robotid, float adv, float rot) throws RoboCompGenericBase::HardwareFailedException;
+  };
+};

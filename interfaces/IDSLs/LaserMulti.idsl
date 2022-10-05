@@ -1,0 +1,53 @@
+import "GenericBase.idsl";
+
+module RoboCompLaserMulti
+{
+  sequence<int> shortVector;
+
+  /** \struct TCamParams
+  *@brief struct camera params
+  */
+  struct LaserConfData
+  {
+     string driver;     // Underlying hardware: HokuyoURG/Gazebo
+     string device;     // Laser device: hardware dependent
+     int staticConf;    // 0 means it has a dynamic laser configuration
+     int maxMeasures;   // Total number of possible measures (Laser specific)
+     int maxDegrees;    // Angular measurement range degrees (Laser specific)
+     int maxRange;      // Maximun distance measurable mm (Laser specific)
+     int minRange;      // Minimun distance measurable mm (Laser specific)
+     int iniRange;      // (0-totalRange) Initial measuring position
+     int endRange;      // (0-totalRange) End measuring position
+     int cluster;       // (0-99) Number of neighboor positions grouped
+     int sampleRate;    // Adquisition period in msecs
+     float angleRes;    // Angle resolution
+     float angleIni;    // Initial angle
+  };
+
+  /** \struct TData
+  *@brief Data laser
+  */
+  struct TData
+  {
+    float angle;
+    float dist;
+  };
+
+  sequence<TData> TLaserData;
+
+  /** \interface Laser
+  *@brief interface Laser functions
+  */
+  interface LaserMulti
+  {
+	/** @brief Get laser data */
+	TLaserData getLaserData(int robotid);
+	
+	
+	/**@brief Return relevan comp params
+    * @return struct LaserConfData
+    */
+	LaserConfData getLaserConfData(int robotid);
+  };
+
+};
