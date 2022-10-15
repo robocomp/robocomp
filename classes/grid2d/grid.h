@@ -29,8 +29,6 @@
 #include <Eigen/Dense>
 #include <QVector2D>
 #include <QColor>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
 
 class Grid
 {
@@ -194,7 +192,7 @@ private:
     QGraphicsScene *scene;
     std::vector<QGraphicsRectItem *> scene_grid_points;
     double updated=0.0, flipped=0.0;
-    cv::Mat costs;
+
 
     std::list<QPointF> orderPath(const std::vector<std::pair<std::uint32_t, Key>> &previous, const Key &source, const Key &target);
     inline double heuristicL2(const Key &a, const Key &b) const;

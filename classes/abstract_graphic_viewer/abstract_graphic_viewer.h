@@ -44,11 +44,8 @@ public:
             this->setMouseTracking(true);
             this->fitInView(scene.sceneRect(), Qt::KeepAspectRatio);
             this->viewport()->setMouseTracking(true);
-            auto r = sceneRect();
-            // bounding box
-            //auto sr = scene.addRect(r, QPen(QColor("Gray"), 100));
-            //sr->setZValue(15);
             // axis
+            auto r = sceneRect();
             QLineF x_axis(r.center(), r.center()+QPointF(300,0));
             QLineF y_axis(r.center(), r.center()+QPointF(0,300));
             scene.addLine(x_axis, QPen(QColor("Red"), 30));
@@ -73,6 +70,12 @@ public:
             robot_polygon->setZValue(55);
             robot_polygon->setPos(0, 0);
             return std::make_tuple(robot_polygon, laser_in_robot_sr);
+        }
+        void draw_contour()
+        {
+            auto r = sceneRect();
+            auto sr = scene.addRect(r, QPen(QColor("Gray"), 100));
+            sr->setZValue(15);
         }
         QGraphicsScene scene;
 
