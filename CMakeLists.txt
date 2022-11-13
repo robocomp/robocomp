@@ -71,13 +71,11 @@ endif(DOXYGEN_FOUND)
 # Compiling options
 SET(compile_dirs "")
 OPTION(CORE "Compile RoboComp Core" ON)
-OPTION(TOOLS "Compile RoboComp Tools" ON)
 if (CORE)
 	SET(compile_dirs ${compile_dirs} "libs")
 endif(CORE)
 
 add_subdirectory(libs)
-add_subdirectory(tools)
 
 #ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
 
