@@ -1,9 +1,0 @@
-
-Component rcinnerModelEditor
-{
-	Communications
-	{
-	};
-	language Cpp;
-	gui Qt(QWidget);
-};

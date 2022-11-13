@@ -1,8 +1,0 @@
-/interfaces/JointMotor.ice
-jointmotor
-localhost
-tcp
-10141
-30
-jointMotorTest.py
-

@@ -1,7 +1,0 @@
-/interfaces/CommonBehavior.ice
-commonbehavior
-localhost
-tcp
-10004
-100
-commonbehavior.py

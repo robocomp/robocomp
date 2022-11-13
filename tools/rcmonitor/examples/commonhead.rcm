@@ -1,8 +1,0 @@
-/interfaces/CommonHead.ice
-commonhead
-pulguita.local
-tcp
-10005
-100
-commonhead.py
-

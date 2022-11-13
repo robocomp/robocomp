@@ -1,9 +1,0 @@
-Component testcomp
-{
-    Communications
-    {
-    };
-	language Python;
-	options dsr;
-};
-

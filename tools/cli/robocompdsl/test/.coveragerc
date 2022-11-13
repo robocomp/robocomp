@@ -1,5 +1,0 @@
-[run]
-omit =
-    */dist-packages/*
-    */site-packages/*
-    */distutils/*

@@ -1,7 +1,0 @@
-/interfaces/Roimant.ice
-roimant
-localhost
-tcp
-10013
-500
-pyramidRoi.py
