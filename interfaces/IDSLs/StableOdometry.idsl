@@ -1,9 +1,0 @@
-module RoboCompStableOdometry{
-
-	interface StableOdometryTopic{
-		void newStableOdometry(float x, float z, float alpha);
-	};
-	interface StableOdometry{
-		void newStableOdometry(out float x,out float z,out float alpha);
-	};
-};

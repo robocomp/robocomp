@@ -1,7 +1,0 @@
-module RoboCompASRPublish
-{
-	interface ASRPublish
-	{
-		void newText(string text);
-	};
-};

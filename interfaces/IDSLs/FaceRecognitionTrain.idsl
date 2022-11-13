@@ -1,4 +1,0 @@
-module RoboCompFaceRecognitionTrain{
-	interface FaceRecognitionTrain{
-	};
-};

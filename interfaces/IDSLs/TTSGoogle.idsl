@@ -1,5 +1,0 @@
-module RoboCompTTSGoogle{
-	interface TTSGoogle{
-		void newTextToSpeech(string newtext);
-	};
-};

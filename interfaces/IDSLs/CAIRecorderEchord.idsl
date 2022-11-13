@@ -1,9 +1,0 @@
-module RoboCompCAIRecorderEchord
-{
-	interface AgentToRecorderComp
-	{
-		void setRecordingStatus(bool recording);
-		void insertTimeStamp(string timeStamp);
-		void insertSubtitle(string startTime, string stopTime, string subtitle);
-	};
-};

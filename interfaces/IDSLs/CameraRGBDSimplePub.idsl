@@ -1,9 +1,0 @@
-import "CameraRGBDSimple.idsl";
-
-module RoboCompCameraRGBDSimplePub
-{
-  interface CameraRGBDSimplePub
-  {
-    idempotent void pushRGBD(RoboCompCameraRGBDSimple::TImage im, RoboCompCameraRGBDSimple::TDepth dep);
-  };
-};

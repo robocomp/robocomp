@@ -1,9 +1,0 @@
-import "FullPoseEstimation.idsl";
-
-module RoboCompFullPoseEstimationPub
-{
-    interface FullPoseEstimationPub
-    {
-        void newFullPose(RoboCompFullPoseEstimation::FullPoseEuler pose);
-    };
-};

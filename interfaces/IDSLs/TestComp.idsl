@@ -1,6 +1,0 @@
-module RoboCompTest{
-
-	interface test{
-		void  printmsg(string message);
-	};
-};

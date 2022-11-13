@@ -1,6 +1,0 @@
-module RoboCompSpeech{
-	interface Speech{
-		bool say(string text,bool overwrite);
-    		bool isBusy();
-  };
-};

@@ -1,6 +1,0 @@
-module RoboCompSoundCapture{
-	sequence <int> sound;
-	interface SoundCapture{
-					
-	};
-};

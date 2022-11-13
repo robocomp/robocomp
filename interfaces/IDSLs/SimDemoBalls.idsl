@@ -1,5 +1,0 @@
-module RoboCompSimDemoBalls{
-	interface SimDemoBalls{
-		void newText(string command);
-	};
-};

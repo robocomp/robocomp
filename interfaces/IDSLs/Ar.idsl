@@ -1,5 +1,0 @@
-module RoboCompAr{
-	interface Ar{
-		
-	};
-};

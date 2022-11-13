@@ -1,9 +1,0 @@
-import "Laser.idsl";
-
-module RoboCompLaserPub
-{
-  interface LaserPub
-  {
-    idempotent void pushLaserData(RoboCompLaser::TLaserData laserData);
-  };
-};

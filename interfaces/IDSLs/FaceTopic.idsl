@@ -1,6 +1,0 @@
-module RoboCompFaceTopic{
-	sequence <int> region;
-	interface FaceTopic{
-		void detected(out RoboCompFaceTopic::region reg);
-	};
-};

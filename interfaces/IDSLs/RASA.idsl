@@ -1,7 +1,0 @@
-module RoboCompRASA{
-
-  interface RASA
-	{
-		string getMostProbableIntention(string phrase);           
-	};
-};

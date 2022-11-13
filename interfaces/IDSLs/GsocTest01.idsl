@@ -1,6 +1,0 @@
-module RoboCompGsocTest01{
-	
-	interface GsocTest01{
-		void setNumDoStuff (int result);
-	};
-};
