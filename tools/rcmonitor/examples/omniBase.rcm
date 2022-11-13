@@ -1,7 +1,0 @@
-/interfaces/OmniRobot.ice
-omnirobot
-localhost
-tcp
-12238
-30
-omniBase.py

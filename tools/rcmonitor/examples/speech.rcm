@@ -1,8 +1,0 @@
-/interfaces/Speech.ice
-speech
-localhost
-tcp
-10021
-30
-speech.py
-

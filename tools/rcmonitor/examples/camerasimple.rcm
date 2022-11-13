@@ -1,7 +1,0 @@
-/interfaces/CameraSimple.ice
-camerasimple
-localhost
-tcp
-10005
-500
-camerasimple.py

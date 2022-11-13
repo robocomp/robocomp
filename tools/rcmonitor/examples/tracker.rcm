@@ -1,7 +1,0 @@
-/interfaces/Tracker.ice
-tracker
-localhost
-tcp
-10009
-30
-tracker.py

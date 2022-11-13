@@ -1,8 +1,0 @@
-/interfaces/CameraBus.ice
-camerabus
-localhost
-tcp
-10101
-30
-cameraBusSimple.py
-

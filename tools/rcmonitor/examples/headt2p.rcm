@@ -1,8 +1,0 @@
-/interfaces/HeadT2P.ice
-headt2p
-localhost
-tcp
-10005
-100
-headt2p.py
-
