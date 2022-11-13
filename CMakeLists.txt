@@ -14,7 +14,6 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 #Set RoboComp directories
 set(RoboComp_LIBS_DIR ${CMAKE_SOURCE_DIR}/libs)
 set(RoboComp_CLASSES_DIR ${CMAKE_SOURCE_DIR}/classes)
-set(RoboComp_INTERFACES_DIR ${CMAKE_SOURCE_DIR}/interfaces)
 # Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
 
@@ -84,7 +83,6 @@ add_subdirectory(tools)
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 INSTALL(FILES "files/robocomp.conf" DESTINATION /etc/ld.so.conf.d/)
-INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
 #INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/
