@@ -66,16 +66,13 @@ void Grid::initialize(  QRectF dim_,
             aux.cost = 1.0;
             QGraphicsRectItem* tile = scene->addRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE, QPen(my_color), QBrush(my_color));
             //tile->setZValue(50);
-            auto res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
+            Eigen::Vector2f res = matrix * Eigen::Vector2f(i, j) + Eigen::Vector2f(grid_center.x(), grid_center.y());
             tile->setPos(res.x(), res.y());
             tile->setRotation(qRadiansToDegrees(grid_angle));
             aux.tile = tile;
             insert(Key(i, j), aux);
             //qInfo() << __FUNCTION__ << i << j << aux.id << aux.free << aux.tile->pos();
         }
-
-    // create cost matrix
-    costs = cv::Mat::ones(dim.height(), dim.width(), CV_8UC1);   // rows, cols
 
     // draw bounding box
     bounding_box = scene->addRect(dim, QPen(QColor("Grey"), 40));
@@ -113,7 +110,7 @@ inline std::tuple<bool, Grid::T&> Grid::getCell(const Key &k)
       }
       catch(const std::exception &e)
       {
-          //qWarning() << __FUNCTION__ << " No key found in grid: (" << k.x << k.z << ")";
+          qWarning() << __FUNCTION__ << " No key found in grid: (" << k.x << k.z << ")";
           return std::forward_as_tuple(false, T());
       }
 }
@@ -387,9 +384,10 @@ void Grid::setVisited(const Key &k, bool visited)
     auto &&[success, v] = getCell(k);
     if(success)
     {
+
         v.visited = visited;
         if(visited)
-           v.tile->setBrush(QColor("Orange"));
+            v.tile->setBrush(QColor("Orange"));
         else
             v.tile->setBrush(QColor("White"));
     }

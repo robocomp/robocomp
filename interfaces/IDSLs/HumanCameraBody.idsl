@@ -51,9 +51,20 @@ module RoboCompHumanCameraBody
         People peoplelist;
         GroundTruth gt;
     };
+    dictionary <int, string> TJointNames;
+    struct TConnection
+    { int first; int second; };
+
+    sequence<TConnection> TConnections;
+	struct TJointData
+	{
+	   TJointNames jointNames;
+	   TConnections connections;
+	};
 
     interface HumanCameraBody
     {
+        TJointData getJointData();
         PeopleData newPeopleData();
     };
 };

@@ -1,6 +1,3 @@
 [submodule "doc/robocomp-examples"]
 	path = doc/robocomp-examples
 	url = https://github.com/robocomp/robocomp-examples.git
-[submodule "tools/rcmanager/widgets/QNetworkxGraph"]
-	path = tools/rcmanager/widgets/QNetworkxGraph
-	url = https://github.com/orensbruli/QNetworkxGraph.git

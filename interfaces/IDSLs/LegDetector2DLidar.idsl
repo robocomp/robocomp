@@ -1,0 +1,19 @@
+import "Laser.idsl";
+
+module RoboCompLegDetector2DLidar
+{
+
+  struct Leg
+  {
+     float x;
+     float y;
+     long timestamp;
+  };	
+  sequence<Leg> Legs;
+
+  interface LegDetector2DLidar
+  {
+	Legs getLegs(RoboCompLaser::TLaserData ldata);
+  };
+
+};

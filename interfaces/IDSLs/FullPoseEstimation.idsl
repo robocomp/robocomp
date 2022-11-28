@@ -14,10 +14,11 @@ module RoboCompFullPoseEstimation
     struct FullPoseEuler
     {
         string source;
-        float x;  float y;  float z;
+        float x;  float y;  float z;        // position in world frame
 	    float rx; float ry; float rz;
-	    float vx; float vy; float vz;
+	    float vx; float vy; float vz;       // speed in world frame
 	    float vrx; float vry; float vrz;
+	    float adv; float side; float rot;   // speed in local robot frame
 	    int confidence;
     };
 
