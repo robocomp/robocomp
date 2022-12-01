@@ -78,23 +78,13 @@ The RoboComp's core libraries and simulator should now be compiled and installed
 
 Done! Now let's have some fun.
 
-# Testing the installation using the RCIS robotics simulator
-We will first fetch some meshes and textures used by the simulator (it will take a while):
+To test RoboComp with Coppelia you need to:
 
-    cd ~/robocomp
-    git annex get .
+- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md)
+- Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.
+- Connect your new component to the ports offered in omniPyrep.py or
+- Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
     
-Now let's run the simulator. 
-
-    cd ~/robocomp/files/innermodel
-    rcis simpleworld.xml
-  
-You can also use the default `innermodel/simpleworld.xml` anywhere if you have set the ROBOCOMP environment variable.
-
-    rcis
-    
-Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
- 
 #### Installing some RoboLab's components from GitHub
 
 The software of the robots using RoboComp is composed of different components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:
@@ -139,14 +129,6 @@ Note 2: If you have anaconda installed (for python 3), It is recommended to unin
 We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim](https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost everything running in the simulator.
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
-
-To test RoboComp with Coppelia you need to:
-
-- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md)
-- Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.
-- Connect your new component to the ports offered in omniPyrep.py or
-- Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
-    
 
 
 # Next steps
