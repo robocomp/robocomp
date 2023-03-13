@@ -1,5 +1,0 @@
-/home/gerardo/Escritorio/aventura_key_2_gir/CMakeFiles/rebuild_cache.dir
-/home/gerardo/Escritorio/aventura_key_2_gir/CMakeFiles/edit_cache.dir
-/home/gerardo/Escritorio/aventura_key_2_gir/src/CMakeFiles/rebuild_cache.dir
-/home/gerardo/Escritorio/aventura_key_2_gir/src/CMakeFiles/edit_cache.dir
-/home/gerardo/Escritorio/aventura_key_2_gir/src/CMakeFiles/ICES__home_gerardo_Escritorio_aventura_key_2_gir_src.dir
