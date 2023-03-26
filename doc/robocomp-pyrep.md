@@ -91,6 +91,8 @@ source ~/.bashrc
                 '%s' % (assert_type.name, actual.name))
         ```
  
+ - __ Comment line 41 in file "/home/pbustos/.local/lib/python3.10/site-packages/pyrep/robots/mobiles/mobile_base.py" 
+
  -  __Error when installing Pyrep. This error might occur if you do a global installation (with sudo) since PyRep won't find COPPELIASIM_ROOT:__
      ```bash
      
