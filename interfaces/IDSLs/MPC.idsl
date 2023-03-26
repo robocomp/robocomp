@@ -1,0 +1,21 @@
+module RoboCompMPC
+{
+  struct Point
+  {
+      double x;
+      double y;
+  };
+  sequence<Point> Path;
+  struct Control
+  {
+    bool valid;
+    float adv;
+    float side;
+    float rot;
+  };
+
+interface MPC
+  {
+    Control newPath(Path newpath);
+  };
+};
