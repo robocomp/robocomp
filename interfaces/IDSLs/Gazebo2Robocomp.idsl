@@ -1,0 +1,42 @@
+module RoboCompGazebo2Robocomp
+{
+	struct Vector3
+	{
+		float x;
+		float y;
+		float z;
+	};
+	
+	struct Quaternion
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
+
+	interface Gazebo2Robocomp
+	{
+		// Raw creation
+		void createEntity(string sdf);
+		
+		// Random name creation
+		void createBoxEntity(Vector3 position, Quaternion orientation, float size);
+		void createCylinderEntity(Vector3 position, Quaternion orientation, float length, float radius);
+		void createSphereEntity(Vector3 position, Quaternion orientation, float radius);
+		void createCapsuleEntity(Vector3 position, Quaternion orientation, float length, float radius);
+		
+		// Specific name creation
+		void createBoxEntity(string name, Vector3 position, Quaternion orientation, float size);
+		void createCylinderEntity(string name, Vector3 position, Quaternion orientation, float length, float radius);
+		void createSphereEntity(string name, Vector3 position, Quaternion orientation, float radius);
+		void createCapsuleEntity(string name, Vector3 position, Quaternion orientation, float length, float radius);
+		
+		// Remove by name
+		void removeEntity(string name);
+		
+		// Moving by name
+		void setEntityPose(string name, Vector3 position, Quaternion orientation);
+	
+	};
+};
