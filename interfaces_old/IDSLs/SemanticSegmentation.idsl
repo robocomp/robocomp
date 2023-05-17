@@ -1,0 +1,30 @@
+import "CameraSimple.idsl";
+module RoboCompSemanticSegmentation
+{
+    // objects
+    struct TBox
+	{
+	    int id;
+	    string type;
+  	    int left;
+	    int top;
+	    int right;
+	    int bot;
+	    float score;  // 0-1
+	    float depth;  // distance to bbox center in mm
+	    float x;      // roi center coordinates in camera CS
+	    float y;
+	    float z;
+	};
+	sequence<TBox> TObjects;
+	dictionary<string, int> TNames;
+  
+  interface SemanticSegmentation
+  {
+    TNames getNamesofCategories();
+    TObjects getInstances();
+    RoboCompCameraSimple::TImage getSegmentedImage();
+    RoboCompCameraSimple::TImage getInstancesImage();
+    RoboCompCameraSimple::TImage getMaskedImage(string categ);
+  };
+};
