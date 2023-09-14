@@ -40,29 +40,81 @@ interfaces in a seamless way. Building new components is done using two domain-s
 
 # Installation from source
 
-Tested in Ubuntu 20.04 and 20.10.  
+Tested in Ubuntu 20.04 and 22.04
 **Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
 **Note:** RoboComp is not compatible with Ubuntu 18.04. RoboComp needs to be compiled using cmake >= 3.16. It's not available in Ubuntu 18.04.
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 
+## Prerequisites
 
-## Requirements
-Make sure you have installed the following packages from the Ubuntu repository:
-```bash
-sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
-      sudo \
-      curl \
-      ca-certificates
-```
+Before you begin the installation, make sure you have the following prerequisites installed on your system:
 
-Make sure you have deleted any previous versions of RoboComp from /usr/local/bin/robocomp*
-And to install the rest of robocomp you can use the script:
-```bash
-cd ~
-curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -s
+### Prerequisites for Robocomp Installation
 
-```
+- sudo apt update
+- sudo apt install python3 python3-pip cmake vim git wget -y
+- pip3 install vcstool colcon-common-extensions
+- sudo apt install qtbase5-dev libqt5xmlpatterns5-dev libopenscenegraph-dev libgsl-dev 
+
+### Prerequisites for Compiling Robocomp Components
+
+- sudo apt install qt6-base-dev
+- pip install PySide2
+- sudo apt install libbz2-dev libssl-dev 
+- pip install zeroc-ice
+- sudo apt install zeroc-icebox zeroc-ice-all-dev libzeroc-icestorm3.7
+- sudo apt install libeigen3-dev meld
+
+## Installation Steps
+
+1. Create a directory for your RoboComp workspace and navigate to it:
+- mkdir -p ~/robocomp_ws/src
+- cd ~/robocomp_ws
+
+2. Download the robocomp.repos file:
+- wget https://raw.githubusercontent.com/robocomp/robocomp2/main/robocomp.repos
+
+3. Configure environment variables:
+- echo export ROBOCOMP=/home/robocomp/robocomp >> ~/.bashrc
+- echo export PATH="$PATH:/home/usuario/.local/bin" >>  ~/.bashrc
+- source ~/.bashrc
+
+4. Import RoboComp packages:
+- vcs import src < robocomp.repos
+
+5. Install RoboComp command-line tools:
+- pushd . && cd src/robocomp/robocomp_tools/cli/ && pip install . && popd
+
+6. Create symbolic links:
+- cd 
+- ln -s robocomp_sw/src/robocomp robocomp
+- cd /home
+- sudo ln -s usuario robocomp
+- cd robocomp/robocomp
+- ln -s robocomp_core/cmake cmake
+- ln -s robocomp_core/classes classes
+- ln -s robocomp_interfaces/interfaces interfaces
+- ln -s robocomp_tools tools
+- ln -r robocomp_cortex cortex
+- mkdir components
+- sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
+
+
+7. Configure rcnode:
+
+    Edit the ~/robocomp/tools/rcnode/rcnode.sh file and change the line:
+
+	- /opt/robocomp/etc/rcnode.conf
+
+    to
+    
+    	- /home/robocomp/robocomp/tools/rcnode/rcnode.conf
+
+8. Add an alias for rcnode to your .bashrc:
+- echo alias rcnode='bash /home/robocomp/robocomp/tools/rcnode/rcnode.sh&' >>  ~/.bashrc
+- source ~/.bashrc
+
 
 If you are going to develop with Robocomp it's recommendable to install the following packages too:
 ```bash
@@ -72,9 +124,6 @@ and create this link for Eigen includes:
 sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
-If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
-
-The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
 Done! Now let's have some fun.
 
