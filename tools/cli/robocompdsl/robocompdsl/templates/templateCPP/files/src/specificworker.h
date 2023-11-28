@@ -29,8 +29,6 @@ ${agmagent_comment}
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-${innermodel_include}
-${innermodelviewer_includes}
 ${dsr_includes}
 
 class SpecificWorker : public GenericWorker
@@ -52,8 +50,6 @@ public slots:
 	${statemachine_methods_definitions}
 	${dsr_slots}
 private:
-	${innermodel_attribute}
-	${innermodelviewer_attributes}
 	${agm_attributes}
 	${dsr_attributes}
 	bool startup_check_flag;

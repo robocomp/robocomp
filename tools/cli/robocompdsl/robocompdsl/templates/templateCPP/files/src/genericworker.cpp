@@ -26,7 +26,7 @@ GenericWorker::GenericWorker(${constructor_proxies}) : ${inherited_constructor}
 	${statemachine_initialization}
 	${require_and_publish_proxies_creation}
 
-	mutex = new QMutex(QMutex::Recursive);
+	mutex = new QMutex();
 
 	${gui_setup}
 	Period = BASIC_PERIOD;
