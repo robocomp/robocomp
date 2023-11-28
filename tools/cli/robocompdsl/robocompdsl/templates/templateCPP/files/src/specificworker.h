@@ -29,8 +29,6 @@ ${agmagent_comment}
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-${innermodel_include}
-${innermodelviewer_includes}
 ${dsr_includes}
 
 class SpecificWorker : public GenericWorker
