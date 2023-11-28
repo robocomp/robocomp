@@ -50,8 +50,6 @@ public slots:
 	${statemachine_methods_definitions}
 	${dsr_slots}
 private:
-	${innermodel_attribute}
-	${innermodelviewer_attributes}
 	${agm_attributes}
 	${dsr_attributes}
 	bool startup_check_flag;
