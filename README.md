@@ -129,7 +129,7 @@ Done! Now let's have some fun.
 
 To test RoboComp with Coppelia you need to:
 
-- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md)
+- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/robocomp-pyrep.md)
 - Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.
 - Connect your new component to the ports offered in omniPyrep.py or
 - Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
