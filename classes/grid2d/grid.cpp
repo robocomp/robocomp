@@ -678,11 +678,11 @@ void Grid::update_costs(bool wide)
         {
             v.cost = 100;
             v.tile->setBrush(occ_brush);
-            // for (auto neighs = neighboors_8(k); auto &&[kk, vv]: neighs)
-            // {
-            //     fmap.at(kk).cost = 100;
-            //     fmap.at(kk).tile->setBrush(occ_brush);
-            // }
+            for (auto neighs = neighboors_8(k); auto &&[kk, vv]: neighs)
+            {
+                fmap.at(kk).cost = 100;
+                fmap.at(kk).tile->setBrush(occ_brush);
+            }
         }
         for (auto &&[k, v]: iter::filter([](auto v) { return std::get<1>(v).cost == 100; }, fmap))
             
