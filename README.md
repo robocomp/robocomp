@@ -118,22 +118,11 @@ mkdir components
 sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
-7. Configure rcnode:
-
-    Edit the `~/robocomp/tools/rcnode/rcnode.sh` file and change the line:
-
-   `/opt/robocomp/etc/rcnode.conf`
-
-    to:
-
-   `/home/robocomp/robocomp/tools/rcnode/rcnode.conf`
-
-9. Add an alias for rcnode to your .bashrc:
+7. Add an alias for rcnode to your .bashrc:
 ```bash
 echo "alias rcnode='bash /home/robocomp/robocomp/tools/rcnode/rcnode.sh&'" >>  ~/.bashrc
 source ~/.bashrc
 ```
-
 
 If you are going to develop with Robocomp it's recommendable to install the following packages too:
 ```bash
