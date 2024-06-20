@@ -176,7 +176,7 @@
      </rect>
     </property>
     <property name="text" >
-     <string> browse</string>
+     <string>browse</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2" >
