@@ -221,6 +221,7 @@ if $install_cortex; then
 
     # Install Cortex
     status_msg "Installing Cortex..."
+    sudo cp -r $path_robocomp/classes/threadpool /usr/include/
     cd "$path_robocomp/cortex" && cmake -B build -DDSR=TRUE && sudo make install -C build -j$JOBS && cd -
     sudo ldconfig
 else
