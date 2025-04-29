@@ -114,6 +114,7 @@ status_msg "Setting RoboComp installation directory..."
 DEFAULT_PATH="$HOME/robocomp"
 if $AUTO_CONFIRM; then
     status_msg "Set default installation directory, $DEFAULT_PATH"
+    path_robocomp=$DEFAULT_PATH
 else
     read -p "Where do you want to install RoboComp? [default: $DEFAULT_PATH]: " path_robocomp
     path_robocomp=${path_robocomp:-$DEFAULT_PATH}
