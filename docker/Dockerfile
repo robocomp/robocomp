@@ -2,6 +2,15 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm
+ENV TZ=Europe/Madrid
+
+# Config tzdata
+RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends tzdata && \
+    echo ${TZ} > /etc/timezone && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
 RUN useradd -m robouser && \
@@ -13,12 +22,17 @@ RUN useradd -m robouser && \
 USER robouser
 WORKDIR /home/robouser
 
+# Define las variables de entorno necesarias para RoboComp
+ENV USER="robouser"
+ENV PATH="$PATH:/home/$USER/.local/bin"
+ENV ROBOCOMP="/home/robouser/robocomp"
+
 # Clone and install
 RUN git clone https://github.com/alfiTH/robocomp.git && \
-    cd robocomp && \
+    cd robocomp &&  \
     bash robocomp_install.sh -y
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
+RUN sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
 
 CMD ["tail", "-f", "/dev/null"]
