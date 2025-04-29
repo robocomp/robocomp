@@ -28,7 +28,7 @@ ENV PATH="$PATH:/home/$USER/.local/bin"
 ENV ROBOCOMP="/home/robouser/robocomp"
 
 # Clone and install
-RUN git clone https://github.com/alfiTH/robocomp.git && \
+RUN git clone https://github.com/robocomp/robocomp.git && \
     cd robocomp &&  \
     bash robocomp_install.sh -y
 

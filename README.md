@@ -49,7 +49,7 @@ Tested in Ubuntu 20.04, 22.04 and 24.04, with Python3.10 and Python3.12
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 
 ## Installation with script
-You can install robocomp with script [robocomp_install.sh](robocomp_install.sh), it allows you to change Robocomp path and install cortex
+You can install robocomp with script [robocomp_install.sh](robocomp_install.sh), it allows you to change Robocomp path and install [cortex](https://github.com/robocomp/cortex)
 ```bash
 wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp_install.sh && bash robocomp_install.sh
 ```
