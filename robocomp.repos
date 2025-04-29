@@ -1,0 +1,17 @@
+repositories:
+  interfaces:
+    type: git
+    url: https://github.com/robocomp/robocomp_interfaces.git
+    version: development
+  tools:
+    type: git
+    url: https://github.com/robocomp/robocomp_tools.git
+    version: development
+  cortex:
+    type: git
+    url: https://github.com/robocomp/cortex.git
+    version: development
+  core:
+    type: git
+    url: https://github.com/robocomp/robocomp_core.git
+    version: development
