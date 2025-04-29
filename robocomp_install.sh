@@ -90,14 +90,6 @@ sudo apt-get install -y \
 
 pip3 install vcstool PySide6 zeroc-ice
 
-# Add environment variables to bashrc
-status_msg "Adding environment variables to bashrc..."
-echo "export ROBOCOMP=$path_robocomp" >> ~/.bashrc
-echo "export PATH=\$PATH:$HOME/.local/bin" >> ~/.bashrc
-echo "alias rcnode='bash $path_robocomp/tools/rcnode/rcnode.sh&'" >> ~/.bashrc
-echo "alias cbuild='cmake -B build && make -C build -j$(nproc)'" >> ~/.bashrc
-source ~/.bashrc
-
 # Install libQGLViewer
 status_msg "Installing libQGLViewer..."
 mkdir -p ~/software
@@ -127,6 +119,14 @@ else
     read -p "Where do you want to install RoboComp? [default: $DEFAULT_PATH]: " path_robocomp
     path_robocomp=${path_robocomp:-$DEFAULT_PATH}
 fi
+
+# Add environment variables to bashrc
+status_msg "Adding environment variables to bashrc..."
+echo "export ROBOCOMP=$path_robocomp" >> ~/.bashrc
+echo "export PATH=\$PATH:$HOME/.local/bin" >> ~/.bashrc
+echo "alias rcnode='bash $path_robocomp/tools/rcnode/rcnode.sh&'" >> ~/.bashrc
+echo "alias cbuild='cmake -B build && make -C build -j$(nproc)'" >> ~/.bashrc
+source ~/.bashrc
 
 # Download RoboComp
 status_msg "Downloading RoboComp..."
