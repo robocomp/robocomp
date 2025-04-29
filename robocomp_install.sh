@@ -64,6 +64,13 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 
+# Set number jobs
+CORES=$(grep -c ^processor /proc/cpuinfo)
+JOBS=$(( CORES * 3 / 4 ))
+# Limit 1 job
+[ "$JOBS" -lt 1 ] && JOBS=1
+export MAKEFLAGS=-j$JOBS
+
 # System update and dependencies installation
 status_msg "Updating system and installing dependencies..."
 sudo apt-get update
@@ -95,7 +102,7 @@ status_msg "Installing libQGLViewer..."
 mkdir -p ~/software
 if [ ! -d ~/software/libQGLViewer ]; then
     git clone https://github.com/GillesDebunne/libQGLViewer.git ~/software/libQGLViewer
-    cd ~/software/libQGLViewer && qmake6 *.pro && make -j$(nproc) && sudo make install && sudo ldconfig && cd -
+    cd ~/software/libQGLViewer && qmake6 *.pro && sudo make install -j$JOBS && sudo ldconfig && cd -
 else
     warning_msg "libQGLViewer already exists in ~/software, skipping installation."
 fi
@@ -104,7 +111,7 @@ fi
 status_msg "Installing tomlplusplus..."
 if [ ! -d ~/software/tomlplusplus ]; then
     git clone https://github.com/marzer/tomlplusplus.git ~/software/tomlplusplus
-    cd ~/software/tomlplusplus && cmake -B build && sudo make install -C build -j$(nproc) && cd -
+    cd ~/software/tomlplusplus && cmake -B build && sudo make install -C build -j$JOBS && cd -
 else
     warning_msg "tomlplusplus already exists in ~/software, skipping installation."
 fi
@@ -177,12 +184,12 @@ if $install_cortex; then
 
     # Install cppitertools
     status_msg "Installing cppitertools..."
-    sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
-    cd /usr/local/include/cppitertools
-    sudo mkdir -p build
-    cd build
-    sudo cmake ..
-    sudo make install
+    if [ ! -d /usr/local/include/cppitertools ]; then
+        git clone https://github.com/ryanhaining/cppitertools ~/software/cppitertools
+        cd ~/software/cppitertools && cmake -B build && sudo make install -C build -j$JOBS && cd -
+    else
+        warning_msg "Fast-CDR already exists in ~/software, skipping installation."
+    fi
 
     # Install FastDDS dependencies
     export MAKEFLAGS=-j$(($(grep -c ^processor /proc/cpuinfo) - 0))
@@ -190,7 +197,7 @@ if $install_cortex; then
     status_msg "Installing Fast-CDR..."
     if [ ! -d ~/software/Fast-CDR ]; then
         git clone https://github.com/eProsima/Fast-CDR.git ~/software/Fast-CDR
-        cd ~/software/Fast-CDR && cmake -B build && sudo make install -C build -j$(nproc) && cd -
+        cd ~/software/Fast-CDR && cmake -B build && sudo make install -C build -j$JOBS && cd -
     else
         warning_msg "Fast-CDR already exists in ~/software, skipping installation."
     fi
@@ -198,7 +205,7 @@ if $install_cortex; then
     status_msg "Installing foonathan_memory_vendor..."
     if [ ! -d ~/software/foonathan_memory_vendor ]; then
         git clone https://github.com/eProsima/foonathan_memory_vendor.git ~/software/foonathan_memory_vendor
-        cd ~/software/foonathan_memory_vendor && cmake -B build && sudo make install -C build -j$(nproc) && cd -
+        cd ~/software/foonathan_memory_vendor && cmake -B build && sudo make install -C build -j$JOBS && cd -
     else
         warning_msg "foonathan_memory_vendor already exists in ~/software, skipping installation."
     fi
@@ -206,7 +213,7 @@ if $install_cortex; then
     status_msg "Installing Fast-DDS..."
     if [ ! -d ~/software/Fast-DDS ]; then
         git clone https://github.com/eProsima/Fast-DDS.git ~/software/Fast-DDS
-        cd ~/software/Fast-DDS && cmake -B build && sudo make install -C build -j$(nproc) && cd -
+        cd ~/software/Fast-DDS && cmake -B build && sudo make install -C build -j$JOBS && cd -
         sudo ldconfig
     else
         warning_msg "Fast-DDS already exists in ~/software, skipping installation."
@@ -214,7 +221,7 @@ if $install_cortex; then
 
     # Install Cortex
     status_msg "Installing Cortex..."
-    cd "$path_robocomp/cortex" && cmake -B build -DDSR=TRUE && sudo make install -C build -j$(nproc) && cd -
+    cd "$path_robocomp/cortex" && cmake -B build -DDSR=TRUE && sudo make install -C build -j$JOBS && cd -
     sudo ldconfig
 else
     status_msg "Skipping Cortex installation as requested."
