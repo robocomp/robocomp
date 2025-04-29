@@ -90,6 +90,14 @@ sudo apt-get install -y \
 
 pip3 install vcstool PySide6 zeroc-ice
 
+# Add environment variables to bashrc
+status_msg "Adding environment variables to bashrc..."
+echo "export ROBOCOMP=$path_robocomp" >> ~/.bashrc
+echo "export PATH=\$PATH:$HOME/.local/bin" >> ~/.bashrc
+echo "alias rcnode='bash $path_robocomp/tools/rcnode/rcnode.sh&'" >> ~/.bashrc
+echo "alias cbuild='cmake -B build && make -C build -j$(nproc)'" >> ~/.bashrc
+source ~/.bashrc
+
 # Install libQGLViewer
 status_msg "Installing libQGLViewer..."
 mkdir -p ~/software
@@ -211,13 +219,5 @@ if $install_cortex; then
 else
     status_msg "Skipping Cortex installation as requested."
 fi
-
-# Add environment variables to bashrc
-status_msg "Adding environment variables to bashrc..."
-echo "export ROBOCOMP=$path_robocomp" >> ~/.bashrc
-echo "export PATH=\$PATH:$HOME/.local/bin" >> ~/.bashrc
-echo "alias rcnode='bash $path_robocomp/tools/rcnode/rcnode.sh&'" >> ~/.bashrc
-echo "alias cbuild='cmake -B build && make -C build -j$(nproc)'" >> ~/.bashrc
-source ~/.bashrc
 
 success_msg "RoboComp installation completed successfully!"
