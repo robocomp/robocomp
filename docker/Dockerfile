@@ -15,7 +15,7 @@ RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime && \
 # Create non-root user
 RUN useradd -m robouser && \
     apt-get update && \
-    apt-get install -y sudo git && \
+    apt-get install -y sudo git wget && \
     echo "robouser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Switch to non-root user
@@ -28,9 +28,8 @@ ENV PATH="$PATH:/home/$USER/.local/bin"
 ENV ROBOCOMP="/home/robouser/robocomp"
 
 # Clone and install
-RUN git clone https://github.com/robocomp/robocomp.git && \
-    cd robocomp &&  \
-    bash robocomp_install.sh -y
+RUN wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp_install.sh && \
+    bash robocomp_install.sh -y -j 2
 
 RUN sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
