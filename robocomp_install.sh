@@ -1,18 +1,40 @@
 #!/bin/bash
 set -euo pipefail
 
-# Auto-confirm flag (default to false)
+# Default values
 AUTO_CONFIRM=false
+CORES=$(grep -c ^processor /proc/cpuinfo)
+JOBS=$(( CORES * 3 / 4 ))
+[ "$JOBS" -lt 1 ] && JOBS=1  # Minimum 1 job
 
-# Check for -y or --yes flag
-if [[ "$#" -gt 0 ]]; then
-    if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
-        AUTO_CONFIRM=true
-    fi
-fi
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -y|--yes)
+            AUTO_CONFIRM=true
+            shift
+            ;;
+        -j|--jobs)
+            if [[ "$2" =~ ^[0-9]+$ ]]; then
+                JOBS="$2"
+                shift 2
+            else
+                echo "Error: -j requires a numeric argument" >&2
+                exit 1
+            fi
+            ;;
+        *)
+            echo "Unknown parameter: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Apply settings
+export MAKEFLAGS="-j$JOBS"
+echo "Using $JOBS parallel jobs for compilation"
 
 clear
-
 
 
 # Improved color definitions
@@ -63,13 +85,6 @@ if [ "$EUID" -eq 0 ]; then
     error_msg "Do not run this script as root/sudo. You'll be prompted for privileges when needed."
     exit 1
 fi
-
-# Set number jobs
-CORES=$(grep -c ^processor /proc/cpuinfo)
-JOBS=$(( CORES * 3 / 4 ))
-# Limit 1 job
-[ "$JOBS" -lt 1 ] && JOBS=1
-export MAKEFLAGS=-j$JOBS
 
 # System update and dependencies installation
 status_msg "Updating system and installing dependencies..."
