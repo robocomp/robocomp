@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Default values
 AUTO_CONFIRM=false
+INSTALL_CORTEX=0
 CORES=$(grep -c ^processor /proc/cpuinfo)
 JOBS=$(( CORES * 3 / 4 ))
 [ "$JOBS" -lt 1 ] && JOBS=1  # Minimum 1 job
@@ -20,6 +21,22 @@ while [[ "$#" -gt 0 ]]; do
                 shift 2
             else
                 echo "Error: -j requires a numeric argument" >&2
+                exit 1
+            fi
+            ;;
+        --version)
+            if [[ "$2" =~ ^[a-z]+$ ]]; then
+                if [ "$2" = "base" ]; then
+                    INSTALL_CORTEX=-1
+                elif [ "$2" = "dsr" ]; then
+                    INSTALL_CORTEX=1
+                else
+                    echo "Error: version supported base or dsr" >&2
+                    exit 1
+                fi
+                shift 2
+            else
+                echo "Error: --version requires a lowercase string argument [base/dsr]" >&2
                 exit 1
             fi
             ;;
@@ -118,6 +135,10 @@ mkdir -p ~/software
 if [ ! -d ~/software/libQGLViewer ]; then
     git clone https://github.com/GillesDebunne/libQGLViewer.git ~/software/libQGLViewer
     cd ~/software/libQGLViewer && qmake6 *.pro && sudo make install -j$JOBS && sudo ldconfig && cd -
+    if [ $? -ne 0 ]; then
+        echo "Error: Compilation failed for libQGLViewer"
+        exit 1
+    fi
 else
     warning_msg "libQGLViewer already exists in ~/software, skipping installation."
 fi
@@ -127,6 +148,10 @@ status_msg "Installing tomlplusplus..."
 if [ ! -d ~/software/tomlplusplus ]; then
     git clone https://github.com/marzer/tomlplusplus.git ~/software/tomlplusplus
     cd ~/software/tomlplusplus && cmake -B build && sudo make install -C build -j$JOBS && cd -
+    if [ $? -ne 0 ]; then
+        echo "Error: Compilation failed for tomlplusplus"
+        exit 1
+    fi
 else
     warning_msg "tomlplusplus already exists in ~/software, skipping installation."
 fi
@@ -152,12 +177,10 @@ source ~/.bashrc
 
 # Download RoboComp
 status_msg "Downloading RoboComp..."
-if [ ! -f robocomp.repos ]; then
-    wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp.repos
-fi
+wget https://raw.githubusercontent.com/alfiTH/robocomp/development/robocomp.repos -O /tmp/robocomp.repos
 
 mkdir -p "$path_robocomp"
-vcs import "$path_robocomp" < robocomp.repos --recursive
+vcs import "$path_robocomp" < /tmp/robocomp.repos --recursive
 
 # Create symbolic links
 cd "$path_robocomp"
@@ -173,21 +196,23 @@ cd "$path_robocomp/tools/cli/" && pip install . && popd > /dev/null
 sudo ln -sf /usr/include/eigen3/Eigen/ /usr/include/Eigen
 
 # Cortex installation prompt
-if $AUTO_CONFIRM; then
-    install_cortex=true
-    status_msg "Auto-confirm enabled: Cortex will be installed"
-else 
-    while true; do
-        read -p "Do you want to install Cortex? [Y/n]: " yn
-        case $yn in
-            [Yy]* ) install_cortex=true; break;;
-            [Nn]* ) install_cortex=false; break;;
-            * ) install_cortex=true; break;;
-        esac
-    done
+if [ "$INSTALL_CORTEX" -eq 0 ]; then
+    if $AUTO_CONFIRM; then
+        INSTALL_CORTEX=1
+        status_msg "Auto-confirm enabled: Cortex will be installed"
+    else 
+        while true; do
+            read -p "Do you want to install Cortex? [Y/n]: " yn
+            case $yn in
+                [Yy]* ) INSTALL_CORTEX=1; break;;
+                [Nn]* ) INSTALL_CORTEX=-1; break;;
+                * ) INSTALL_CORTEX=1; break;;
+            esac
+        done
+    fi
 fi
 
-if $install_cortex; then
+if [ "$INSTALL_CORTEX" -eq 1 ]; then
     status_msg "Installing Cortex dependencies..."
     sudo apt-get install -y \
         libasio-dev \
@@ -202,6 +227,10 @@ if $install_cortex; then
     if [ ! -d /usr/local/include/cppitertools ]; then
         git clone https://github.com/ryanhaining/cppitertools ~/software/cppitertools
         cd ~/software/cppitertools && cmake -B build && sudo make install -C build -j$JOBS && cd -
+        if [ $? -ne 0 ]; then
+            echo "Error: Compilation failed for cppitertools"
+            exit 1
+        fi
     else
         warning_msg "Fast-CDR already exists in ~/software, skipping installation."
     fi
@@ -213,6 +242,10 @@ if $install_cortex; then
     if [ ! -d ~/software/Fast-CDR ]; then
         git clone https://github.com/eProsima/Fast-CDR.git ~/software/Fast-CDR
         cd ~/software/Fast-CDR && cmake -B build && sudo make install -C build -j$JOBS && cd -
+        if [ $? -ne 0 ]; then
+            echo "Error: Compilation failed for Fast-CDR"
+            exit 1
+        fi
     else
         warning_msg "Fast-CDR already exists in ~/software, skipping installation."
     fi
@@ -221,6 +254,10 @@ if $install_cortex; then
     if [ ! -d ~/software/foonathan_memory_vendor ]; then
         git clone https://github.com/eProsima/foonathan_memory_vendor.git ~/software/foonathan_memory_vendor
         cd ~/software/foonathan_memory_vendor && cmake -B build && sudo make install -C build -j$JOBS && cd -
+        if [ $? -ne 0 ]; then
+            echo "Error: Compilation failed for foonathan_memory_vendor"
+            exit 1
+        fi
     else
         warning_msg "foonathan_memory_vendor already exists in ~/software, skipping installation."
     fi
@@ -229,6 +266,10 @@ if $install_cortex; then
     if [ ! -d ~/software/Fast-DDS ]; then
         git clone https://github.com/eProsima/Fast-DDS.git ~/software/Fast-DDS
         cd ~/software/Fast-DDS && cmake -B build && sudo make install -C build -j$JOBS && cd -
+        if [ $? -ne 0 ]; then
+            echo "Error: Compilation failed for Fast-DDS"
+            exit 1
+        fi
         sudo ldconfig
     else
         warning_msg "Fast-DDS already exists in ~/software, skipping installation."
@@ -238,6 +279,10 @@ if $install_cortex; then
     status_msg "Installing Cortex..."
     sudo cp -r $path_robocomp/classes/threadpool /usr/include/
     cd "$path_robocomp/cortex" && cmake -B build -DDSR=TRUE && sudo make install -C build -j$JOBS && cd -
+    if [ $? -ne 0 ]; then
+        echo "Error: Compilation failed for Cortex"
+        exit 1
+    fi
     sudo ldconfig
 else
     status_msg "Skipping Cortex installation as requested."
