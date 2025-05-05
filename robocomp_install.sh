@@ -177,7 +177,7 @@ source ~/.bashrc
 
 # Download RoboComp
 status_msg "Downloading RoboComp..."
-wget https://raw.githubusercontent.com/alfiTH/robocomp/development/robocomp.repos -O /tmp/robocomp.repos
+wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp.repos -O /tmp/robocomp.repos
 
 mkdir -p "$path_robocomp"
 vcs import "$path_robocomp" < /tmp/robocomp.repos --recursive

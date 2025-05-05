@@ -4,11 +4,8 @@
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Docs Links Checker](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml)
-[![CodeQL Analysis](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml)
 [![Docker Images](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml)
-[![Component generation test](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml)
-[![Component compilation test](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml)
-[![robocompdsl test](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml)
+[![Tools Robocomp](https://github.com/robocomp/robocomp/actions/workflows/robocomp_tools_check.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/robocomp_tools_check.yml)
 # About
 
 An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/) and many other collaborators from the Google Summer of Code program.
