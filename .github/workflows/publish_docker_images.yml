@@ -2,186 +2,87 @@ name: "Docker Images"
 
 on:
   push:
+    branches: [development]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DOCKER_IMAGE: robocomp/robocomp
+
 jobs:
-  robocomp-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: robocomp/robocomp
-          tags: |
-            type=ref, suffix=__dependencies__latest, event=branch
-            type=sha, prefix={{branch}}__dependencies__
-
-      - uses: docker/setup-buildx-action@v1
-        id: dependencies-builder
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build against dependencies-builder
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.dependencies-builder.outputs.name }}
-          context: docker
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          build-args:  |
-            base_image=nvidia/opengl
-            base_tag=base-ubuntu20.04
-            branch=${{ steps.extract_branch.outputs.branch }}
-            robocomp_version=dependencies
-        # This ugly bit is necessary if you don't want your cache to grow forever
-        # till it hits GitHub's limit of 5GB.
-        # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   robocomp-base:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Docker meta
+      - uses: docker/metadata-action@v4
         id: meta
-        uses: docker/metadata-action@v3
         with:
-          images: robocomp/robocomp
+          images: ${{ env.DOCKER_IMAGE }}
           tags: |
-            type=ref, suffix=__base__latest, event=branch
-            type=sha, prefix={{branch}}__base__
+            type=raw,value=base-latest
+            type=sha, prefix=base-
+          flavor: |
+            latest=false
 
-      - uses: docker/setup-buildx-action@v1
-        id: base-builder
+      - uses: docker/setup-buildx-action@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build against base-builder
-        uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         with:
-          builder: ${{ steps.base-builder.outputs.name }}
           context: docker
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          build-args:  |
-            base_image=nvidia/opengl
-            base_tag=base-ubuntu20.04
-            branch=${{ steps.extract_branch.outputs.branch }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            base_image=ubuntu
+            base_tag=22.04
+            branch=development
             robocomp_version=base
-        # This ugly bit is necessary if you don't want your cache to grow forever
-        # till it hits GitHub's limit of 5GB.
-        # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   robocomp-dsr:
     runs-on: ubuntu-latest
+    needs: robocomp-base
     steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Docker meta
+      - uses: docker/metadata-action@v4
         id: meta
-        uses: docker/metadata-action@v3
         with:
-          images: robocomp/robocomp
+          images: ${{ env.DOCKER_IMAGE }}
           tags: |
-            type=ref, suffix=__dsr__latest, event=branch
-            type=sha, prefix={{branch}}__dsr__
+            type=raw,value=dsr-latest
+            type=sha, prefix=dsr-
+          flavor: |
+            latest=false
 
-      - uses: docker/setup-buildx-action@v1
-        id: dsr-builder
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      - uses: docker/setup-buildx-action@v2
 
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build against dsr-builder
-        uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         with:
-          builder: ${{ steps.dsr-builder.outputs.name }}
           context: docker
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          build-args:  |
-            base_image=nvidia/opengl
-            base_tag=base-ubuntu20.04
-            branch=${{ steps.extract_branch.outputs.branch }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            base_image=ubuntu
+            base_tag=22.04
+            branch=development
             robocomp_version=dsr
