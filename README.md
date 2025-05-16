@@ -4,11 +4,8 @@
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Docs Links Checker](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/broken_links.yml)
-[![CodeQL Analysis](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/codeql-analysis.yml)
 [![Docker Images](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/publish_docker_images.yml)
-[![Component generation test](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_generation.yml)
-[![Component compilation test](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/components_compilation.yml)
-[![robocompdsl test](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/robocompdsl.yml)
+[![Tools Robocomp](https://github.com/robocomp/robocomp/actions/workflows/robocomp_tools_check.yml/badge.svg)](https://github.com/robocomp/robocomp/actions/workflows/robocomp_tools_check.yml)
 # About
 
 An organization maintained by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/) and many other collaborators from the Google Summer of Code program.
@@ -48,49 +45,48 @@ Tested in Ubuntu 20.04, 22.04 and 24.04, with Python3.10 and Python3.12
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 
-## Prerequisites
+## Installation with script
+You can install robocomp with script [robocomp_install.sh](robocomp_install.sh), it allows you to change Robocomp path and install [cortex](https://github.com/robocomp/cortex)
+```bash
+wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp_install.sh && bash robocomp_install.sh
+```
+
+## Manual installation
+### Prerequisites
 
 Before you begin the installation, make sure you have the following prerequisites installed on your system:
-
-### Prerequisites for Robocomp Installation
 ```bash
 sudo apt update
-sudo apt install python3 python3-pip cmake vim git wget libopenscenegraph-dev libgsl-dev 
-pip3 install vcstool 
-```
+sudo apt install python3 python3-pip cmake vim git wget libopenscenegraph-dev libgsl-dev qt6-base-dev qt6-declarative-dev qt6-scxml-dev libqt6statemachineqml6 libqt6statemachine6 libbz2-dev libssl-dev zeroc-icebox zeroc-ice-all-dev libzeroc-icestorm3.7 libeigen3-dev meld
+pip install vcstool PySide6 zeroc-ice
 
-### Prerequisites for Compiling Robocomp Components
-```bash
-sudo apt install qt6-base-dev qt6-declarative-dev qt6-scxml-dev libqt6statemachineqml6 libqt6statemachine6 libbz2-dev libssl-dev zeroc-icebox zeroc-ice-all-dev libzeroc-icestorm3.7 libeigen3-dev meld
-pip install PySide6 zeroc-ice
-
+# Install libQGLViewer
 mkdir ~/software 2> /dev/null; git clone https://github.com/GillesDebunne/libQGLViewer.git ~/software/libQGLViewer
 cd ~/software/libQGLViewer && qmake6 *.pro && make -j12 && sudo make install && sudo ldconfig && cd -
+
+# Install tomlplusplus
+git clone https://github.com/marzer/tomlplusplus.git ~/software/tomlplusplus
+cd ~/software/tomlplusplus && cmake -B build && sudo make install -C build -j12 && cd -
 ```
 
-
-## Installation Steps
-
-1. Download the robocomp.repos file:
+### Installation Steps
+1. Download the Robocomp.repos file:
 ```bash
-cd
-wget https://raw.githubusercontent.com/robocomp/robocomp2/main/robocomp.repos
+wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp.repos
 ```
 
-2. Configure environment variables:
+2. Configure environment variables, you can change the Robocomp path here:
 ```bash
-echo "export ROBOCOMP=/home/robocomp/robocomp" >> ~/.bashrc
-echo "export PATH=\$PATH:/home/$USER/.local/bin" >>  ~/.bashrc
+echo "export ROBOCOMP=$HOME/robocomp" >> ~/.bashrc #Change HERE if you prefer another installation path.
+echo "export PATH=\$PATH:$HOME/.local/bin" >> ~/.bashrc
 source ~/.bashrc
 ```
 
 3. Import RoboComp packages:
 ```bash
-vcs import . < robocomp.repos --recursive
+vcs import $ROBOCOMP < robocomp.repos --recursive
 
-sudo ln -s /home/$USER /home/robocomp
-
-cd /home/robocomp/robocomp
+cd $ROBOCOMP
 ln -s core/cmake cmake
 ln -s core/classes classes
 
@@ -99,16 +95,18 @@ mkdir components
 
 4. Install RoboComp command-line tools:
 ```bash
-pushd . && cd /home/robocomp/robocomp/tools/cli/ && pip install . && popd
+pushd . && cd $ROBOCOMP/tools/cli/ && pip install . && popd
 ```
 
 ```bash
 sudo ln -s /usr/include/eigen3/Eigen/ /usr/include/Eigen
 ```
 
-5. Add an alias for rcnode to your .bashrc:
+5. Add an alias for rcnode and clean compile to your .bashrc:
 ```bash
-echo "alias rcnode='bash /home/robocomp/robocomp/tools/rcnode/rcnode.sh&'" >>  ~/.bashrc
+
+echo "alias rcnode='bash $ROBOCOMP/tools/rcnode/rcnode.sh&'" >> ~/.bashrc
+echo "alias cbuild='cmake -B build && make -C build -j$(nproc)'" >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -117,12 +115,8 @@ If you are going to develop with Robocomp it's recommendable to install the foll
 ```bash
 sudo apt-get install yakuake
 
-sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
-cd /usr/local/include/cppitertools
-sudo mkdir build
-cd build
-sudo cmake ..
-sudo make install
+git clone https://github.com/ryanhaining/cppitertools ~/software/cppitertools
+cd ~/software/cppitertools && cmake -B build && sudo make install -C build -j$JOBS && cd -
 ```
 
 Done! Now let's have some fun.

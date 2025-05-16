@@ -15,7 +15,7 @@ jobs:
   make-generation-test:
     runs-on: ubuntu-latest
     container:
-      image: "robocomp/robocomp:development__dsr__latest"
+      image: "robocomp/robocomp:dsr-latest"
       options: --user robolab
 
     steps:
