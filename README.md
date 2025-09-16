@@ -33,7 +33,16 @@ interfaces in a seamless way. Building new components is done using two domain-s
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
+# Recommended Tools  
 
+We recommend installing:  
+
+- **Yakuake** for terminal management  
+- **Qt Designer** or **Qt Creator** for designing Qt interfaces  
+
+```bash
+sudo apt install yakuake qt6-tools-dev
+```
 
 # Installation from source
 
@@ -45,13 +54,24 @@ Tested in Ubuntu 20.04, 22.04 and 24.04, with Python3.10 and Python3.12
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 
+> [!WARNING]  
+> If you are using Ubuntu 24.04, you may need a Python virtual environment. It can be created with:
+> ```bash
+> sudo apt install python3-venv
+> mkdir ~/software 2> /dev/null; cd ~/software && python3 -m venv pip_venv
+> echo "PATH="$HOME/software/pip_venv/bin:\$PATH"" >> ~/.bashrc
+> ```
+
+
 ## Installation with script
-You can install robocomp with script [robocomp_install.sh](robocomp_install.sh), it allows you to change Robocomp path and install [cortex](https://github.com/robocomp/cortex)
+You can install RoboComp using the script [robocomp_install.sh](robocomp_install.sh).  
+It allows you to change the RoboComp installation path and also install [Cortex](https://github.com/robocomp/cortex).
 ```bash
 wget https://raw.githubusercontent.com/robocomp/robocomp/development/robocomp_install.sh && bash robocomp_install.sh
 ```
 
 ## Manual installation
+
 ### Prerequisites
 
 Before you begin the installation, make sure you have the following prerequisites installed on your system:
