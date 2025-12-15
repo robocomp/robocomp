@@ -188,10 +188,11 @@ Note 1: You must have your simulator running in a terminal and only then you can
 
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
-# Testing the installation using the Coppelia Simulator
-We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [CoppeliaSim](https://www.coppeliarobotics.com/) because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost everything running in the simulator.
+# Testing the installation using the Webots robotics simulator
+We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is [Webots](https://cyberbotics.com). To install it follow the instructions in their page. To use if from RoboComp components you can clone the repository into ~/robocomp/ and build it (cmake and make). Go through its Webots2Robocomp.cdsl file to see all the interfaces it offers. Go through the etc/config files to check the ports where they are offer [webots-bridge](https://github.com/robocomp/webots-bridge.git) ed. 
+There is another repository with some worlds (.wbt files) that you can load into Webots with our robot Shadow,  [webots-shadow](https://github.com/robocomp/webots-shadow.git) Clone it in ~/robocomp and load one of the available worlds.
 
-Follow the instructions in https://github.com/robocomp/robocomp/blob/development/doc/robocomp-pyrep.md to install CoppeliaSim and PyRep
+Start webots_bridge to activate the Webots interface and try to connect your new component to the Shadow robot and its 360º camera and 3D Lidar.
 
 # Next steps
 
