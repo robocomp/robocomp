@@ -219,6 +219,7 @@ if [ "$INSTALL_CORTEX" -eq 1 ]; then
         libtinyxml2-dev \
         libopencv-dev \
         python3-dev \
+        libgraphviz-dev \
         python3-pybind11 \
 
 
