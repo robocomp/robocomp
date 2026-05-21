@@ -127,7 +127,7 @@ sudo apt-get install -y \
     libeigen3-dev \
     meld
 
-pip3 install vcstool PySide6 zeroc-ice toml rich
+pip3 install vcstool
 
 # Install libQGLViewer
 status_msg "Installing libQGLViewer..."
